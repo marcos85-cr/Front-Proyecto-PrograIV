@@ -1,0 +1,78 @@
+import { Component, signal, inject, ViewEncapsulation } from '@angular/core';
+import {
+  FormGroup,
+  NonNullableFormBuilder,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
+import { ToastService } from 'src/app/services/toast.service';
+import { IonicModule } from '@ionic/angular';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
+  imports: [IonicModule, ReactiveFormsModule],
+  standalone: true,
+  encapsulation: ViewEncapsulation.None,
+})
+export class LoginComponent {
+  // Inject dependencies usando la función inject()
+  private readonly fb = inject(NonNullableFormBuilder);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly toastService = inject(ToastService);
+
+  // Signals para estado reactivo
+  readonly showPassword = signal(false);
+  readonly isLoading = signal(false);
+
+  // Formulario reactivo
+  readonly loginForm: FormGroup = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required],
+  });
+
+  togglePassword(): void {
+    this.showPassword.update(value => !value);
+  }
+
+  onSubmit(): void {
+    if (this.loginForm.valid) {
+      this.isLoading.set(true);
+
+      this.authService.signIn(this.loginForm.getRawValue()).subscribe({
+        next: async (res: any) => {
+          this.authService.saveToken(res.data.token);
+          this.authService.loginSuccess$.subscribe();
+
+          await this.toastService.success('Inicio de sesión exitoso', 2000);
+
+          // Redirigir según el rol
+          // const user = res.user;
+          // if (user.role === 'Administrador') {
+          //   this.router.navigate(['/admin/dashboard']);
+          // } else if (user.role === 'Gestor') {
+          //   this.router.navigate(['/gestor/dashboard']);
+          // } else {
+          //   this.router.navigate(['/tabs/home']);
+          // }
+           this.router.navigate(['/dashboard']);
+        },
+        error: async (error: any) => {
+          console.error('Error en login:', error);
+          const message =
+            error.error?.message ||
+            'Error al iniciar sesión. Verifique sus credenciales.';
+          await this.toastService.error(message);
+          this.isLoading.set(false);
+        },
+        complete: () => {
+          this.isLoading.set(false);
+        },
+      });
+    }
+  }
+}

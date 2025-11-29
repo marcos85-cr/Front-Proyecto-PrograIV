@@ -1,0 +1,538 @@
+
+
+// ============================================
+// CARDS - Tarjetas reutilizables
+// ============================================
+.bank-card {
+  background: $bg-secondary;
+  border-radius: $border-radius-lg;
+  padding: $spacing-md;
+  box-shadow: $shadow-sm;
+  transition: all $transition-normal;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+
+  &--elevated {
+    box-shadow: $shadow-md;
+
+    &:hover {
+      box-shadow: $shadow-lg;
+    }
+  }
+
+  &--flat {
+    box-shadow: none;
+    border: 1px solid $border-color;
+  }
+
+  &--interactive {
+    cursor: pointer;
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: $shadow-sm;
+    }
+  }
+}
+
+.bank-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-sm;
+  border-bottom: 1px solid $border-color;
+
+  h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $text-primary;
+  }
+}
+
+.bank-card-body {
+  color: $text-secondary;
+  line-height: 1.6;
+}
+
+.bank-card-footer {
+  margin-top: $spacing-md;
+  padding-top: $spacing-sm;
+  border-top: 1px solid $border-color;
+  display: flex;
+  gap: $spacing-sm;
+  justify-content: flex-end;
+}
+
+// ============================================
+// BUTTONS - Botones del sistema
+// ============================================
+
+.bank-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: $border-radius-md;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all $transition-normal;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.2);
+    opacity: 0;
+    transition: opacity $transition-fast;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  // Variantes
+  &--primary {
+    background: $bank-primary;
+    color: white;
+    box-shadow: 0 2px 8px rgba(26, 77, 143, 0.3);
+
+    &:hover {
+      background: $bank-primary-dark;
+      box-shadow: 0 4px 12px rgba(26, 77, 143, 0.4);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  &--success {
+    background: $bank-success;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 135, 90, 0.3);
+
+    &:hover {
+      background: $bank-accent-dark;
+      box-shadow: 0 4px 12px rgba(0, 135, 90, 0.4);
+      transform: translateY(-1px);
+    }
+  }
+
+  &--danger {
+    background: $bank-danger;
+    color: white;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+
+    &:hover {
+      background: darken($bank-danger, 8%);
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+      transform: translateY(-1px);
+    }
+  }
+
+  &--outline {
+    background: transparent;
+    color: $bank-primary;
+    border: 2px solid $bank-primary;
+    box-shadow: none;
+
+    &:hover {
+      background: rgba(26, 77, 143, 0.05);
+      border-color: $bank-primary-dark;
+    }
+  }
+
+  &--text {
+    background: transparent;
+    color: $bank-primary;
+    box-shadow: none;
+    padding: 0.5rem 1rem;
+
+    &:hover {
+      background: rgba(26, 77, 143, 0.05);
+    }
+  }
+
+  // Tamaños
+  &--sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  &--lg {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+  }
+
+  &--full {
+    width: 100%;
+  }
+}
+
+// ============================================
+// FORMS - Formularios
+// ============================================
+
+.bank-form-group {
+  margin-bottom: $spacing-md;
+
+  label {
+    display: block;
+    margin-bottom: $spacing-xs;
+    font-weight: 500;
+    color: $text-primary;
+    font-size: 0.875rem;
+  }
+
+  .form-hint {
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: $text-light;
+  }
+
+  .form-error {
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: $bank-danger;
+    animation: shake 0.3s;
+  }
+}
+
+.bank-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid $border-color;
+  border-radius: $border-radius-md;
+  font-size: 1rem;
+  color: $text-primary;
+  background: $bg-secondary;
+  transition: all $transition-normal;
+
+  &::placeholder {
+    color: $text-light;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $bank-primary;
+    box-shadow: 0 0 0 3px rgba(26, 77, 143, 0.1);
+  }
+
+  &:disabled {
+    background: $bg-tertiary;
+    cursor: not-allowed;
+  }
+
+  &--error {
+    border-color: $bank-danger;
+
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+  }
+
+  &--success {
+    border-color: $bank-success;
+  }
+}
+
+// ============================================
+// TABLES - Tablas
+// ============================================
+
+.bank-table {
+  width: 100%;
+  background: $bg-secondary;
+  border-radius: $border-radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead {
+    background: $bg-tertiary;
+
+    th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: $text-primary;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid $border-color;
+      transition: background $transition-fast;
+
+      &:hover {
+        background: $bg-tertiary;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    td {
+      padding: 1rem;
+      color: $text-secondary;
+    }
+  }
+}
+
+// ============================================
+// BADGES - Etiquetas
+// ============================================
+
+.bank-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+
+  &--primary {
+    background: rgba(26, 77, 143, 0.1);
+    color: $bank-primary-dark;
+  }
+
+  &--success {
+    background: rgba(0, 135, 90, 0.1);
+    color: $bank-accent-dark;
+  }
+
+  &--warning {
+    background: rgba(217, 119, 6, 0.1);
+    color: darken($bank-warning, 10%);
+  }
+
+  &--danger {
+    background: rgba(220, 38, 38, 0.1);
+    color: $bank-danger;
+  }
+
+  &--neutral {
+    background: $bg-tertiary;
+    color: $text-secondary;
+  }
+}
+
+// ============================================
+// ALERTS - Alertas
+// ============================================
+
+.bank-alert {
+  padding: $spacing-md;
+  border-radius: $border-radius-md;
+  display: flex;
+  gap: $spacing-sm;
+  align-items: flex-start;
+
+  ion-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  &--info {
+    background: rgba(26, 77, 143, 0.1);
+    color: $bank-primary-dark;
+    border-left: 4px solid $bank-primary;
+  }
+
+  &--success {
+    background: rgba(0, 135, 90, 0.1);
+    color: $bank-accent-dark;
+    border-left: 4px solid $bank-success;
+  }
+
+  &--warning {
+    background: rgba(217, 119, 6, 0.1);
+    color: darken($bank-warning, 10%);
+    border-left: 4px solid $bank-warning;
+  }
+
+  &--danger {
+    background: rgba(220, 38, 38, 0.1);
+    color: $bank-danger;
+    border-left: 4px solid $bank-danger;
+  }
+}
+
+// ============================================
+// STATS - Estadísticas
+// ============================================
+
+.bank-stat {
+  background: $bg-secondary;
+  padding: $spacing-md;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-sm;
+  transition: all $transition-normal;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+
+  &-label {
+    font-size: 0.875rem;
+    color: $text-secondary;
+    margin-bottom: $spacing-xs;
+  }
+
+  &-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin-bottom: $spacing-xs;
+  }
+
+  &-change {
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    &--up {
+      color: $bank-success;
+    }
+
+    &--down {
+      color: $bank-danger;
+    }
+  }
+}
+
+// ============================================
+// UTILITIES - Utilidades
+// ============================================
+
+// Espaciado
+.mt-xs { margin-top: $spacing-xs; }
+.mt-sm { margin-top: $spacing-sm; }
+.mt-md { margin-top: $spacing-md; }
+.mt-lg { margin-top: $spacing-lg; }
+.mt-xl { margin-top: $spacing-xl; }
+
+.mb-xs { margin-bottom: $spacing-xs; }
+.mb-sm { margin-bottom: $spacing-sm; }
+.mb-md { margin-bottom: $spacing-md; }
+.mb-lg { margin-bottom: $spacing-lg; }
+.mb-xl { margin-bottom: $spacing-xl; }
+
+.p-xs { padding: $spacing-xs; }
+.p-sm { padding: $spacing-sm; }
+.p-md { padding: $spacing-md; }
+.p-lg { padding: $spacing-lg; }
+.p-xl { padding: $spacing-xl; }
+
+// Texto
+.text-primary { color: $text-primary; }
+.text-secondary { color: $text-secondary; }
+.text-light { color: $text-light; }
+
+.text-xs { font-size: 0.75rem; }
+.text-sm { font-size: 0.875rem; }
+.text-base { font-size: 1rem; }
+.text-lg { font-size: 1.125rem; }
+.text-xl { font-size: 1.25rem; }
+.text-2xl { font-size: 1.5rem; }
+
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+
+// Display
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.gap-sm { gap: $spacing-sm; }
+.gap-md { gap: $spacing-md; }
+
+// Layout
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 $spacing-md;
+}
+
+.grid {
+  display: grid;
+  gap: $spacing-md;
+
+  &--2 { grid-template-columns: repeat(2, 1fr); }
+  &--3 { grid-template-columns: repeat(3, 1fr); }
+  &--4 { grid-template-columns: repeat(4, 1fr); }
+
+  @media (max-width: 768px) {
+    &--2, &--3, &--4 {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// ============================================
+// ANIMACIONES
+// ============================================
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+.animate-slideIn { animation: slideInRight 0.4s ease-out; }

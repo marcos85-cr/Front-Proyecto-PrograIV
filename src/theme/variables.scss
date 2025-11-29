@@ -1,0 +1,44 @@
+
+// Variables de color
+$bank-primary: #1a4d8f;
+$bank-primary-dark: #0d2f5e;
+$bank-primary-light: #3d5a80;
+$bank-accent: #00875a;
+$bank-accent-dark: #006644;
+$bank-warning: #d97706;
+$bank-danger: #dc2626;
+$bank-success: #00875a;
+
+// Textos
+$text-primary: #1e293b;
+$text-secondary: #475569;
+$text-tertiary: #64748b;
+$text-light: #94a3b8;
+
+// Fondos
+$bg-primary: #f8fafc;
+$bg-secondary: #ffffff;
+$bg-tertiary: #f1f5f9;
+
+// Bordes y sombras
+$border-color: #e2e8f0;
+$border-radius-sm: 8px;
+$border-radius-md: 12px;
+$border-radius-lg: 16px;
+
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+$shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+$shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.2);
+
+// Espaciado
+$spacing-xs: 0.5rem;
+$spacing-sm: 1rem;
+$spacing-md: 1.5rem;
+$spacing-lg: 2rem;
+$spacing-xl: 3rem;
+
+// Transiciones
+$transition-fast: 0.15s ease;
+$transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+$transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
