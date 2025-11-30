@@ -52,10 +52,10 @@ export class UserService {
    * @param bloqueado - Estado de bloqueo deseado
    * @returns Observable con el resultado de la operación
    */
-  updateUserStatus(id: string, bloqueado: boolean): Observable<Result> {
-    const url = `${this.baseUrl}/${id}/status`;
+  updateUserStatus(id: string): Observable<Result> {
+    const url = `${this.baseUrl}/${id}/block`;
 
-    return this.http.patch<Result>(url, { bloqueado }).pipe(
+    return this.http.put<Result>(url, {}).pipe(
       catchError((error) => this.errorHandler.handleError(error, url))
     );
   }

@@ -18,4 +18,11 @@ export const MAIN_ROUTES: Routes = [
         (m) => m.CUSTOMER_ROUTES
       ),
   },
+  {
+    path: 'accounts',
+    loadChildren: () =>
+      import('./components/accounts/account.route').then(
+        (m) => m.ACCOUNT_ROUTES
+      ),
+  }
 ];

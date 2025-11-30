@@ -17,6 +17,8 @@ import { AlertController } from '@ionic/angular';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { EMPTY, forkJoin } from 'rxjs';
 import { USER_ROLES } from 'src/app/shared/constants/user-roles.constants';
+import { Account } from '../../../accounts/models/account.dto';
+import { AccountsService } from '../../../accounts/services/accounts.service';
 
 // Constantes para tipos de cuenta y monedas
 export const ACCOUNT_TYPES = [
@@ -58,7 +60,8 @@ export class CustomerCreateComponent implements OnInit {
     private route: ActivatedRoute,
     private customerService: CustomerService,
     private toastService: ToastService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private accountsService: AccountsService,
   ) {
     this.customerForm = this.fb.group({
       direccion: ['', [Validators.required, Validators.minLength(5)]],
@@ -216,7 +219,7 @@ export class CustomerCreateComponent implements OnInit {
             text: 'Eliminar',
             role: 'destructive',
             handler: () => {
-              this.cuentas.removeAt(index);
+              this.executeDeleteAccount(cuenta);
             },
           },
         ],
@@ -226,6 +229,15 @@ export class CustomerCreateComponent implements OnInit {
       this.cuentas.removeAt(index);
     }
   }
+
+   private executeDeleteAccount(account: Account): void {
+      this.accountsService.deleteAccount(account.id.toString()).subscribe({
+        next: () => {
+          this.toastService.success('Cuenta eliminada exitosamente');
+        },
+        error: (error) => this.toastService.error(error?.message || 'Error al eliminar cuenta'),
+      });
+    }
 
   loadCustomer(id: string): void {
     this.isLoading.set(true);

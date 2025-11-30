@@ -109,7 +109,7 @@ export class UserListComponent implements OnInit, ViewWillEnter {
    * Ejecuta el cambio de estado del usuario después de la confirmación
    */
   private executeToggleUserStatus(user: User, bloquear: boolean, actionCapitalized: string): void {
-    this.userService.updateUserStatus(user.id, bloquear).subscribe({
+    this.userService.updateUserStatus(user.id).subscribe({
       next: () => {
         // Actualizar el estado local del usuario
         user.bloqueado = bloquear;
@@ -156,8 +156,9 @@ export class UserListComponent implements OnInit, ViewWillEnter {
         this.toastService.success('Usuario eliminado exitosamente');
         this.refreshUsers();
       },
-      error: () => {
-        this.toastService.error('Error al eliminar usuario');
+      error: (error) => {
+        const message = error?.message || 'Error al eliminar usuario';
+        this.toastService.error(message);
       }
     });
   }

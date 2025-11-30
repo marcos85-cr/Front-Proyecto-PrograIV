@@ -1,0 +1,163 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Gestión de Cuentas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="refreshAccounts()">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <!-- Búsqueda y Filtros -->
+  <div class="search-container">
+    <ion-searchbar
+      [value]="searchTerm()"
+      (ionInput)="onSearchChange($event)"
+      placeholder="Buscar por número o titular"
+      animated>
+    </ion-searchbar>
+
+    <!-- Filtros -->
+    <div class="filters-container">
+      <ion-segment [value]="filterTipo()" (ionChange)="onTipoChange($event)" class="filter-segment">
+        <ion-segment-button value="todos">
+          <ion-label>Todos</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="Ahorro">
+          <ion-label>Ahorro</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="Corriente">
+          <ion-label>Corriente</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <div class="secondary-filters">
+      <ion-chip [outline]="filterMoneda() !== 'todas'" (click)="toggleMoneda('todas')">
+        <ion-label>Todos</ion-label>
+      </ion-chip>
+      <ion-chip [outline]="filterMoneda() !== 'CRC'" (click)="toggleMoneda('CRC')">
+        <ion-label>₡ Colones</ion-label>
+      </ion-chip>
+      <ion-chip [outline]="filterMoneda() !== 'USD'" (click)="toggleMoneda('USD')">
+        <ion-label>$ Dólares</ion-label>
+      </ion-chip>
+      <ion-chip [outline]="filterEstado() !== 'Activa'" color="success" (click)="toggleEstado('Activa')">
+        <ion-label>Activas</ion-label>
+      </ion-chip>
+      <ion-chip [outline]="filterEstado() !== 'Inactiva'" color="danger" (click)="toggleEstado('Inactiva')">
+        <ion-label>Inactivas</ion-label>
+      </ion-chip>
+    </div>
+  </div>
+
+  <div class="bank-content-container">
+    <!-- Estado de carga -->
+    @if (isLoading()) {
+    <div class="bank-loading-section">
+      <div class="bank-glass-card loading-card">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando cuentas...</p>
+      </div>
+    </div>
+    }
+
+    <!-- Lista de Cuentas -->
+    <div class="bank-section">
+      <div class="bank-section-header">
+        <h3>Cuentas Bancarias</h3>
+        <span class="bank-badge-primary">{{ filteredAccounts().length }} cuentas</span>
+      </div>
+
+      @if (filteredAccounts().length > 0 && !isLoading()) {
+      <div class="accounts-list">
+        @for (account of filteredAccounts(); track account.id) {
+        <div class="account-card" (click)="goToAccountDetail(account.id)">
+          <div class="account-header">
+            <div class="account-type-icon" [class]="'type-' + account.tipo.toLowerCase()">
+              <ion-icon [name]="getTypeIcon(account.tipo)"></ion-icon>
+            </div>
+            <div class="account-number-info">
+              <span class="account-number">{{ account.numero }}</span>
+              <div class="account-badges">
+                <ion-badge [color]="getTypeColor(account.tipo)">{{ account.tipo }}</ion-badge>
+                <ion-badge [color]="getStatusColor(account.estado)">{{ account.estado }}</ion-badge>
+              </div>
+            </div>
+            <div class="account-balance">
+              <span class="balance-label">Saldo</span>
+              <span class="balance-amount" [class.usd]="account.moneda === 'USD'">
+                {{ formatBalance(account) }}
+              </span>
+            </div>
+          </div>
+
+          <div class="account-details">
+            @if (account.usuario) {
+            <div class="detail-item">
+              <ion-icon name="person-outline"></ion-icon>
+              <span class="detail-label">Titular:</span>
+              <span class="detail-value">{{ account.usuario.nombre }}</span>
+            </div>
+            }
+            @if (account.usuario?.email) {
+            <div class="detail-item">
+              <ion-icon name="mail-outline"></ion-icon>
+              <span class="detail-value email">{{ account.usuario?.email }}</span>
+            </div>
+            }
+            @if (account.gestor) {
+            <div class="detail-item">
+              <ion-icon name="briefcase-outline"></ion-icon>
+              <span class="detail-label">Gestor:</span>
+              <span class="detail-value">{{ account.gestor.nombre }}</span>
+            </div>
+            }
+            <div class="detail-item">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span class="detail-label">Apertura:</span>
+              <span class="detail-value">{{ formatDate(account.fechaApertura) }}</span>
+            </div>
+          </div>
+
+          <div class="account-actions">
+            <ion-button fill="clear" size="small" (click)="toggleAccountStatus(account); $event.stopPropagation()">
+              <ion-icon
+                [name]="account.estado === 'Activa' ? 'close-circle-outline' : 'checkmark-circle-outline'"
+                [color]="account.estado === 'Activa' ? 'warning' : 'success'"
+                slot="icon-only">
+              </ion-icon>
+            </ion-button>
+            <ion-button fill="clear" size="small" color="danger" (click)="deleteAccount(account); $event.stopPropagation()">
+              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+        }
+      </div>
+      }
+
+      <!-- Sin Resultados -->
+      @if (filteredAccounts().length === 0 && !isLoading()) {
+      <div class="bank-empty-state">
+        <div class="empty-content">
+          <div class="empty-icon">
+            <ion-icon name="wallet-outline"></ion-icon>
+          </div>
+          <h3>No se encontraron cuentas</h3>
+          <p>Intenta ajustar los criterios de búsqueda</p>
+          <ion-button fill="outline" (click)="clearFilters()" class="empty-action-btn">
+            <ion-icon name="refresh-outline" slot="start"></ion-icon>
+            Mostrar todas
+          </ion-button>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</ion-content>

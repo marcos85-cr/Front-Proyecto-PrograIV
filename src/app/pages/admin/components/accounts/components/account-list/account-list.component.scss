@@ -1,0 +1,308 @@
+.search-container {
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+
+  ion-searchbar {
+    --background: rgba(255, 255, 255, 0.95);
+    --color: #1e293b;
+    --placeholder-color: #64748b;
+    --icon-color: #64748b;
+    --border-radius: 12px;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 0.75rem;
+  }
+}
+
+.filters-container {
+  margin-bottom: 0.75rem;
+}
+
+.filter-segment {
+  --background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+
+  ion-segment-button {
+    --color: rgba(255, 255, 255, 0.8);
+    --color-checked: #ffffff;
+    --indicator-color: rgba(255, 255, 255, 0.25);
+    font-size: 0.85rem;
+    font-weight: 500;
+    min-height: 36px;
+  }
+}
+
+.secondary-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+
+  ion-chip {
+    --background: rgba(255, 255, 255, 0.2);
+    --color: white;
+    font-size: 0.8rem;
+    height: 28px;
+
+    &[outline="false"] {
+      --background: rgba(255, 255, 255, 0.35);
+      font-weight: 600;
+    }
+  }
+}
+
+.bank-content-container {
+  padding: 0 1rem 1rem;
+}
+
+.bank-loading-section {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+
+  .loading-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+
+    ion-spinner {
+      --color: white;
+      width: 40px;
+      height: 40px;
+    }
+
+    p {
+      color: rgba(255, 255, 255, 0.8);
+      margin: 0;
+    }
+  }
+}
+
+.bank-section {
+  margin-top: 0.5rem;
+}
+
+.bank-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.bank-badge-primary {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.accounts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.account-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .account-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, #1a4d8f 0%, #2563eb 100%);
+    color: white;
+  }
+
+  .account-type-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+
+    ion-icon {
+      font-size: 1.5rem;
+    }
+
+    &.type-ahorro,
+    &.type-ahorros {
+      background: rgba(16, 185, 129, 0.3);
+    }
+
+    &.type-corriente {
+      background: rgba(59, 130, 246, 0.3);
+    }
+  }
+
+  .account-number-info {
+    flex: 1;
+    min-width: 0;
+
+    .account-number {
+      display: block;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.25rem;
+    }
+
+    .account-badges {
+      display: flex;
+      gap: 0.35rem;
+
+      ion-badge {
+        font-size: 0.65rem;
+        font-weight: 600;
+        padding: 0.15rem 0.4rem;
+      }
+    }
+  }
+
+  .account-balance {
+    text-align: right;
+    flex-shrink: 0;
+
+    .balance-label {
+      display: block;
+      font-size: 0.7rem;
+      opacity: 0.8;
+    }
+
+    .balance-amount {
+      display: block;
+      font-size: 1.1rem;
+      font-weight: 700;
+
+      &.usd {
+        color: #86efac;
+      }
+    }
+  }
+
+  .account-details {
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .detail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #475569;
+
+    ion-icon {
+      font-size: 1rem;
+      color: #64748b;
+      flex-shrink: 0;
+    }
+
+    .detail-label {
+      color: #64748b;
+    }
+
+    .detail-value {
+      color: #1e293b;
+      font-weight: 500;
+
+      &.email {
+        color: #2563eb;
+      }
+    }
+  }
+
+  .account-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+
+    ion-button {
+      --padding-start: 0.5rem;
+      --padding-end: 0.5rem;
+      margin: 0;
+      height: 32px;
+
+      ion-icon {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
+
+.bank-empty-state {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1rem;
+
+  .empty-content {
+    text-align: center;
+    max-width: 300px;
+  }
+
+  .empty-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 3rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+
+  p {
+    margin: 0 0 1.5rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+  }
+
+  .empty-action-btn {
+    --background: transparent;
+    --color: white;
+    --border-color: rgba(255, 255, 255, 0.5);
+  }
+}

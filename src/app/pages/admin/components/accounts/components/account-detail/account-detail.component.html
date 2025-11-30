@@ -1,0 +1,187 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/accounts"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle de Cuenta</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleAccountStatus()">
+        <ion-icon
+          [name]="account()?.estado === 'Activa' ? 'close-circle-outline' : 'checkmark-circle-outline'"
+          slot="icon-only">
+        </ion-icon>
+      </ion-button>
+      <ion-button color="danger" (click)="deleteAccount()">
+        <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <!-- Loading -->
+  @if (isLoading()) {
+  <div class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando cuenta...</p>
+  </div>
+  }
+
+  @if (account() && !isLoading()) {
+  <div class="detail-container">
+    <!-- Header Card -->
+    <div class="account-header-card">
+      <div class="account-icon" [class]="'type-' + account()!.tipo.toLowerCase()">
+        <ion-icon [name]="getTypeIcon(account()!.tipo)"></ion-icon>
+      </div>
+      <div class="account-main-info">
+        <span class="account-number">{{ account()!.numero }}</span>
+        <div class="account-badges">
+          <ion-badge [color]="getTypeColor(account()!.tipo)">{{ account()!.tipo }}</ion-badge>
+          <ion-badge [color]="getStatusColor(account()!.estado)">{{ account()!.estado }}</ion-badge>
+        </div>
+      </div>
+      <div class="account-balance-display">
+        <span class="balance-label">Saldo Disponible</span>
+        <span class="balance-amount" [class.usd]="account()!.moneda === 'USD'">
+          {{ formattedBalance() }}
+        </span>
+        <span class="currency-name">{{ currencyName() }}</span>
+      </div>
+    </div>
+
+    <!-- Información de la Cuenta -->
+    <div class="detail-section">
+      <div class="section-header">
+        <ion-icon name="wallet-outline"></ion-icon>
+        <h3>Información de la Cuenta</h3>
+      </div>
+      <div class="info-card">
+        <div class="info-row">
+          <span class="info-label">Número de Cuenta</span>
+          <span class="info-value">{{ account()!.numero }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Tipo de Cuenta</span>
+          <span class="info-value">{{ account()!.tipo }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Moneda</span>
+          <span class="info-value">{{ currencyName() }} ({{ account()!.moneda }})</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Estado</span>
+          <ion-badge [color]="getStatusColor(account()!.estado)">{{ account()!.estado }}</ion-badge>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Fecha de Apertura</span>
+          <span class="info-value">{{ formatDateTime(account()!.fechaApertura) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Titular de la Cuenta -->
+    @if (account()!.usuario) {
+    <div class="detail-section">
+      <div class="section-header">
+        <ion-icon name="person-outline"></ion-icon>
+        <h3>Titular de la Cuenta</h3>
+      </div>
+      <div class="info-card clickable" (click)="goToCustomerDetail()">
+        <div class="user-header">
+          <div class="user-avatar">
+            <img [src]="'https://ui-avatars.com/api/?name=' + account()!.usuario!.nombre + '&background=random'" [alt]="account()!.usuario!.nombre" />
+          </div>
+          <div class="user-info">
+            <h4>{{ account()!.usuario!.nombre }}</h4>
+            <span class="user-role">{{ account()!.usuario!.rol }}</span>
+          </div>
+          <ion-icon name="chevron-forward-outline" class="nav-icon"></ion-icon>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Email</span>
+          <span class="info-value email">{{ account()!.usuario!.email }}</span>
+        </div>
+        @if (account()!.usuario!.telefono) {
+        <div class="info-row">
+          <span class="info-label">Teléfono</span>
+          <span class="info-value">{{ account()!.usuario!.telefono }}</span>
+        </div>
+        }
+        @if (account()!.usuario!.identificacion) {
+        <div class="info-row">
+          <span class="info-label">Identificación</span>
+          <span class="info-value">{{ account()!.usuario!.identificacion }}</span>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- Información del Cliente -->
+    @if (account()!.cliente) {
+    <div class="detail-section">
+      <div class="section-header">
+        <ion-icon name="business-outline"></ion-icon>
+        <h3>Información del Cliente</h3>
+      </div>
+      <div class="info-card">
+        @if (account()!.cliente!.direccion) {
+        <div class="info-row">
+          <span class="info-label">Dirección</span>
+          <span class="info-value">{{ account()!.cliente!.direccion }}</span>
+        </div>
+        }
+        @if (account()!.cliente!.fechaNacimiento) {
+        <div class="info-row">
+          <span class="info-label">Fecha de Nacimiento</span>
+          <span class="info-value">{{ formatDate(account()!.cliente!.fechaNacimiento) }}</span>
+        </div>
+        }
+        <div class="info-row">
+          <span class="info-label">Estado del Cliente</span>
+          <ion-badge [color]="getStatusColor(account()!.cliente!.estado)">{{ account()!.cliente!.estado }}</ion-badge>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Cliente desde</span>
+          <span class="info-value">{{ formatDate(account()!.cliente!.fechaRegistro) }}</span>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Gestor Asignado -->
+    @if (account()!.gestor) {
+    <div class="detail-section">
+      <div class="section-header">
+        <ion-icon name="briefcase-outline"></ion-icon>
+        <h3>Gestor Asignado</h3>
+      </div>
+      <div class="info-card">
+        <div class="user-header">
+          <div class="user-avatar gestor">
+            <img [src]="'https://ui-avatars.com/api/?name=' + account()!.gestor!.nombre + '&background=1a4d8f&color=fff'" [alt]="account()!.gestor!.nombre" />
+          </div>
+          <div class="user-info">
+            <h4>{{ account()!.gestor!.nombre }}</h4>
+            <span class="user-role">Gestor de Cuentas</span>
+          </div>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Email</span>
+          <span class="info-value email">{{ account()!.gestor!.email }}</span>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Acciones -->
+    <div class="actions-section">
+      <ion-button expand="block" fill="outline" (click)="goBack()">
+        <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+        Volver a la Lista
+      </ion-button>
+    </div>
+  </div>
+  }
+</ion-content>
