@@ -57,7 +57,7 @@ userName: string = '';
         };
       },
       error: (error) => {
-        this.errorHandler.handleError(error, 'loadStats').subscribe({
+        this.errorHandler.handleError(error?.message, 'loadStats').subscribe({
           error: () => {
             // Valores por defecto en caso de error
             this.stats = {

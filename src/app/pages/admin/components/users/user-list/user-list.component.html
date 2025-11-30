@@ -1,12 +1,15 @@
 <ion-header class="ion-no-border">
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin"></ion-back-button>
+      <ion-back-button defaultHref="/admin/dashboard"></ion-back-button>
     </ion-buttons>
     <ion-title>Gestión de Usuarios</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="refreshUsers()">
         <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button (click)="goToCreateUser()">
+        <ion-icon name="person-add-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -127,6 +130,14 @@
 
           <!-- Footer del card con acciones -->
           <div class="bank-card-footer">
+            <ion-button
+              fill="outline"
+              size="small"
+              color="primary"
+              (click)="goToEditUser(user.id)">
+              <ion-icon name="create-outline" slot="start"></ion-icon>
+              Editar
+            </ion-button>
             @if (!user.bloqueado) {
             <ion-button
               fill="outline"

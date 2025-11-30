@@ -3,9 +3,10 @@ import { UserService } from '../../../../../services/user.service';
 import { ToastService } from '../../../../../services/toast.service';
 import { ErrorHandlerService } from '../../../../../services/error-handler.service';
 import { User } from '../../../../../shared/models/user.model';
-import { IonicModule } from '@ionic/angular';
+import { ROLES_UTILS, USER_ROLES } from '../../../../../shared/constants/user-roles.constants';
+import { AlertController, IonicModule, ViewWillEnter } from '@ionic/angular';
 import { CommonModule, DecimalPipe } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -20,26 +21,29 @@ import { FormsModule } from '@angular/forms';
     RouterModule,
   ],
 })
-export class UserListComponent implements OnInit {
-  /** Lista de usuarios cargados desde la API */
+export class UserListComponent implements OnInit, ViewWillEnter {
   users: User[] = [];
-
-  /** Estado de carga del componente */
   isLoading = false;
-
-  /** Término de búsqueda para filtrar usuarios */
   searchTerm = '';
-
-  /** Estado del filtro de usuarios bloqueados */
   filterBloqueados: boolean | null = null;
 
   constructor(
     private userService: UserService,
     private toastService: ToastService,
-    private errorHandler: ErrorHandlerService
+    private errorHandler: ErrorHandlerService,
+    private router: Router,
+    private alertController: AlertController,
   ) {}
 
   ngOnInit(): void {
+    this.loadUsers();
+  }
+
+  /**
+   * Se ejecuta cada vez que la vista está a punto de entrar
+   * Útil para refrescar datos cuando se vuelve de otra página
+   */
+  ionViewWillEnter(): void {
     this.loadUsers();
   }
 
@@ -76,33 +80,81 @@ export class UserListComponent implements OnInit {
    * @param user - Usuario a modificar
    * @param bloquear - Nuevo estado de bloqueo
    */
-  toggleUserStatus(user: User, bloquear: boolean): void {
+  async toggleUserStatus(user: User, bloquear: boolean): Promise<void> {
     const action = bloquear ? 'bloquear' : 'desbloquear';
     const actionCapitalized = action.charAt(0).toUpperCase() + action.slice(1);
 
+    const alert = await this.alertController.create({
+      header: `${actionCapitalized} Usuario`,
+      message: `¿Está seguro que desea ${action} al usuario  ${user.nombre}?`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+        },
+        {
+          text: 'Aceptar',
+          role: 'confirm',
+          handler: () => {
+            this.executeToggleUserStatus(user, bloquear, actionCapitalized);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  /**
+   * Ejecuta el cambio de estado del usuario después de la confirmación
+   */
+  private executeToggleUserStatus(user: User, bloquear: boolean, actionCapitalized: string): void {
     this.userService.updateUserStatus(user.id, bloquear).subscribe({
       next: () => {
         // Actualizar el estado local del usuario
         user.bloqueado = bloquear;
         this.toastService.success(`Usuario ${actionCapitalized} exitosamente`);
+        this.refreshUsers();
       },
       error: () => {
-        this.toastService.error(`Error al ${action} usuario`);
+        this.toastService.error(`Error al ${actionCapitalized.toLowerCase()} usuario`);
       }
     });
   }
 
+
+  async deleteUser(user: User): Promise<void> {
+    const alert = await this.alertController.create({
+      header: 'Eliminar Usuario',
+      message: `¿Está seguro que desea eliminar al usuario ${user.nombre}? Esta acción no se puede deshacer.`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: () => {
+            this.executeDeleteUser(user);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
   /**
-   * Elimina un usuario del sistema
-   *
-   * @param user - Usuario a eliminar
+   * Ejecuta la eliminación del usuario después de la confirmación
    */
-  deleteUser(user: User): void {
+  private executeDeleteUser(user: User): void {
     this.userService.deleteUser(user.id).subscribe({
       next: () => {
         // Remover el usuario de la lista local
         this.users = this.users.filter(u => u.id !== user.id);
         this.toastService.success('Usuario eliminado exitosamente');
+        this.refreshUsers();
       },
       error: () => {
         this.toastService.error('Error al eliminar usuario');
@@ -138,50 +190,23 @@ export class UserListComponent implements OnInit {
     this.loadUsers();
   }
 
-  /**
-   * Obtiene el color del rol para mostrar en la UI
-   *
-   * @param role - Rol del usuario
-   * @returns Color de Ionic
-   */
   getRoleColor(role: string): string {
-    switch (role) {
-      case 'Administrador':
-        return 'danger';
-      case 'Gestor':
-        return 'warning';
-      case 'Cliente':
-        return 'success';
-      default:
-        return 'medium';
-    }
+    return ROLES_UTILS.getRoleColor(role as any);
   }
 
-  /**
-   * Obtiene el ícono del rol
-   *
-   * @param role - Rol del usuario
-   * @returns Nombre del ícono
-   */
+
   getRoleIcon(role: string): string {
-    switch (role) {
-      case 'Administrador':
-        return 'shield-checkmark-outline';
-      case 'Gestor':
-        return 'business-outline';
-      case 'Cliente':
-        return 'person-outline';
-      default:
-        return 'help-outline';
-    }
+    return ROLES_UTILS.getRoleIcon(role as any);
   }
 
-  /**
-   * Formatea la fecha para mostrar
-   *
-   * @param dateString - Fecha en formato string
-   * @returns Fecha formateada
-   */
+  goToCreateUser(): void {
+    this.router.navigate(['/admin/users/create']);
+  }
+
+  goToEditUser(userId: string): void {
+    this.router.navigate([`/admin/users/edit/${userId}`]);
+  }
+
   formatDate(dateString: string): string {
     return new Date(dateString).toLocaleDateString('es-ES', {
       year: 'numeric',

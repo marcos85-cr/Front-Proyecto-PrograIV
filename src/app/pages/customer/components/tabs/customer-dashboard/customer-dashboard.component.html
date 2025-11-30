@@ -1,0 +1,120 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="dashboard-toolbar">
+    <ion-title mode="md" class="ion-no-padding">
+      <div class="welcome-section">
+        <span class="welcome-text">Bienvenido</span>
+        <h2 class="user-name">{{ userName() }}</h2>
+      </div>
+    </ion-title>
+    <ion-avatar slot="end" routerLink="/profile" class="avatar-btn">
+      <img src="assets/icon/BANK.jpg" alt="Avatar" />
+    </ion-avatar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="dashboard-content">
+  <ion-refresher slot="fixed" (ionRefresh)="refreshDashboard($event)">
+    <ion-refresher-content pullingIcon="chevron-down-circle-outline" refreshingSpinner="circles">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Balance Total Card -->
+  <div class="balance-hero">
+    <div class="balance-card bank-card bank-card--elevated">
+      <span class="balance-label">Balance Total</span>
+      <h1 class="balance-amount">{{ formatCurrency(totalBalance()) }}</h1>
+      <div class="accounts-summary">
+        <ion-icon name="wallet-outline"></ion-icon>
+        <span>{{ accounts().length }} cuentas activas</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cuentas Slider -->
+  @if (accounts().length > 0) {
+    <div class="accounts-section">
+      <div class="section-header">
+        <h3 class="section-title">Mis Cuentas</h3>
+        <ion-button fill="clear" size="small" routerLink="/cliente/accounts">
+          Ver todas
+          <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+        </ion-button>
+      </div>
+
+      <swiper-container
+        pagination="true"
+        slides-per-view="1.15"
+        space-between="12"
+        class="accounts-swiper">
+        @for (account of accounts(); track account.id) {
+          <swiper-slide>
+            <div class="account-card bank-card">
+              <div class="account-header">
+                <div class="account-type-badge bank-badge bank-badge--primary">
+                  {{ account.acc_type }}
+                </div>
+                <ion-icon name="card-outline" class="account-icon"></ion-icon>
+              </div>
+              <div class="account-body">
+                <span class="account-number">•••• {{ account.acc_no.slice(-4) }}</span>
+                <h3 class="account-balance">{{ formatCurrency(account.balance) }}</h3>
+              </div>
+            </div>
+          </swiper-slide>
+        }
+      </swiper-container>
+    </div>
+  }
+
+  <!-- Acciones Rápidas -->
+  <div class="quick-actions-section">
+    <h3 class="section-title">Acciones Rápidas</h3>
+    <div class="actions-grid">
+      @for (action of quickActions(); track action.route) {
+        <button class="action-card bank-card bank-card--interactive" [routerLink]="action.route">
+          <div class="action-icon" [attr.data-color]="action.color">
+            <ion-icon [name]="action.icon"></ion-icon>
+          </div>
+          <span class="action-label">{{ action.label }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Transacciones Recientes -->
+  @if (recentTransactions().length > 0) {
+    <div class="transactions-section">
+      <div class="section-header">
+        <h3 class="section-title">Transacciones Recientes</h3>
+        <ion-button fill="clear" size="small" routerLink="/cliente/history">
+          Ver todas
+          <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+        </ion-button>
+      </div>
+
+      <div class="transactions-list bank-card">
+        @for (transaction of recentTransactions(); track transaction.id; let last = $last) {
+          <div class="transaction-item" [class.no-border]="last">
+            <div class="transaction-icon" [attr.data-type]="transaction.amount >= 0 ? 'income' : 'expense'">
+              <ion-icon [name]="getTransactionIcon(transaction.amount)"></ion-icon>
+            </div>
+            <div class="transaction-details">
+              <span class="transaction-name">{{ transaction.to }}</span>
+              <span class="transaction-date">{{ formatDate(transaction.date) }}</span>
+            </div>
+            <div class="transaction-amount" [class.income]="transaction.amount >= 0" [class.expense]="transaction.amount < 0">
+              {{ transaction.amount >= 0 ? '+' : '' }}{{ formatCurrency(transaction.amount) }}
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="empty-state bank-card">
+      <ion-icon name="receipt-outline" class="empty-icon"></ion-icon>
+      <h4>Sin transacciones</h4>
+      <p>Aún no tienes transacciones registradas</p>
+    </div>
+  }
+
+</ion-content>

@@ -75,6 +75,46 @@ export class UserService {
   }
 
   /**
+   * Crea un nuevo usuario
+   *
+   * @param userData - Datos del nuevo usuario
+   * @returns Observable con el resultado de la operación
+   */
+  createUser(userData: {
+    email: string;
+    password: string;
+    confirmPassword: string;
+    nombre: string;
+    identificacion: string;
+    telefono: string;
+    role: string;
+  }): Observable<Result> {
+    return this.http.post<Result>(this.baseUrl, userData).pipe(
+      catchError((error) => this.errorHandler.handleError(error, 'createUser'))
+    );
+  }
+
+  /**
+   * Actualiza un usuario existente
+   *
+   * @param userData - Datos actualizados del usuario
+   * @returns Observable con el resultado de la operación
+   */
+  updateUser(userData: {
+    id: string;
+    nombre: string;
+    email: string;
+    identificacion: string;
+    telefono: string;
+    role: string;
+  }): Observable<Result> {
+    const url = `${this.baseUrl}/${userData.id}`;
+    return this.http.put<Result>(url, userData).pipe(
+      catchError((error) => this.errorHandler.handleError(error, 'updateUser'))
+    );
+  }
+
+  /**
    * Construye la URL con parámetros de filtrado
    *
    * @param filters - Filtros a aplicar

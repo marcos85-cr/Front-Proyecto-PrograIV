@@ -1,3 +1,200 @@
-<p>
-  user-create works!
-</p>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/users"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ title() }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <div class="bank-content-container">
+
+    <!-- Formulario de creación de usuario -->
+    <div class="bank-section">
+      <form [formGroup]="userForm" (ngSubmit)="saveUser()">
+
+        <!-- Información básica del usuario -->
+        <div class="bank-glass-card p-md mb-md">
+          <div class="bank-section-header mb-md">
+            <h3 style="color: black;">Información Básica</h3>
+          </div>
+
+          <!-- Nombre completo -->
+          <div class="bank-form-group">
+            <ion-item class="bank-input-item">
+              <ion-label position="floating">Nombre Completo</ion-label>
+              <ion-input
+                type="text"
+                formControlName="nombre"
+                placeholder="Ingrese el nombre completo"
+                [class.invalid]="hasError('nombre', 'required') || hasError('nombre', 'minlength')">
+              </ion-input>
+            </ion-item>
+            @if (hasError('nombre', 'required') && userForm.get('nombre')?.touched) {
+            <div class="bank-form-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              {{ getErrorMessage('nombre') }}
+            </div>
+            }
+          </div>
+
+          <!-- Email -->
+          <div class="bank-form-group">
+            <ion-item class="bank-input-item">
+              <ion-label position="floating">Correo Electrónico</ion-label>
+              <ion-input
+                type="email"
+                formControlName="email"
+                placeholder="usuario@ejemplo.com"
+                [class.invalid]="hasError('email', 'required') || hasError('email', 'email')">
+              </ion-input>
+            </ion-item>
+            @if (hasError('email', 'required') && userForm.get('email')?.touched || hasError('email', 'email') && userForm.get('email')?.touched) {
+            <div class="bank-form-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              {{ getErrorMessage('email') }}
+            </div>
+            }
+          </div>
+
+          <!-- Identificación -->
+          <div class="bank-form-group">
+            <ion-item class="bank-input-item">
+              <ion-label position="floating">Identificación</ion-label>
+              <ion-input
+                type="text"
+                formControlName="identificacion"
+                placeholder="123456789"
+                [class.invalid]="hasError('identificacion', 'required') || hasError('identificacion', 'minlength')">
+              </ion-input>
+            </ion-item>
+            @if (hasError('identificacion', 'required') && userForm.get('identificacion')?.touched || hasError('identificacion', 'minlength') && userForm.get('identificacion')?.touched) {
+            <div class="bank-form-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              {{ getErrorMessage('identificacion') }}
+            </div>
+            }
+          </div>
+
+          <!-- Teléfono -->
+          <div class="bank-form-group">
+            <ion-item class="bank-input-item">
+              <ion-label position="floating">Teléfono</ion-label>
+              <ion-input
+                type="tel"
+                formControlName="telefono"
+                placeholder="+1234567890"
+                [class.invalid]="hasError('telefono', 'required') || hasError('telefono', 'pattern')">
+              </ion-input>
+            </ion-item>
+            @if (hasError('telefono', 'required') && userForm.get('telefono')?.touched || hasError('telefono', 'pattern') && userForm.get('telefono')?.touched) {
+            <div class="bank-form-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              {{ getErrorMessage('telefono') }}
+            </div>
+            }
+          </div>
+
+          <!-- Rol -->
+          <div class="bank-form-group">
+            <ion-item class="bank-input-item">
+              <ion-label position="floating">Rol del Usuario</ion-label>
+              <ion-select
+                id="user-role-select"
+                formControlName="role"
+                placeholder="Seleccionar rol"
+                [class.invalid]="hasError('role', 'required')">
+                @for (role of roles; track role) {
+                <ion-select-option [value]="role">{{ role }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+            @if (hasError('role', 'required') && userForm.get('role')?.touched) {
+            <div class="bank-form-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              {{ getErrorMessage('role') }}
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Credenciales de acceso - Solo visible en modo creación -->
+        @if (!isEditMode()) {
+        <div class="bank-glass-card p-md mb-md">
+          <div class="bank-section-header mb-md">
+            <h3>Credenciales de Acceso</h3>
+          </div>
+
+          <!-- Contraseña -->
+          <div class="bank-form-group">
+            <ion-item class="bank-input-item">
+              <ion-label position="floating">Contraseña</ion-label>
+              <ion-input
+                type="password"
+                formControlName="password"
+                placeholder="Mínimo 8 caracteres"
+                [class.invalid]="hasError('password', 'required') || hasError('password', 'minlength')">
+              </ion-input>
+            </ion-item>
+            @if (hasError('password', 'required') && userForm.get('password')?.touched || hasError('password', 'minlength') && userForm.get('password')?.touched) {
+            <div class="bank-form-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              {{ getErrorMessage('password') }}
+            </div>
+            }
+          </div>
+
+          <!-- Confirmar Contraseña -->
+          <div class="bank-form-group">
+            <ion-item class="bank-input-item">
+              <ion-label position="floating">Confirmar Contraseña</ion-label>
+              <ion-input
+                type="password"
+                formControlName="confirmPassword"
+                placeholder="Repita la contraseña"
+                [class.invalid]="hasError('confirmPassword', 'required') || hasError('confirmPassword', 'passwordMismatch')">
+              </ion-input>
+            </ion-item>
+            @if (hasError('confirmPassword', 'required') && userForm.get('confirmPassword')?.touched || hasError('confirmPassword', 'passwordMismatch') && userForm.get('confirmPassword')?.touched) {
+            <div class="bank-form-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              {{ getErrorMessage('confirmPassword') }}
+            </div>
+            }
+          </div>
+        </div>
+        }
+
+        <!-- Botones de acción -->
+        <div class="bank-glass-card p-md">
+          <div class="flex gap-md">
+            <ion-button
+              type="button"
+              fill="outline"
+              color="medium"
+              (click)="goBack()"
+              expand="block">
+              <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+              Cancelar
+            </ion-button>
+            <ion-button
+              type="submit"
+              color="primary"
+              [disabled]="userForm.invalid || isLoading()"
+              expand="block">
+              @if (isLoading()) {
+              <ion-spinner name="crescent" slot="start"></ion-spinner>
+              {{ submitLoadingText() }}
+              } @else {
+              <ion-icon name="person-add-outline" slot="start"></ion-icon>
+              {{ submitButtonText() }}
+              }
+            </ion-button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</ion-content>

@@ -1,0 +1,483 @@
+// ============================================
+// CUSTOMER DASHBOARD STYLES
+// ============================================
+
+@use 'sass:color';
+@use '../../../../../../theme/variables' as *;
+
+// ============================================
+// CUSTOMER DASHBOARD - Estilos específicos
+// ============================================
+
+// Header personalizado
+.dashboard-toolbar {
+  --background: #{$bank-primary};
+  --color: white;
+  padding: $spacing-sm;
+}
+
+.welcome-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  .welcome-text {
+    font-size: 0.875rem;
+    opacity: 0.8;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .user-name {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.avatar-btn {
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  margin-right: $spacing-sm;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+}
+
+// ============================================
+// BALANCE HERO - Usando bank-gradient-bg
+// ============================================
+
+.dashboard-content {
+  --background: #{$bg-primary};
+  --padding-top: 0;
+  --padding-bottom: #{$spacing-lg};
+}
+
+.balance-hero {
+  background: linear-gradient(135deg, $bank-primary 0%, $bank-primary-dark 100%);
+  position: relative;
+  padding: $spacing-md;
+  padding-top: $spacing-lg;
+  padding-bottom: $spacing-xl;
+  margin-bottom: -#{$spacing-lg};
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+.balance-card {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: center;
+  color: white;
+
+  .balance-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .balance-amount {
+    margin: $spacing-xs 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .accounts-summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-xs;
+    font-size: 0.875rem;
+    opacity: 0.8;
+
+    ion-icon {
+      font-size: 1.25rem;
+    }
+  }
+}
+
+
+// ============================================
+// SECTIONS - Usando estilos del theme
+// ============================================
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+
+  ion-button {
+    --color: #{$bank-primary};
+    font-size: 0.875rem;
+  }
+}
+
+.section-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+// ============================================
+// ACCOUNTS SECTION - Usando bank-theme
+// ============================================
+
+.accounts-section {
+  padding: $spacing-md;
+  padding-top: $spacing-lg + $spacing-sm;
+}
+
+.accounts-swiper {
+  padding-bottom: $spacing-md;
+
+  swiper-slide {
+    height: auto;
+  }
+}
+
+.account-card {
+  background: linear-gradient(135deg, $bank-primary-light 0%, $bank-primary 100%);
+  color: white;
+  padding: $spacing-md;
+  height: 140px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1rem;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .account-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .account-type-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: rgba(255, 255, 255, 0.2) !important;
+      color: white !important;
+    }
+
+    .account-icon {
+      font-size: 2rem;
+      opacity: 0.7;
+      color: white;
+    }
+  }
+
+  .account-body {
+    .account-number {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      letter-spacing: 2px;
+    }
+
+    .account-balance {
+      margin: $spacing-xs 0 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: white;
+    }
+  }
+}
+
+// ============================================
+// QUICK ACTIONS - Usando bank-theme
+// ============================================
+
+.quick-actions-section {
+  padding: 0 $spacing-md $spacing-md;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.875rem;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.action-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 1.25rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transition: all 0.2s ease;
+  text-decoration: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 100px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .action-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+
+    ion-icon {
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    &[data-color="primary"] {
+      background: #{$bank-primary};
+      color: white;
+      border-radius: 50%;
+      padding: 0;
+      width: 48px;
+      height: 48px;
+    }
+
+    &[data-color="success"] {
+      background: #{$bank-success};
+      color: white;
+      border-radius: 50%;
+      padding: 0;
+      width: 48px;
+      height: 48px;
+    }
+
+    &[data-color="warning"] {
+      background: #{$bank-danger};
+      color: white;
+      border-radius: 50%;
+      padding: 0;
+      width: 48px;
+      height: 48px;
+    }
+
+    &[data-color="tertiary"] {
+      background: linear-gradient(135deg, $bank-primary-light 0%, $bank-primary 100%);
+      border-radius: 50%;
+      padding: 0;
+      width: 48px;
+      height: 48px;
+    }
+  }
+
+  .action-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #64748b;
+    text-align: center;
+  }
+
+  &:hover .action-icon {
+    transform: scale(1.1);
+  }
+}
+
+// ============================================
+// TRANSACTIONS - Usando bank-theme
+// ============================================
+
+.transactions-section {
+  padding: 0 $spacing-md $spacing-md;
+}
+
+.transactions-list {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 0;
+  overflow: hidden;
+}
+
+.transaction-item {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  border-bottom: 1px solid $border-color;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: $bg-tertiary;
+  }
+
+  &.no-border {
+    border-bottom: none;
+  }
+
+  .transaction-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    ion-icon {
+      font-size: 1.25rem;
+      color: white;
+    }
+
+    &[data-type="income"] {
+      background: rgba($bank-success, 0.15);
+
+      ion-icon {
+        color: $bank-success;
+      }
+    }
+
+    &[data-type="expense"] {
+      background: rgba($bank-danger, 0.15);
+
+      ion-icon {
+        color: $bank-danger;
+      }
+    }
+  }
+
+  .transaction-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
+
+    .transaction-name {
+      font-weight: 500;
+      color: #1e293b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .transaction-date {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+  }
+
+  .transaction-amount {
+    font-weight: 600;
+    font-size: 0.875rem;
+    white-space: nowrap;
+
+    &.income {
+      color: $bank-success;
+    }
+
+    &.expense {
+      color: $bank-danger;
+    }
+  }
+}
+
+// ============================================
+// EMPTY STATE - Usando bank-theme
+// ============================================
+
+.empty-state {
+  background: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  text-align: center;
+  margin: $spacing-md auto;
+}
+
+// ============================================
+// RESPONSIVE - Mejorado
+// ============================================
+
+@media (max-width: 360px) {
+
+  .balance-card .balance-amount {
+    font-size: 2rem;
+  }
+
+  .transaction-amount {
+    font-size: 0.75rem;
+  }
+
+  .actions-grid {
+    gap: 0.75rem;
+    max-width: 100%;
+  }
+
+  .action-card {
+    min-height: 90px;
+    padding: 1rem;
+  }
+
+  .action-icon {
+    width: 44px;
+    height: 44px;
+
+    ion-icon {
+      font-size: 1.375rem;
+    }
+  }
+
+  .action-label {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .accounts-swiper {
+    swiper-slide {
+      max-width: 300px;
+    }
+  }
+}

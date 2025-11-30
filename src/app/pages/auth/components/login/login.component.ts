@@ -50,16 +50,9 @@ export class LoginComponent {
 
           await this.toastService.success('Inicio de sesión exitoso', 2000);
 
-          // Redirigir según el rol
-          // const user = res.user;
-          // if (user.role === 'Administrador') {
-          //   this.router.navigate(['/admin/dashboard']);
-          // } else if (user.role === 'Gestor') {
-          //   this.router.navigate(['/gestor/dashboard']);
-          // } else {
-          //   this.router.navigate(['/tabs/home']);
-          // }
-           this.router.navigate(['/admin/dashboard']);
+
+           //this.router.navigate(['/admin/dashboard']);
+          this.router.navigate(['/customer/dashboard']);
         },
         error: async (error: any) => {
           console.error('Error en login:', error);

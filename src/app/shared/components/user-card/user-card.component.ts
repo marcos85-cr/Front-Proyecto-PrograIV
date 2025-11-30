@@ -3,23 +3,6 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { User } from '../../models/user.model';
 
-/**
- * Componente compartido para tarjetas de usuario
- *
- * @description
- * Tarjeta reutilizable para mostrar información básica de un usuario
- * con opciones de acción configurables.
- *
- * @example
- * ```html
- * <app-user-card
- *   [user]="user"
- *   [showActions]="true"
- *   [compact]="false"
- *   (action)="onUserAction($event)">
- * </app-user-card>
- * ```
- */
 @Component({
   selector: 'app-user-card',
   templateUrl: './user-card.component.html',
@@ -31,16 +14,12 @@ import { User } from '../../models/user.model';
   ]
 })
 export class UserCardComponent {
-  /** Datos del usuario a mostrar */
   @Input({ required: true }) user: User = {} as User;
 
-  /** Indica si se muestran los botones de acción */
   @Input() showActions: boolean = true;
 
-  /** Indica si se usa el modo compacto */
   @Input() compact: boolean = false;
 
-  /** Lista de acciones personalizadas */
   @Input() actions: Array<{
     label: string;
     icon: string;
@@ -48,7 +27,6 @@ export class UserCardComponent {
     action: () => void;
   }> = [];
 
-  /** Evento emitido cuando se realiza una acción */
   @Output() action = new EventEmitter<{
     type: string;
     user: User;

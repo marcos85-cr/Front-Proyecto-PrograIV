@@ -1,0 +1,81 @@
+
+.bank-form-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: slideInRight 0.3s ease-out;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.1);
+
+  ion-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    color: #dc2626;
+  }
+}
+
+.bank-glass-card h3 {
+  color: #1e293b !important;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+// Corregir superposición de label y placeholder
+.bank-input-item {
+  --background: rgba(255, 255, 255, 0.95);
+  --border-radius: 12px;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(226, 232, 240, 1);
+
+  &.item-has-focus {
+    --background: rgba(255, 255, 255, 1);
+    --box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    border-color: #1a4d8f;
+  }
+
+  &.invalid {
+    --background: rgba(254, 202, 202, 0.4);
+    --highlight-color-focused: var(--ion-color-danger);
+    border-color: #dc2626;
+
+    ion-label {
+      color: #dc2626 !important;
+      font-weight: 600;
+    }
+  }
+
+  ion-label {
+    color: #1e293b !important;
+    font-weight: 500;
+    font-size: 1rem;
+    opacity: 1 !important; // Siempre visible
+    transform: translateY(-8px) scale(0.75); // Posición flotante (arriba)
+    transition: all 0.3s ease;
+  }
+
+  ion-input {
+    --color: #1e293b;
+    font-size: 1rem;
+    font-weight: 400;
+    --padding-top: 5px; // Espacio suficiente para el label flotante
+    --padding-bottom: 8px;
+  }
+
+  ion-select {
+    --placeholder-color: #475569;
+    --placeholder-opacity: 0.8;
+    --color: #1e293b;
+    --padding-top: 5px; // Espacio suficiente para el label flotante
+    --padding-bottom: 8px;
+     color: #1e293b !important;
+  }
+}
