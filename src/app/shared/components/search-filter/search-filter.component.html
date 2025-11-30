@@ -1,0 +1,33 @@
+<!-- Contenedor de filtros -->
+<div class="search-filter-container">
+  <div class="bank-glass-card p-md">
+
+    <!-- Header de filtros -->
+    <div class="filter-header" *ngIf="filterOptions.length > 0">
+      <h3 class="filter-title">Filtros</h3>
+    </div>
+
+    <!-- Barra de búsqueda -->
+    <ion-searchbar
+      [(ngModel)]="searchTerm"
+      (ionChange)="onSearchTermChange($event.detail.value)"
+      [placeholder]="placeholder"
+      animated="true"
+      clearInput="true"
+      class="bank-searchbar">
+    </ion-searchbar>
+
+    <!-- Filtros rápidos segmentados -->
+    @if (filterOptions.length > 0) {
+    <div class="filter-buttons">
+      <ion-segment [(ngModel)]="filterValue" (ionChange)="onFilterChange($event.detail.value)" class="bank-segment">
+        @for (option of filterOptions; track option.value) {
+        <ion-segment-button [value]="option.value">
+          <ion-label>{{ option.label }}</ion-label>
+        </ion-segment-button>
+        }
+      </ion-segment>
+    </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,25 @@
+/* Search Filter Component Styles */
+/*
+ * Componente compartido para filtros de búsqueda
+ * Utiliza los estilos globales del tema bancario
+ */
+
+.search-filter-container {
+  margin-bottom: 1rem;
+}
+
+.filter-header {
+  margin-bottom: 1rem;
+}
+
+.filter-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+}
+
+/* Estilos adicionales específicos si son necesarios */
+.filter-buttons {
+  margin-top: 1rem;
+}

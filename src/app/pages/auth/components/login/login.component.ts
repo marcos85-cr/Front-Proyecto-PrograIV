@@ -59,7 +59,7 @@ export class LoginComponent {
           // } else {
           //   this.router.navigate(['/tabs/home']);
           // }
-           this.router.navigate(['/dashboard']);
+           this.router.navigate(['/admin/dashboard']);
         },
         error: async (error: any) => {
           console.error('Error en login:', error);

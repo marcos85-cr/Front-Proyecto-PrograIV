@@ -1,0 +1,75 @@
+<!-- Tarjeta de usuario -->
+<div class="bank-glass-card user-card" [class.user-card--compact]="compact">
+
+  <!-- Header del usuario -->
+  <div class="user-header">
+    <div class="user-avatar">
+      <ion-icon name="person-circle-outline"></ion-icon>
+    </div>
+    <div class="user-info">
+      <h4 class="user-name">{{ user.nombre }}</h4>
+      <p class="user-email">{{ user.email }}</p>
+      <div class="user-role">
+        <ion-chip [color]="getRoleColor(user.role)" class="role-chip">
+          <ion-icon [name]="getRoleIcon(user.role)" slot="start"></ion-icon>
+          <ion-label>{{ user.role }}</ion-label>
+        </ion-chip>
+      </div>
+    </div>
+    <div class="user-status">
+      @if (user.bloqueado) {
+      <ion-chip color="danger" outline="true">
+        <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+        <ion-label>Bloqueado</ion-label>
+      </ion-chip>
+      } @else {
+      <ion-chip color="success" outline="true">
+        <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+        <ion-label>Activo</ion-label>
+      </ion-chip>
+      }
+    </div>
+  </div>
+
+  <!-- Detalles del usuario -->
+  @if (!compact) {
+  <div class="user-details">
+    <div class="detail-item">
+      <ion-icon name="card-outline" color="medium"></ion-icon>
+      <span class="detail-label">ID:</span>
+      <span class="detail-value">{{ user.identificacion }}</span>
+    </div>
+    <div class="detail-item">
+      <ion-icon name="call-outline" color="medium"></ion-icon>
+      <span class="detail-label">Tel:</span>
+      <span class="detail-value">{{ user.telefono }}</span>
+    </div>
+    <div class="detail-item">
+      <ion-icon name="calendar-outline" color="medium"></ion-icon>
+      <span class="detail-label">Creación:</span>
+      <span class="detail-value">{{ formatDate(user.fechaCreacion) }}</span>
+    </div>
+    <div class="detail-item">
+      <ion-icon name="wallet-outline" color="medium"></ion-icon>
+      <span class="detail-label">Cuentas:</span>
+      <span class="detail-value">{{ user.cuentasActivas }}</span>
+    </div>
+  </div>
+  }
+
+  <!-- Acciones -->
+  @if (showActions && actions.length > 0) {
+  <div class="user-actions">
+    @for (actionItem of actions; track actionItem.label) {
+    <ion-button
+      fill="outline"
+      size="small"
+      [color]="actionItem.color"
+      (click)="handleAction(actionItem)">
+      <ion-icon [name]="actionItem.icon" slot="start"></ion-icon>
+      {{ actionItem.label }}
+    </ion-button>
+    }
+  </div>
+  }
+</div>

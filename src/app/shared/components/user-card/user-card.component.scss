@@ -1,0 +1,49 @@
+/* User Card Component Styles */
+/*
+ * Componente compartido para tarjetas de usuario
+ * Utiliza los estilos globales del tema bancario
+ */
+
+/* Estilos específicos para tarjetas de usuario */
+.user-card--compact {
+  padding: 1rem;
+
+  .user-header {
+    margin-bottom: 0.75rem;
+    align-items: center;
+  }
+
+  .user-avatar ion-icon {
+    font-size: 2rem;
+  }
+
+  .user-info {
+    .user-name {
+      font-size: 1rem;
+      margin-bottom: 0.125rem;
+    }
+
+    .user-email {
+      font-size: 0.8rem;
+      margin-bottom: 0.25rem;
+    }
+  }
+
+  .user-details {
+    display: none;
+  }
+
+  .user-actions {
+    margin-top: 0.75rem;
+    justify-content: center;
+  }
+}
+
+/* Variantes adicionales si son necesarias */
+.user-card {
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}

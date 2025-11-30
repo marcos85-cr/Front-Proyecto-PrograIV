@@ -1,0 +1,114 @@
+<ion-header class="ion-no-border">
+    <ion-toolbar color="primary">
+        <ion-title>Panel Administrador</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="logout()">
+                <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+    <div class="bank-content-container p-md">
+
+        <!-- Bienvenida -->
+        <div class="bank-welcome-section mb-xl">
+            <h1 class="bank-welcome-title">Bienvenido, {{ userName }}</h1>
+            <p class="bank-welcome-subtitle">Panel de Administración</p>
+        </div>
+
+        <!-- Estadísticas Rápidas -->
+        <div class="bank-stats-grid mb-xl">
+            <div class="bank-glass-card bank-stat-item" style="animation-delay: 0.1s;">
+                <ion-icon name="people-outline" color="primary"></ion-icon>
+                <div>
+                    <span class="bank-stat-number">{{ stats.totalUsers | number }}</span>
+                    <span class="bank-stat-label">Usuarios</span>
+                </div>
+            </div>
+
+            <div class="bank-glass-card bank-stat-item" style="animation-delay: 0.2s;">
+                <ion-icon name="wallet-outline" color="success"></ion-icon>
+                <div>
+                    <span class="bank-stat-number">{{ stats.totalAccounts | number }}</span>
+                    <span class="bank-stat-label">Cuentas</span>
+                </div>
+            </div>
+
+            <div class="bank-glass-card bank-stat-item" style="animation-delay: 0.3s;">
+                <ion-icon name="swap-horizontal-outline" color="tertiary"></ion-icon>
+                <div>
+                    <span class="bank-stat-number">{{ stats.todayTransactions | number }}</span>
+                    <span class="bank-stat-label">Hoy</span>
+                </div>
+            </div>
+
+            <div class="bank-glass-card bank-stat-item" style="animation-delay: 0.4s;">
+                <ion-icon name="alert-circle-outline" color="warning"></ion-icon>
+                <div>
+                    <span class="bank-stat-number">{{ stats.pendingApprovals }}</span>
+                    <span class="bank-stat-label">Pendientes</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menú de Opciones -->
+        <div class="bank-section mb-xl">
+            <div class="bank-menu-grid">
+                <a class="bank-glass-card bank-menu-item" (click)="navegation('/admin/users')">
+                    <ion-icon name="people"></ion-icon>
+                    <span>Usuarios</span>
+                </a>
+                <a class="bank-glass-card bank-menu-item" routerLink="/admin/accounts">
+                    <ion-icon name="wallet"></ion-icon>
+                    <span>Cuentas</span>
+                </a>
+                <a class="bank-glass-card bank-menu-item" routerLink="/admin/clients">
+                    <ion-icon name="people-circle"></ion-icon>
+                    <span>Clientes</span>
+                </a>
+                <a class="bank-glass-card bank-menu-item" routerLink="/admin/reports">
+                    <ion-icon name="bar-chart"></ion-icon>
+                    <span>Reportes</span>
+                </a>
+                <a class="bank-glass-card bank-menu-item" routerLink="/admin/operations">
+                    <ion-icon name="alert-circle"></ion-icon>
+                    <span>Operaciones</span>
+                </a>
+                <a class="bank-glass-card bank-menu-item" routerLink="/admin/settings">
+                    <ion-icon name="settings"></ion-icon>
+                    <span>Configuración</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Transacciones Pendientes de Aprobación -->
+        @if (pendingTransactions.length > 0) {
+        <div class="bank-section">
+            <div class="bank-section-header">
+                <h3>Aprobaciones Pendientes</h3>
+                <span class="bank-badge-warning">{{ pendingTransactions.length }}</span>
+            </div>
+            <div class="bank-list-grid">
+                @for (transaction of pendingTransactions; track transaction.id) {
+                <div class="bank-glass-card bank-pending-item">
+                    <div class="bank-pending-info">
+                        <div class="bank-pending-description">{{ transaction.descripcion }}</div>
+                        <div class="bank-pending-details">
+                            <span class="bank-amount">${{ transaction.monto | number:'1.2-2' }}</span>
+                            <span class="bank-date">{{ transaction.fecha | date:'shortDate' }}</span>
+                        </div>
+                    </div>
+                    <div class="bank-action-buttons">
+                        <button class="bank-btn-action bank-btn-approve" (click)="approveTransaction(transaction.id)">✓</button>
+                        <button class="bank-btn-action bank-btn-reject" (click)="rejectTransaction(transaction.id)">✗</button>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+        }
+
+    </div>
+</ion-content>

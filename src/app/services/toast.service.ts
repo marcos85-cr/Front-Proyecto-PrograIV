@@ -14,25 +14,6 @@ export interface ToastConfig {
   buttons?: ToastOptions['buttons'];
   translucent?: boolean;
 }
-
-/**
- * Servicio para mostrar mensajes toast en la aplicación
- *
- * @example
- * ```typescript
- * // Inyectar el servicio
- * private readonly toastService = inject(ToastService);
- *
- * // Mostrar toast básico
- * await this.toastService.show({ message: 'Mensaje' });
- *
- * // Métodos helper
- * await this.toastService.success('Operación exitosa');
- * await this.toastService.error('Ha ocurrido un error');
- * await this.toastService.warning('Advertencia');
- * await this.toastService.info('Información');
- * ```
- */
 @Injectable({
   providedIn: 'root'
 })
@@ -73,7 +54,7 @@ export class ToastService {
   async success(message: string, duration?: number): Promise<void> {
     await this.show({
       message,
-      duration,
+      duration: duration ?? 3000,
       color: 'success',
       icon: 'checkmark-circle-outline',
     });
@@ -88,7 +69,7 @@ export class ToastService {
   async error(message: string, duration?: number): Promise<void> {
     await this.show({
       message,
-      duration,
+      duration: duration ?? 5000,
       color: 'danger',
       icon: 'close-circle-outline',
     });
@@ -103,7 +84,7 @@ export class ToastService {
   async warning(message: string, duration?: number): Promise<void> {
     await this.show({
       message,
-      duration,
+      duration: duration ?? 3000,
       color: 'warning',
       icon: 'warning-outline',
     });
@@ -118,7 +99,7 @@ export class ToastService {
   async info(message: string, duration?: number): Promise<void> {
     await this.show({
       message,
-      duration,
+      duration: duration ?? 3000,
       color: 'primary',
       icon: 'information-circle-outline',
     });
