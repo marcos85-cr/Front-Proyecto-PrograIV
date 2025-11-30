@@ -51,8 +51,8 @@ export class LoginComponent {
           await this.toastService.success('Inicio de sesión exitoso', 2000);
 
 
-           //this.router.navigate(['/admin/dashboard']);
-          this.router.navigate(['/customer/dashboard']);
+          this.router.navigate(['/admin/dashboard']);
+          //this.router.navigate(['/customer/dashboard']);
         },
         error: async (error: any) => {
           console.error('Error en login:', error);
