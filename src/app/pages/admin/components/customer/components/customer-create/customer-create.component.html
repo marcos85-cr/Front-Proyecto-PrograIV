@@ -1,3 +1,280 @@
-<p>
-  customer-create works!
-</p>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/customers"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ title() }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <div class="bank-content-container">
+
+    <!-- Formulario de creación de cliente -->
+    <div class="bank-section">
+      <form [formGroup]="customerForm" (ngSubmit)="saveCustomer()">
+
+        <!-- Información básica del cliente -->
+        <div class="bank-section">
+          <div class="bank-section-header">
+            <h3>Información del Cliente</h3>
+          </div>
+
+          <!-- Dirección -->
+          <div class="bank-form-group">
+            <ion-item class="bank-input-item">
+              <ion-label position="floating">Dirección</ion-label>
+              <ion-input
+                type="text"
+                formControlName="direccion"
+                placeholder="Ingrese la dirección del cliente"
+                [class.invalid]="hasError('direccion', 'required') || hasError('direccion', 'minlength')">
+              </ion-input>
+            </ion-item>
+            @if (hasError('direccion', 'required') && customerForm.get('direccion')?.touched || hasError('direccion', 'minlength') && customerForm.get('direccion')?.touched) {
+            <div class="bank-form-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              {{ getErrorMessage('direccion') }}
+            </div>
+            }
+          </div>
+
+          <!-- Fecha de Nacimiento -->
+          <div class="bank-form-group">
+            <input
+              type="date"
+              #hiddenDateInput
+              class="hidden-date-input"
+              (change)="onDateChange($event)">
+            <ion-item class="bank-input-item" (click)="openDatePicker()">
+              <ion-label position="floating">Fecha de Nacimiento</ion-label>
+              <ion-input
+                type="text"
+                formControlName="fechaNacimiento"
+                [readonly]="true"
+                placeholder="Seleccione una fecha"
+                [class.invalid]="hasError('fechaNacimiento', 'required')">
+              </ion-input>
+              <ion-icon
+                name="calendar-outline"
+                slot="end"
+                color="primary"
+                class="calendar-icon">
+              </ion-icon>
+            </ion-item>
+            @if (hasError('fechaNacimiento', 'required') && customerForm.get('fechaNacimiento')?.touched) {
+            <div class="bank-form-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              {{ getErrorMessage('fechaNacimiento') }}
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Asignaciones -->
+        <div class="bank-section">
+          <div class="bank-section-header">
+            <h3>Asignaciones</h3>
+          </div>
+
+          <!-- Usuario Vinculado -->
+          <div class="bank-form-group">
+            <ion-item class="bank-input-item" [class.readonly-item]="isEditMode()">
+              <ion-label position="floating">Usuario Vinculado</ion-label>
+              @if (isEditMode()) {
+                <!-- En modo edición mostrar solo lectura -->
+                <ion-input
+                  type="text"
+                  [value]="getUsuarioNombre()"
+                  [readonly]="true"
+                  class="readonly-input">
+                </ion-input>
+                <ion-icon name="lock-closed-outline" slot="end" color="medium"></ion-icon>
+              } @else {
+                <!-- En modo creación permitir seleccionar -->
+                <ion-select
+                  formControlName="usuarioId"
+                  placeholder="Seleccionar usuario"
+                  [class.invalid]="hasError('usuarioId', 'required')">
+                  <ion-select-option [value]="null">Sin usuario</ion-select-option>
+                  @for (usuario of usuarios(); track usuario.id) {
+                  <ion-select-option [value]="usuario.id">{{ usuario.nombre }} - {{ usuario.email }}</ion-select-option>
+                  }
+                </ion-select>
+              }
+            </ion-item>
+            @if (!isEditMode() && hasError('usuarioId', 'required') && customerForm.get('usuarioId')?.touched) {
+            <div class="bank-form-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              {{ getErrorMessage('usuarioId') }}
+            </div>
+            }
+          </div>
+
+          <!-- Gestor Asignado -->
+          <div class="bank-form-group">
+            <ion-item class="bank-input-item">
+              <ion-label position="floating">Gestor Asignado</ion-label>
+              <ion-select
+                formControlName="gestorId"
+                placeholder="Seleccionar gestor (opcional)"
+                [class.invalid]="hasError('gestorId', 'required')">
+                <ion-select-option [value]="null">Sin gestor asignado</ion-select-option>
+                @for (gestor of gestores(); track gestor.id) {
+                <ion-select-option [value]="gestor.id">{{ gestor.nombre }} - {{ gestor.email }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+            @if (hasError('gestorId', 'required') && customerForm.get('gestorId')?.touched) {
+            <div class="bank-form-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              {{ getErrorMessage('gestorId') }}
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Cuentas Bancarias -->
+        <div class="bank-section">
+          <div class="bank-section-header">
+            <h3>Cuentas Bancarias</h3>
+            <ion-button fill="clear" size="small" (click)="addAccount()">
+              <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+              Agregar Cuenta
+            </ion-button>
+          </div>
+
+          @if (cuentas.length === 0) {
+            <div class="empty-accounts">
+              <ion-icon name="wallet-outline"></ion-icon>
+              <p>No hay cuentas agregadas</p>
+              <ion-button fill="outline" size="small" (click)="addAccount()">
+                <ion-icon name="add-outline" slot="start"></ion-icon>
+                Agregar primera cuenta
+              </ion-button>
+            </div>
+          }
+
+          <div formArrayName="cuentas">
+            @for (cuenta of cuentas.controls; track $index; let i = $index) {
+              <div class="account-card" [formGroupName]="i" [class.readonly-card]="isEditMode() && cuenta.get('id')?.value">
+                <div class="account-card-header">
+                  <span class="account-number">Cuenta #{{ i + 1 }}</span>
+                  @if (isEditMode() && cuenta.get('id')?.value) {
+                    <ion-icon name="lock-closed-outline" color="medium" class="readonly-badge"></ion-icon>
+                  }
+                  <ion-button fill="clear" color="danger" size="small" (click)="removeAccount(i)">
+                    <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                  </ion-button>
+                </div>
+
+                <div class="account-card-body">
+                  <!-- Tipo de Cuenta -->
+                  <div class="bank-form-group">
+                    <ion-item class="bank-input-item" [class.readonly-item]="isEditMode() && cuenta.get('id')?.value">
+                      <ion-label position="floating">Tipo de Cuenta</ion-label>
+                      @if (isEditMode() && cuenta.get('id')?.value) {
+                        <ion-input
+                          type="text"
+                          [value]="getAccountTypeLabel(cuenta.get('tipo')?.value)"
+                          [readonly]="true">
+                        </ion-input>
+                      } @else {
+                        <ion-select formControlName="tipo" placeholder="Seleccionar tipo">
+                          @for (type of accountTypes; track type.value) {
+                            <ion-select-option [value]="type.value">{{ type.label }}</ion-select-option>
+                          }
+                        </ion-select>
+                      }
+                    </ion-item>
+                    @if (!isEditMode() && hasAccountError(i, 'tipo', 'required')) {
+                      <div class="bank-form-error">
+                        <ion-icon name="alert-circle-outline"></ion-icon>
+                        {{ getAccountErrorMessage(i, 'tipo') }}
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Moneda -->
+                  <div class="bank-form-group">
+                    <ion-item class="bank-input-item" [class.readonly-item]="isEditMode() && cuenta.get('id')?.value">
+                      <ion-label position="floating">Moneda</ion-label>
+                      @if (isEditMode() && cuenta.get('id')?.value) {
+                        <ion-input
+                          type="text"
+                          [value]="getCurrencyLabel(cuenta.get('moneda')?.value)"
+                          [readonly]="true">
+                        </ion-input>
+                      } @else {
+                        <ion-select formControlName="moneda" placeholder="Seleccionar moneda">
+                          @for (currency of currencies; track currency.value) {
+                            <ion-select-option [value]="currency.value">{{ currency.label }}</ion-select-option>
+                          }
+                        </ion-select>
+                      }
+                    </ion-item>
+                    @if (!isEditMode() && hasAccountError(i, 'moneda', 'required')) {
+                      <div class="bank-form-error">
+                        <ion-icon name="alert-circle-outline"></ion-icon>
+                        {{ getAccountErrorMessage(i, 'moneda') }}
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Saldo Inicial -->
+                  <div class="bank-form-group">
+                    <ion-item class="bank-input-item" [class.readonly-item]="isEditMode() && cuenta.get('id')?.value">
+                      <ion-label position="floating">{{ isEditMode() && cuenta.get('id')?.value ? 'Saldo Actual' : 'Saldo Inicial' }}</ion-label>
+                      <ion-input
+                        type="number"
+                        formControlName="saldoInicial"
+                        placeholder="0.00"
+                        [readonly]="isEditMode() && cuenta.get('id')?.value"
+                        [class.invalid]="hasAccountError(i, 'saldoInicial', 'required') || hasAccountError(i, 'saldoInicial', 'min')">
+                      </ion-input>
+                    </ion-item>
+                    @if (!isEditMode() && (hasAccountError(i, 'saldoInicial', 'required') || hasAccountError(i, 'saldoInicial', 'min'))) {
+                      <div class="bank-form-error">
+                        <ion-icon name="alert-circle-outline"></ion-icon>
+                        {{ getAccountErrorMessage(i, 'saldoInicial') }}
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="bank-section">
+          <div class="bank-button-group">
+            <ion-button
+              type="button"
+              fill="outline"
+              color="medium"
+              (click)="goBack()"
+              expand="block">
+              <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+              Cancelar
+            </ion-button>
+            <ion-button
+              type="submit"
+              color="primary"
+              [disabled]="customerForm.invalid || isLoading()"
+              expand="block">
+              @if (isLoading()) {
+              <ion-spinner name="crescent" slot="start"></ion-spinner>
+              {{ submitLoadingText() }}
+              } @else {
+              <ion-icon name="person-add-outline" slot="start"></ion-icon>
+              {{ submitButtonText() }}
+              }
+            </ion-button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</ion-content>

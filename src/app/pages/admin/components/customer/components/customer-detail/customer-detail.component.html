@@ -1,3 +1,189 @@
-<p>
-  customer-detail works!
-</p>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/customers"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle del Cliente</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToEdit()">
+        <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <!-- Loading -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <ion-spinner name="crescent" color="light"></ion-spinner>
+      <p>Cargando información del cliente...</p>
+    </div>
+  }
+
+  @if (customer() && !isLoading()) {
+    <div class="bank-content-container">
+
+      <!-- Header del Cliente -->
+      <div class="customer-header">
+        <div class="customer-avatar">
+          <img [src]="'https://ui-avatars.com/api/?name=' + customer()!.nombreCompleto + '&background=random&size=120'"
+               [alt]="customer()!.nombreCompleto" />
+        </div>
+        <h2 class="customer-name">{{ customer()!.nombreCompleto }}</h2>
+        <p class="customer-email">{{ customer()!.email }}</p>
+        <div class="customer-status">
+          <span class="status-badge" [class.active]="customer()!.estado === 'Activo'"
+                [class.inactive]="customer()!.estado !== 'Activo'">
+            {{ customer()!.estado }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Resumen Financiero -->
+      <div class="bank-section">
+        <div class="financial-summary">
+          <div class="summary-card">
+            <ion-icon name="wallet-outline"></ion-icon>
+            <div class="summary-info">
+              <span class="summary-value">{{ customer()!.cuentasActivas }}</span>
+              <span class="summary-label">Cuentas Activas</span>
+            </div>
+          </div>
+          <div class="summary-card">
+            <ion-icon name="cash-outline"></ion-icon>
+            <div class="summary-info">
+              <span class="summary-value">{{ formatCurrency(customer()!.saldoTotal) }}</span>
+              <span class="summary-label">Saldo Total</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información Personal -->
+      <div class="bank-section">
+        <div class="bank-section-header">
+          <h3><ion-icon name="person-outline"></ion-icon> Información Personal</h3>
+        </div>
+        <div class="bank-glass-card">
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="info-label">Identificación</span>
+              <span class="info-value">{{ customer()!.identificacion }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Teléfono</span>
+              <span class="info-value">{{ customer()!.telefono || 'No disponible' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Correo Electrónico</span>
+              <span class="info-value">{{ customer()!.email }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Dirección</span>
+              <span class="info-value">{{ customer()!.direccion || 'No disponible' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Fecha de Nacimiento</span>
+              <span class="info-value">{{ formatDate(customer()!.fechaNacimiento) }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Fecha de Registro</span>
+              <span class="info-value">{{ formatDateTime(customer()!.fechaRegistro) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Usuario Vinculado -->
+      @if (customer()!.usuario) {
+        <div class="bank-section">
+          <div class="bank-section-header">
+            <h3><ion-icon name="person-circle-outline"></ion-icon> Usuario Vinculado</h3>
+          </div>
+          <div class="bank-glass-card">
+            <div class="user-card">
+              <div class="user-avatar">
+                <img [src]="'https://ui-avatars.com/api/?name=' + customer()!.usuario!.nombre + '&background=1a4d8f&color=fff'"
+                     [alt]="customer()!.usuario!.nombre" />
+              </div>
+              <div class="user-info">
+                <h4>{{ customer()!.usuario!.nombre }}</h4>
+                <p>{{ customer()!.usuario!.email }}</p>
+                <div class="user-meta">
+                  <span class="role-badge">{{ customer()!.usuario!.rol }}</span>
+                  <span class="status-badge" [class.active]="!customer()!.usuario!.estaBloqueado"
+                        [class.blocked]="customer()!.usuario!.estaBloqueado">
+                    {{ customer()!.usuario!.estaBloqueado ? 'Bloqueado' : 'Activo' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Gestor Asignado -->
+      @if (customer()!.gestor) {
+        <div class="bank-section">
+          <div class="bank-section-header">
+            <h3><ion-icon name="briefcase-outline"></ion-icon> Gestor Asignado</h3>
+          </div>
+          <div class="bank-glass-card">
+            <div class="user-card">
+              <div class="user-avatar gestor">
+                <img [src]="'https://ui-avatars.com/api/?name=' + customer()!.gestor!.nombre + '&background=2d7a4f&color=fff'"
+                     [alt]="customer()!.gestor!.nombre" />
+              </div>
+              <div class="user-info">
+                <h4>{{ customer()!.gestor!.nombre }}</h4>
+                <p>{{ customer()!.gestor!.email }}</p>
+                <span class="role-badge gestor">Gestor</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Cuentas Bancarias -->
+      <div class="bank-section">
+        <div class="bank-section-header">
+          <h3><ion-icon name="card-outline"></ion-icon> Cuentas Bancarias</h3>
+          <span class="bank-badge-primary">{{ customer()!.cuentas.length || 0 }} cuentas</span>
+        </div>
+
+        @if (customer()!.cuentas && customer()!.cuentas.length > 0) {
+          <div class="accounts-list">
+            @for (cuenta of customer()!.cuentas; track cuenta.id) {
+              <div class="bank-glass-card account-card">
+                <div class="account-header">
+                  <div class="account-type">
+                    <ion-icon [name]="cuenta.tipo === 'Ahorro' ? 'wallet-outline' : 'card-outline'"></ion-icon>
+                    <span>{{ cuenta.tipo }}</span>
+                  </div>
+                  <span class="account-status" [class.active]="cuenta.estado === 'Activa'">
+                    {{ cuenta.estado }}
+                  </span>
+                </div>
+                <div class="account-number">
+                  <span class="label">Número de Cuenta</span>
+                  <span class="value">{{ cuenta.numero }}</span>
+                </div>
+                <div class="account-balance">
+                  <span class="currency">{{ cuenta.moneda }}</span>
+                  <span class="amount">{{ formatCurrency(cuenta.saldo, cuenta.moneda) }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="bank-glass-card empty-accounts">
+            <ion-icon name="wallet-outline"></ion-icon>
+            <p>Este cliente no tiene cuentas registradas</p>
+          </div>
+        }
+      </div>
+
+    </div>
+  }
+</ion-content>

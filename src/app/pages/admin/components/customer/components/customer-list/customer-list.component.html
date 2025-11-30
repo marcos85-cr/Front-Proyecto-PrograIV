@@ -5,7 +5,7 @@
         </ion-buttons>
         <ion-title>Gestión de Clientes</ion-title>
         <ion-buttons slot="end">
-            <ion-button (click)="openCreateAccountModal()">
+            <ion-button (click)="goToCreateCustomer()">
                 <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
             </ion-button>
         </ion-buttons>
@@ -31,19 +31,32 @@
             @if (filteredCustomers().length > 0) {
             <div class="bank-simple-list">
                 @for (customer of filteredCustomers(); track customer.id) {
-                <div class="bank-glass-card bank-customer-item" (click)="openCustomerDetail(customer)">
-                    <div class="bank-customer-avatar">
-                        <img [src]="'https://ui-avatars.com/api/?name=' + customer.nombre + '&background=random'" [alt]="customer.nombre" />
-                    </div>
-                    <div class="bank-customer-info">
-                        <h4 class="bank-customer-name">{{ customer.nombre }}</h4>
-                        <p class="bank-customer-email">{{ customer.email }}</p>
-                        <div class="bank-customer-meta">
-                            <span class="bank-badge" [class.bank-badge-success]="customer.estado === 'Activo'" [class.bank-badge-danger]="customer.estado !== 'Activo'">
-                                {{ customer.estado }}
-                            </span>
-                            <span class="bank-text-small">{{ customer.cuentasActivas }} cuentas activas</span>
+                <div class="bank-glass-card bank-customer-item">
+                    <div class="customer-main-content" (click)="goToCustomerDetail(customer.id)">
+                        <div class="bank-customer-avatar">
+                            <img [src]="'https://ui-avatars.com/api/?name=' + (customer.nombreCompleto || 'Cliente') + '&background=random'" [alt]="customer.nombreCompleto" />
                         </div>
+                        <div class="bank-customer-info">
+                            <h4 class="bank-customer-name">{{ customer.nombreCompleto || 'Sin nombre' }}</h4>
+                            <p class="bank-customer-email">{{ customer.email || 'Sin correo' }}</p>
+                            <div class="bank-customer-meta">
+                                <span class="bank-badge" [class.bank-badge-success]="customer.estado === 'Activo'" [class.bank-badge-danger]="customer.estado !== 'Activo'">
+                                    {{ customer.estado }}
+                                </span>
+                                <span class="bank-text-small">{{ customer.cuentasActivas || 0 }} cuentas</span>
+                                @if (customer.gestorNombre) {
+                                <span class="bank-text-small">• Gestor: {{ customer.gestorNombre }}</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="customer-actions">
+                        <ion-button fill="clear" size="small" (click)="goToEditCustomer(customer.id); $event.stopPropagation()">
+                            <ion-icon name="create-outline" color="primary" slot="icon-only"></ion-icon>
+                        </ion-button>
+                        <ion-button fill="clear" size="small" color="danger" (click)="deleteCustomer(customer); $event.stopPropagation()">
+                            <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                        </ion-button>
                     </div>
                 </div>
                 }

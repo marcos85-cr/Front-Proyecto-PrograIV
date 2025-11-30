@@ -1,11 +1,31 @@
 export interface Customer {
-  id: string;
-  nombre: string;
-  email: string;
+  id: number;
+  usuarioId: number;
   identificacion: string;
-  telefono: string;
-  cuentasActivas: number;
-  ultimaOperacion: Date;
+  nombreCompleto: string;
+  telefono?: string;
+  email?: string;
+  direccion?: string;
+  fechaNacimiento?: string;
   estado: 'Activo' | 'Inactivo';
-  volumenTotal: number;
+  fechaRegistro: string;
+  cuentasActivas: number;
+  gestorId?: number;
+  gestorNombre?: string;
+  cuentas?: CustomerAccount[];
+}
+
+export interface CustomerAccount {
+  id?: number;
+  tipo: string;
+  moneda: string;
+  saldoInicial: number;
+}
+
+export interface CustomerRequest {
+  direccion: string;
+  fechaNacimiento: string;
+  usuarioId: number;
+  gestorId?: number;
+  cuentas?: CustomerAccount[];
 }

@@ -1,0 +1,296 @@
+// CustomerCreateComponent - Estilos del formulario
+
+.hidden-date-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.bank-form-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  padding: 0.4rem 0.65rem;
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 500;
+
+  ion-icon {
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+}
+
+.bank-section-header h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.calendar-icon {
+  cursor: pointer;
+  font-size: 1.3rem;
+  padding: 0.5rem;
+  margin-right: 0.25rem;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.bank-form-group {
+  margin-bottom: 0.5rem;
+}
+
+.bank-section {
+  margin-bottom: 0.75rem;
+}
+
+.bank-input-item {
+  --background: rgba(255, 255, 255, 0.95);
+  --border-radius: 10px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --inner-padding-end: 0;
+  --min-height: 56px;
+  margin-bottom: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &.item-has-focus {
+    --background: #ffffff;
+    border-color: #1a4d8f;
+  }
+
+  &.invalid {
+    border-color: #dc2626;
+
+    ion-label {
+      color: #dc2626 !important;
+    }
+  }
+
+  // Estilo para campos de solo lectura
+  &.readonly-item {
+    --background: rgba(248, 250, 252, 0.95);
+    border-color: rgba(0, 0, 0, 0.05);
+    cursor: not-allowed;
+
+    ion-input {
+      --color: #64748b !important;
+      font-style: italic;
+    }
+
+    ion-icon[name="lock-closed-outline"] {
+      color: #94a3b8;
+      font-size: 1.1rem;
+    }
+  }
+
+  ion-label {
+    color: #1e293b !important;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  ion-input,
+  ion-select {
+    --color: #1e293b !important;
+    --placeholder-color: #64748b !important;
+    --placeholder-opacity: 1;
+    font-size: 1rem;
+    font-weight: 400;
+  }
+}
+
+:host ::ng-deep {
+  .bank-input-item {
+    ion-label.label-floating {
+      transform: translateY(50%) scale(1);
+    }
+
+    &.item-has-focus ion-label.label-floating,
+    &.item-has-value ion-label.label-floating {
+      transform: translateY(0) scale(0.82);
+    }
+  }
+
+  ion-input {
+    --color: #1e293b !important;
+
+    input {
+      color: #1e293b !important;
+    }
+
+    input::placeholder {
+      color: #64748b !important;
+      opacity: 1 !important;
+    }
+  }
+
+  ion-select {
+    color: #1e293b !important;
+    --color: #1e293b !important;
+  }
+
+  ion-select::part(text) {
+    color: #1e293b !important;
+    opacity: 1 !important;
+  }
+
+  ion-select::part(placeholder) {
+    color: #64748b !important;
+    opacity: 1 !important;
+  }
+
+  ion-select::part(icon) {
+    color: #1e293b !important;
+    opacity: 1 !important;
+  }
+}
+
+.bank-button-group {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+
+  ion-button {
+    flex: 1;
+    height: 44px;
+    font-weight: 600;
+    font-size: 0.9rem;
+
+    &:hover {
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// Estilos para sección de cuentas
+.bank-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+
+  ion-button {
+    --color: white;
+    font-size: 0.85rem;
+  }
+}
+
+.empty-accounts {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  text-align: center;
+
+  ion-icon {
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+  }
+
+  ion-button {
+    --background: rgba(255, 255, 255, 0.2);
+    --color: white;
+    --border-color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.account-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  // Estilo para tarjeta de cuenta en modo lectura
+  &.readonly-card {
+    background: rgba(248, 250, 252, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+
+    .account-card-header {
+      background: #64748b;
+
+      .readonly-badge {
+        font-size: 0.9rem;
+        margin-left: auto;
+        margin-right: 0.5rem;
+      }
+    }
+  }
+
+  .account-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: #1a4d8f;
+    color: white;
+
+    .account-number {
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    ion-button {
+      --padding-start: 0.25rem;
+      --padding-end: 0.25rem;
+      margin: 0;
+      height: 28px;
+
+      ion-icon {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .account-card-body {
+    padding: 0.75rem;
+
+    .bank-input-item {
+      margin-bottom: 0.5rem;
+      --min-height: 48px;
+    }
+
+    .account-number-input {
+      .generate-btn {
+        --color: #1a4d8f;
+        --padding-start: 0.5rem;
+        --padding-end: 0.5rem;
+        height: 32px;
+        margin: 0;
+
+        &:hover {
+          --background: rgba(26, 77, 143, 0.1);
+        }
+
+        ion-icon {
+          font-size: 1.1rem;
+        }
+      }
+    }
+  }
+}

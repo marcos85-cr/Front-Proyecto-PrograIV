@@ -1,3 +1,4 @@
+import { USER_ROLES } from './../../../../shared/constants/user-roles.constants';
 import { Component, signal, inject, ViewEncapsulation } from '@angular/core';
 import {
   FormGroup,
@@ -49,10 +50,14 @@ export class LoginComponent {
           this.authService.loginSuccess$.subscribe();
 
           await this.toastService.success('Inicio de sesión exitoso', 2000);
-
-
-          this.router.navigate(['/admin/dashboard']);
-          //this.router.navigate(['/customer/dashboard']);
+          const infoUser = this.authService.getUserInfo();
+          if (infoUser.role === USER_ROLES.ADMINISTRADOR) {
+            this.router.navigate(['/admin/dashboard']);
+          } else if (infoUser.role === USER_ROLES.GESTOR) {
+            this.router.navigate(['/manager/dashboard']);
+          } else if (infoUser.role === USER_ROLES.CLIENTE) {
+            this.router.navigate(['/customer/dashboard']);
+          }
         },
         error: async (error: any) => {
           console.error('Error en login:', error);

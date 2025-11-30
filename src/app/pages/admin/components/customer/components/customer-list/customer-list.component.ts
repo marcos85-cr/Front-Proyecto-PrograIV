@@ -3,12 +3,9 @@ import { Component, OnInit, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { Customer } from '../../models/customer.dto';
-import { IonicModule, AlertController, ModalController } from '@ionic/angular';
+import { IonicModule, AlertController } from '@ionic/angular';
 import { ToastService } from '../../../../../../services/toast.service';
 import { CustomerService } from '../../services/customer.service';
-import { CustomerDetailComponent } from '../customer-detail/customer-detail.component';
-import { CustomerAccountsComponent } from '../customer-accounts/customer-accounts.component';
-import { CustomerTransactionsComponent } from '../customer-transactions/customer-transactions.component';
 
 @Component({
   selector: 'app-customer-list',
@@ -19,8 +16,8 @@ import { CustomerTransactionsComponent } from '../customer-transactions/customer
 })
 export class CustomerListComponent implements OnInit {
   // Signals para estado reactivo
-  customers = signal<Customer[]>([]);
-  filteredCustomers = signal<Customer[]>([]);
+  customers = signal<any[]>([]);
+  filteredCustomers = signal<any[]>([]);
   searchTerm = signal('');
   isLoading = signal(false);
 
@@ -29,14 +26,13 @@ export class CustomerListComponent implements OnInit {
     const customers = this.customers();
     return {
       totalCustomers: customers.length,
-      totalAccounts: customers.reduce((sum, customer) => sum + customer.cuentasActivas, 0),
-      totalVolume: customers.reduce((sum, customer) => sum + customer.volumenTotal, 0)
+      totalAccounts: customers.reduce((sum, customer) => sum + (customer.cuentasActivas || 0), 0),
+      activeCustomers: customers.filter(c => c.estado === 'Activo').length
     };
   });
 
   constructor(
     private alertController: AlertController,
-    private modalController: ModalController,
     private router: Router,
     private toastService: ToastService,
     private customerService: CustomerService
@@ -46,131 +42,24 @@ export class CustomerListComponent implements OnInit {
     this.loadCustomers();
   }
 
-  async loadCustomers() {
+  loadCustomers(): void {
     this.isLoading.set(true);
-    try {
-      // Datos simulados - todos los clientes del sistema
-      const mockCustomers: Customer[] = [
-        {
-          id: '1',
-          nombre: 'Carlos Sánchez Mora',
-          email: 'carlos.sanchez@email.com',
-          identificacion: '1-1234-5678',
-          telefono: '8888-9999',
-          cuentasActivas: 3,
-          ultimaOperacion: new Date('2025-11-07'),
-          estado: 'Activo',
-          volumenTotal: 5600000
-        },
-        {
-          id: '2',
-          nombre: 'Ana Rodríguez Pérez',
-          email: 'ana.rodriguez@email.com',
-          identificacion: '2-2345-6789',
-          telefono: '7777-8888',
-          cuentasActivas: 2,
-          ultimaOperacion: new Date('2025-11-06'),
-          estado: 'Activo',
-          volumenTotal: 3200000
-        },
-        {
-          id: '3',
-          nombre: 'José Martínez López',
-          email: 'jose.martinez@email.com',
-          identificacion: '3-3456-7890',
-          telefono: '6666-7777',
-          cuentasActivas: 4,
-          ultimaOperacion: new Date('2025-11-05'),
-          estado: 'Activo',
-          volumenTotal: 8900000
-        },
-        {
-          id: '4',
-          nombre: 'María Fernández Castro',
-          email: 'maria.fernandez@email.com',
-          identificacion: '4-4567-8901',
-          telefono: '5555-6666',
-          cuentasActivas: 1,
-          ultimaOperacion: new Date('2025-10-28'),
-          estado: 'Activo',
-          volumenTotal: 1200000
-        },
-        {
-          id: '5',
-          nombre: 'Pedro Ramírez Solís',
-          email: 'pedro.ramirez@email.com',
-          identificacion: '5-5678-9012',
-          telefono: '4444-5555',
-          cuentasActivas: 2,
-          ultimaOperacion: new Date('2025-11-03'),
-          estado: 'Activo',
-          volumenTotal: 4500000
-        },
-        {
-          id: '6',
-          nombre: 'Laura Herrera Vargas',
-          email: 'laura.herrera@email.com',
-          identificacion: '6-6789-0123',
-          telefono: '3333-4444',
-          cuentasActivas: 3,
-          ultimaOperacion: new Date('2025-11-02'),
-          estado: 'Activo',
-          volumenTotal: 6700000
-        },
-        {
-          id: '7',
-          nombre: 'Diego Torres Jiménez',
-          email: 'diego.torres@email.com',
-          identificacion: '7-7890-1234',
-          telefono: '2222-3333',
-          cuentasActivas: 2,
-          ultimaOperacion: new Date('2025-10-25'),
-          estado: 'Inactivo',
-          volumenTotal: 890000
-        },
-        {
-          id: '8',
-          nombre: 'Sofía Campos Rojas',
-          email: 'sofia.campos@email.com',
-          identificacion: '8-8901-2345',
-          telefono: '1111-2222',
-          cuentasActivas: 5,
-          ultimaOperacion: new Date('2025-11-08'),
-          estado: 'Activo',
-          volumenTotal: 12400000
-        },
-        {
-          id: '9',
-          nombre: 'Roberto Méndez Ortiz',
-          email: 'roberto.mendez@email.com',
-          identificacion: '9-9012-3456',
-          telefono: '9999-0000',
-          cuentasActivas: 1,
-          ultimaOperacion: new Date('2025-10-15'),
-          estado: 'Activo',
-          volumenTotal: 650000
-        },
-        {
-          id: '10',
-          nombre: 'Gabriela Castro Monge',
-          email: 'gabriela.castro@email.com',
-          identificacion: '1-0123-4567',
-          telefono: '8888-7777',
-          cuentasActivas: 3,
-          ultimaOperacion: new Date('2025-11-04'),
-          estado: 'Activo',
-          volumenTotal: 7800000
+    this.customerService.getCustomers().subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.customers.set(response.data || []);
+          this.filteredCustomers.set(response.data || []);
+        } else {
+          this.toastService.warning(response.message || 'Error al cargar clientes');
         }
-      ];
-
-      this.customers.set(mockCustomers);
-      this.filteredCustomers.set(mockCustomers);
-    } catch (error) {
-      console.error('Error al cargar clientes:', error);
-      await this.toastService.error('Error al cargar clientes');
-    } finally {
-      this.isLoading.set(false);
-    }
+        this.isLoading.set(false);
+      },
+      error: (error) => {
+        console.error('Error al cargar clientes:', error);
+        this.toastService.error('Error al cargar clientes');
+        this.isLoading.set(false);
+      }
+    });
   }
 
   filterCustomers() {
@@ -181,96 +70,71 @@ export class CustomerListComponent implements OnInit {
     }
 
     const filtered = this.customers().filter(customer =>
-      customer.nombre.toLowerCase().includes(term) ||
-      customer.email.toLowerCase().includes(term) ||
-      customer.identificacion.includes(term)
+      (customer.nombreCompleto?.toLowerCase() || '').includes(term) ||
+      (customer.email?.toLowerCase() || '').includes(term) ||
+      (customer.identificacion || '').includes(term) ||
+      (customer.gestorNombre?.toLowerCase() || '').includes(term)
     );
 
     this.filteredCustomers.set(filtered);
   }
 
-  async openCustomerDetail(customer: Customer) {
-    const modal = await this.modalController.create({
-      component: CustomerDetailComponent,
-      componentProps: {
-        customer: customer,
-      },
-      cssClass: 'custom-modal-size',
-    });
-
-    await modal.present();
-
-    const { data } = await modal.onWillDismiss();
-    if (data?.action === 'viewAccounts') {
-      this.viewCustomerAccounts(customer);
-    } else if (data?.action === 'viewTransactions') {
-      this.viewCustomerTransactions(customer);
-    }
+  goToCustomerDetail(customerId: number): void {
+    this.router.navigate([`/admin/customers/detail/${customerId}`]);
   }
 
-  async viewCustomerAccounts(customer: Customer) {
-    const modal = await this.modalController.create({
-      component: CustomerAccountsComponent,
-      componentProps: {
-        customer: customer
-      },
-      cssClass: 'custom-modal-size'
-    });
-
-    await modal.present();
-
-    const { data } = await modal.onWillDismiss();
-    if (data?.action === 'openNewAccount') {
-      this.openCreateAccountForCustomer(customer);
-    }
+  goToCreateCustomer(): void {
+    this.router.navigate(['/admin/customers/create']);
   }
 
-  async viewCustomerTransactions(customer: Customer) {
-    const modal = await this.modalController.create({
-      component: CustomerTransactionsComponent,
-      componentProps: {
-        customer: customer
-      },
-      cssClass: 'custom-modal-size'
-    });
-
-    await modal.present();
+  goToEditCustomer(customerId: number): void {
+    this.router.navigate([`/admin/customers/edit/${customerId}`]);
   }
 
-  async openCreateAccountModal() {
-    const customers = this.customers();
+  async deleteCustomer(customer: Customer): Promise<void> {
     const alert = await this.alertController.create({
-      header: 'Seleccionar Cliente',
-      message: 'Seleccione el cliente para abrir una nueva cuenta',
-      inputs: customers.map(customer => ({
-        type: 'radio' as const,
-        label: customer.nombre,
-        value: customer.id
-      })),
+      header: 'Eliminar Cliente',
+      message: `¿Está seguro que desea eliminar al cliente ${customer.nombreCompleto || 'seleccionado'}? Esta acción no se puede deshacer.`,
       buttons: [
         {
           text: 'Cancelar',
-          role: 'cancel'
+          role: 'cancel',
         },
         {
-          text: 'Siguiente',
-          handler: (customerId) => {
-            if (customerId) {
-              const customer = customers.find(c => c.id === customerId);
-              if (customer) {
-                this.openCreateAccountForCustomer(customer);
-              }
-            }
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: () => {
+            this.executeDeleteCustomer(customer);
           }
         }
       ]
     });
+
     await alert.present();
+  }
+
+  private executeDeleteCustomer(customer: Customer): void {
+    this.customerService.deleteCustomer(customer.id.toString()).subscribe({
+      next: (response) => {
+        if (response.success) {
+          // Remover el cliente de la lista local
+          const customers = this.customers().filter(c => c.id !== customer.id);
+          this.customers.set(customers);
+          this.filterCustomers();
+          this.toastService.success('Cliente eliminado exitosamente');
+        } else {
+          this.toastService.error(response.message || 'Error al eliminar cliente');
+        }
+      },
+      error: () => {
+        this.toastService.error('Error al eliminar cliente');
+      }
+    });
   }
 
   async openCreateAccountForCustomer(customer: Customer) {
     const alert = await this.alertController.create({
-      header: `Nueva Cuenta para ${customer.nombre}`,
+      header: `Nueva Cuenta para ${customer.nombreCompleto || 'Cliente'}`,
       inputs: [
         {
           name: 'tipo',
@@ -317,24 +181,19 @@ export class CustomerListComponent implements OnInit {
       // Actualizar el cliente localmente
       const customers = this.customers().map(c =>
         c.id === customer.id
-          ? { ...c, cuentasActivas: c.cuentasActivas + 1 }
+          ? { ...c, cuentasActivas: (c.cuentasActivas || 0) + 1 }
           : c
       );
       this.customers.set(customers);
-      this.filteredCustomers.set(customers.filter(c =>
-        this.searchTerm().trim() === '' ||
-        c.nombre.toLowerCase().includes(this.searchTerm().toLowerCase()) ||
-        c.email.toLowerCase().includes(this.searchTerm().toLowerCase()) ||
-        c.identificacion.includes(this.searchTerm())
-      ));
+      this.filterCustomers();
     } catch (error) {
       console.error('Error al crear la cuenta:', error);
       await this.toastService.error('Error al crear la cuenta');
     }
   }
 
-  async handleRefresh(event: any) {
-    await this.loadCustomers();
+  handleRefresh(event: any): void {
+    this.loadCustomers();
     event.target.complete();
   }
 }
