@@ -16,32 +16,30 @@
 </ion-header>
 
 <ion-content class="bank-gradient-bg">
-  <div class="bank-content-container">
+  <!-- Búsqueda -->
+  <div class="search-container">
+    <ion-searchbar [(ngModel)]="searchTerm" placeholder="Buscar usuario por nombre" animated></ion-searchbar>
 
-    <!-- Barra de búsqueda y filtros -->
-    <div class="bank-section mb-md">
-      <div class="bank-glass-card p-md">
-        <ion-searchbar
-          [(ngModel)]="searchTerm"
-          placeholder="Buscar usuarios..."
-          class="bank-searchbar">
-        </ion-searchbar>
-
-        <div class="filter-buttons mt-sm">
-          <ion-segment [(ngModel)]="filterBloqueados" class="bank-segment">
-            <ion-segment-button [value]="null">
-              <ion-label>Todos</ion-label>
-            </ion-segment-button>
-            <ion-segment-button [value]="false">
-              <ion-label>Activos</ion-label>
-            </ion-segment-button>
-            <ion-segment-button [value]="true">
-              <ion-label>Bloqueados</ion-label>
-            </ion-segment-button>
-          </ion-segment>
-        </div>
-      </div>
+    <!-- Filtros de perfiles -->
+    <div class="filters-container">
+      <ion-segment [(ngModel)]="filterRole" class="profile-segment">
+        <ion-segment-button value="todos">
+          <ion-label>Todos</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="Administrador">
+          <ion-label>Administrador</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="Gestor">
+          <ion-label>Gestor</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="Cliente">
+          <ion-label>Cliente</ion-label>
+        </ion-segment-button>
+      </ion-segment>
     </div>
+  </div>
+
+  <div class="bank-content-container">
 
     <!-- Estado de carga -->
     @if (isLoading) {
@@ -53,140 +51,59 @@
     </div>
     }
 
-    <!-- Lista de usuarios -->
-    @if (!isLoading && filteredUsers.length > 0) {
+    <!-- Lista de Usuarios -->
     <div class="bank-section">
-      <div class="grid gap-md">
+      <div class="bank-section-header">
+        <h3>Usuarios Registrados</h3>
+        <span class="bank-badge-primary">{{ filteredUsers.length }} usuarios</span>
+      </div>
+      @if (filteredUsers.length > 0) {
+      <div class="bank-simple-list">
         @for (user of filteredUsers; track user.id) {
-        <div class="bank-card bank-card--elevated animate-fadeIn" style="--index: {{$index}}">
-
-          <!-- Header del card -->
-          <div class="bank-card-header">
-            <div class="flex items-center gap-md">
-              <div class="user-avatar">
-                <ion-icon name="person-circle-outline"></ion-icon>
-              </div>
-              <div class="user-info">
-                <h4 class="user-name text-primary font-semibold text-sm">{{ user.nombre }}</h4>
-                <p class="user-email text-secondary text-sm">{{ user.email }}</p>
-              </div>
-            </div>
-            <div class="flex gap-sm">
-              <ion-chip [color]="getRoleColor(user.role)" class="role-chip">
-                <ion-icon [name]="getRoleIcon(user.role)" slot="start"></ion-icon>
-                <ion-label>{{ user.role }}</ion-label>
-              </ion-chip>
-              @if (user.bloqueado) {
-              <div class="bank-badge bank-badge--danger">
-                <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-                Bloqueado
-              </div>
-              } @else {
-              <div class="bank-badge bank-badge--success">
-                <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
-                Activo
-              </div>
-              }
+        <div class="bank-glass-card bank-customer-item" (click)="goToEditUser(user.id)">
+          <div class="bank-customer-avatar">
+            <img [src]="'https://ui-avatars.com/api/?name=' + user.nombre + '&background=random'" [alt]="user.nombre" />
+          </div>
+          <div class="bank-customer-info">
+            <h4 class="bank-customer-name">{{ user.nombre }}</h4>
+            <p class="bank-customer-email">{{ user.email }}</p>
+            <div class="bank-customer-meta">
+              <span class="bank-badge" [class.bank-badge-success]="!user.bloqueado" [class.bank-badge-danger]="user.bloqueado">
+                {{ user.bloqueado ? 'Bloqueado' : 'Activo' }}
+              </span>
+              <span class="bank-text-small">{{ user.role }}</span>
             </div>
           </div>
-
-          <!-- Cuerpo del card con detalles -->
-          <div class="bank-card-body">
-            <div class="grid grid--2 gap-sm">
-              <!-- Columna 1: Identificación completa -->
-              <div class="detail-item">
-                <ion-icon name="card-outline" color="medium" class="text-light"></ion-icon>
-                <div>
-                  <span class="text-xs text-light">Identificación</span>
-                  <span class="detail-value text-secondary font-medium">{{ user.identificacion }}</span>
-                </div>
-              </div>
-              <!-- Columna 2: Teléfono completo -->
-              <div class="detail-item">
-                <ion-icon name="call-outline" color="medium" class="text-light"></ion-icon>
-                <div>
-                  <span class="text-xs text-light">Teléfono</span>
-                  <span class="detail-value text-secondary font-medium">{{ user.telefono }}</span>
-                </div>
-              </div>
-              <!-- Columna 1: Fecha Creación -->
-              <div class="detail-item">
-                <ion-icon name="calendar-outline" color="medium" class="text-light"></ion-icon>
-                <div>
-                  <span class="text-xs text-light">Fecha Creación</span>
-                  <span class="detail-value text-secondary font-medium">{{ formatDate(user.fechaCreacion) }}</span>
-                </div>
-              </div>
-              <!-- Columna 2: Cuentas Activas -->
-              <div class="detail-item">
-                <ion-icon name="wallet-outline" color="medium" class="text-light"></ion-icon>
-                <div>
-                  <span class="text-xs text-light">Cuentas Activas</span>
-                  <span class="detail-value text-secondary font-medium">{{ user.cuentasActivas }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Footer del card con acciones -->
-          <div class="bank-card-footer">
-            <ion-button
-              fill="outline"
-              size="small"
-              color="primary"
-              (click)="goToEditUser(user.id)">
-              <ion-icon name="create-outline" slot="start"></ion-icon>
-              Editar
-            </ion-button>
-            @if (!user.bloqueado) {
-            <ion-button
-              fill="outline"
-              size="small"
-              color="warning"
-              (click)="toggleUserStatus(user, true)">
-              <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-              Bloquear
-            </ion-button>
-            } @else {
-            <ion-button
-              fill="outline"
-              size="small"
-              color="success"
-              (click)="toggleUserStatus(user, false)">
-              <ion-icon name="lock-open-outline" slot="start"></ion-icon>
-              Desbloquear
-            </ion-button>
-            }
-            <ion-button
-              fill="outline"
-              size="small"
-              color="danger"
-              (click)="deleteUser(user)">
-              <ion-icon name="trash-outline" slot="start"></ion-icon>
-              Eliminar
-            </ion-button>
-          </div>
-
         </div>
         }
       </div>
-    </div>
-    }
+      }
 
-    <!-- Sin resultados -->
-    @if (!isLoading && filteredUsers.length === 0) {
-    <div class="bank-empty-state">
-      <div class="bank-glass-card empty-card">
-        <ion-icon name="people-outline" class="empty-icon"></ion-icon>
-        <h3>No se encontraron usuarios</h3>
-        <p>Intenta ajustar los filtros de búsqueda</p>
-        <ion-button fill="clear" (click)="refreshUsers()">
-          <ion-icon name="refresh-outline" slot="start"></ion-icon>
-          Recargar
-        </ion-button>
+      <!-- Sin Resultados -->
+      @if (filteredUsers.length === 0 && !isLoading) {
+      <div class="bank-empty-state">
+        <div class="empty-content">
+          <div class="empty-icon">
+            <ion-icon name="search-outline"></ion-icon>
+          </div>
+          <h3>No se encontraron usuarios</h3>
+          <p>Intenta ajustar los criterios de búsqueda</p>
+          <ion-button fill="outline" (click)="searchTerm = '';" class="empty-action-btn">
+            <ion-icon name="refresh-outline" slot="start"></ion-icon>
+            Mostrar todos
+          </ion-button>
+        </div>
       </div>
-    </div>
-    }
+      }
 
+      <!-- Loading -->
+      @if (isLoading) {
+      <div class="bank-loading-state">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <p>Cargando usuarios...</p>
+      </div>
+      }
+
+    </div>
   </div>
 </ion-content>

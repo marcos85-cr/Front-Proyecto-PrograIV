@@ -3,7 +3,7 @@ import { CustomerListComponent } from './components/customer-list/customer-list.
 import { CustomerCreateComponent } from './components/customer-create/customer-create.component';
 export const CUSTOMER_ROUTES: Routes = [
   {
-    path: 'list',
+    path: '',
     component: CustomerListComponent,
   },
   {

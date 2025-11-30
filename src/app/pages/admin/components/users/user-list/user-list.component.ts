@@ -26,6 +26,7 @@ export class UserListComponent implements OnInit, ViewWillEnter {
   isLoading = false;
   searchTerm = '';
   filterBloqueados: boolean | null = null;
+  filterRole = 'todos';
 
   constructor(
     private userService: UserService,
@@ -57,8 +58,7 @@ export class UserListComponent implements OnInit, ViewWillEnter {
       next: (response: any) => {
         if (response.success) {
           this.users = response.data;
-          this.toastService.success(`Se cargaron ${response.data.length} usuarios`, 2000);
-        } else {
+         } else {
           this.toastService.warning(response.message || 'Error al cargar usuarios');
         }
         this.isLoading = false;
@@ -179,8 +179,15 @@ export class UserListComponent implements OnInit, ViewWillEnter {
       const matchesBloqueados = this.filterBloqueados === null ||
         user.bloqueado === this.filterBloqueados;
 
-      return matchesSearch && matchesBloqueados;
+      // Filtrar por rol
+      const matchesRole = this.filterRole === 'todos' || user.role === this.filterRole;
+
+      return matchesSearch && matchesBloqueados && matchesRole;
     });
+  }
+
+  filterUsers(): void {
+    // Método vacío para que funcione el reactive filtering con signals/properties
   }
 
   /**

@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
-import { Client } from '../../models/customer.dto';
-import { IonicModule, AlertController, ToastController, ModalController } from '@ionic/angular';
+import { Customer } from '../../models/customer.dto';
+import { IonicModule, AlertController, ModalController } from '@ionic/angular';
+import { ToastService } from '../../../../../../services/toast.service';
+import { CustomerService } from '../../services/customer.service';
 import { CustomerDetailComponent } from '../customer-detail/customer-detail.component';
 import { CustomerAccountsComponent } from '../customer-accounts/customer-accounts.component';
 import { CustomerTransactionsComponent } from '../customer-transactions/customer-transactions.component';
@@ -12,36 +14,43 @@ import { CustomerTransactionsComponent } from '../customer-transactions/customer
   selector: 'app-customer-list',
   templateUrl: './customer-list.component.html',
   styleUrls: ['./customer-list.component.scss'],
-   imports: [CommonModule, FormsModule, IonicModule, RouterModule]
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule, RouterModule]
 })
-export class CustomerListComponent  implements OnInit {
- clients: Client[] = [];
-  filteredClients: Client[] = [];
-  searchTerm: string = '';
-  isLoading = false;
+export class CustomerListComponent implements OnInit {
+  // Signals para estado reactivo
+  customers = signal<Customer[]>([]);
+  filteredCustomers = signal<Customer[]>([]);
+  searchTerm = signal('');
+  isLoading = signal(false);
 
-  stats = {
-    totalClients: 0,
-    totalAccounts: 0,
-    totalVolume: 0
-  };
+  // Signal computado para estadísticas
+  stats = computed(() => {
+    const customers = this.customers();
+    return {
+      totalCustomers: customers.length,
+      totalAccounts: customers.reduce((sum, customer) => sum + customer.cuentasActivas, 0),
+      totalVolume: customers.reduce((sum, customer) => sum + customer.volumenTotal, 0)
+    };
+  });
 
   constructor(
     private alertController: AlertController,
-    private toastController: ToastController,
     private modalController: ModalController,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService,
+    private customerService: CustomerService
   ) {}
 
   ngOnInit() {
-    this.loadClients();
+    this.loadCustomers();
   }
 
-  async loadClients() {
-    this.isLoading = true;
+  async loadCustomers() {
+    this.isLoading.set(true);
     try {
       // Datos simulados - todos los clientes del sistema
-      this.clients = [
+      const mockCustomers: Customer[] = [
         {
           id: '1',
           nombre: 'Carlos Sánchez Mora',
@@ -154,41 +163,37 @@ export class CustomerListComponent  implements OnInit {
         }
       ];
 
-      this.filteredClients = [...this.clients];
-      this.calculateStats();
+      this.customers.set(mockCustomers);
+      this.filteredCustomers.set(mockCustomers);
     } catch (error) {
-      console.error('Error loading clients:', error);
-      await this.showToast('Error al cargar clientes', 'danger');
+      console.error('Error al cargar clientes:', error);
+      await this.toastService.error('Error al cargar clientes');
     } finally {
-      this.isLoading = false;
+      this.isLoading.set(false);
     }
   }
 
-  calculateStats() {
-    this.stats.totalClients = this.clients.length;
-    this.stats.totalAccounts = this.clients.reduce((sum, client) => sum + client.cuentasActivas, 0);
-    this.stats.totalVolume = this.clients.reduce((sum, client) => sum + client.volumenTotal, 0);
-  }
-
-  filterClients() {
-    if (!this.searchTerm.trim()) {
-      this.filteredClients = [...this.clients];
+  filterCustomers() {
+    const term = this.searchTerm().trim().toLowerCase();
+    if (!term) {
+      this.filteredCustomers.set(this.customers());
       return;
     }
 
-    const term = this.searchTerm.toLowerCase();
-    this.filteredClients = this.clients.filter(client =>
-      client.nombre.toLowerCase().includes(term) ||
-      client.email.toLowerCase().includes(term) ||
-      client.identificacion.includes(term)
+    const filtered = this.customers().filter(customer =>
+      customer.nombre.toLowerCase().includes(term) ||
+      customer.email.toLowerCase().includes(term) ||
+      customer.identificacion.includes(term)
     );
+
+    this.filteredCustomers.set(filtered);
   }
 
-  async openClientDetail(client: Client) {
+  async openCustomerDetail(customer: Customer) {
     const modal = await this.modalController.create({
       component: CustomerDetailComponent,
       componentProps: {
-        client: client,
+        customer: customer,
       },
       cssClass: 'custom-modal-size',
     });
@@ -197,17 +202,17 @@ export class CustomerListComponent  implements OnInit {
 
     const { data } = await modal.onWillDismiss();
     if (data?.action === 'viewAccounts') {
-      this.viewClientAccounts(client);
+      this.viewCustomerAccounts(customer);
     } else if (data?.action === 'viewTransactions') {
-      this.viewClientTransactions(client);
+      this.viewCustomerTransactions(customer);
     }
   }
 
-  async viewClientAccounts(client: Client) {
+  async viewCustomerAccounts(customer: Customer) {
     const modal = await this.modalController.create({
       component: CustomerAccountsComponent,
       componentProps: {
-        client: client
+        customer: customer
       },
       cssClass: 'custom-modal-size'
     });
@@ -216,15 +221,15 @@ export class CustomerListComponent  implements OnInit {
 
     const { data } = await modal.onWillDismiss();
     if (data?.action === 'openNewAccount') {
-      this.openCreateAccountForClient(client);
+      this.openCreateAccountForCustomer(customer);
     }
   }
 
-  async viewClientTransactions(client: Client) {
+  async viewCustomerTransactions(customer: Customer) {
     const modal = await this.modalController.create({
       component: CustomerTransactionsComponent,
       componentProps: {
-        client: client
+        customer: customer
       },
       cssClass: 'custom-modal-size'
     });
@@ -233,13 +238,14 @@ export class CustomerListComponent  implements OnInit {
   }
 
   async openCreateAccountModal() {
+    const customers = this.customers();
     const alert = await this.alertController.create({
-      header: 'Seleccione Cliente',
+      header: 'Seleccionar Cliente',
       message: 'Seleccione el cliente para abrir una nueva cuenta',
-      inputs: this.clients.map(client => ({
+      inputs: customers.map(customer => ({
         type: 'radio' as const,
-        label: client.nombre,
-        value: client.id
+        label: customer.nombre,
+        value: customer.id
       })),
       buttons: [
         {
@@ -248,11 +254,11 @@ export class CustomerListComponent  implements OnInit {
         },
         {
           text: 'Siguiente',
-          handler: (clientId) => {
-            if (clientId) {
-              const client = this.clients.find(c => c.id === clientId);
-              if (client) {
-                this.openCreateAccountForClient(client);
+          handler: (customerId) => {
+            if (customerId) {
+              const customer = customers.find(c => c.id === customerId);
+              if (customer) {
+                this.openCreateAccountForCustomer(customer);
               }
             }
           }
@@ -262,9 +268,9 @@ export class CustomerListComponent  implements OnInit {
     await alert.present();
   }
 
-  async openCreateAccountForClient(client: Client) {
+  async openCreateAccountForCustomer(customer: Customer) {
     const alert = await this.alertController.create({
-      header: `Nueva Cuenta para ${client.nombre}`,
+      header: `Nueva Cuenta para ${customer.nombre}`,
       inputs: [
         {
           name: 'tipo',
@@ -292,11 +298,11 @@ export class CustomerListComponent  implements OnInit {
           text: 'Crear Cuenta',
           handler: async (data) => {
             if (!data.tipo || !data.moneda || !data.saldoInicial) {
-              await this.showToast('Complete todos los campos', 'warning');
+              await this.toastService.warning('Complete todos los campos');
               return false;
             }
 
-            await this.createAccount(client, data);
+            await this.createAccount(customer, data);
             return true;
           }
         }
@@ -305,30 +311,30 @@ export class CustomerListComponent  implements OnInit {
     await alert.present();
   }
 
-  async createAccount(client: Client, accountData: any) {
+  async createAccount(customer: Customer, accountData: any) {
     try {
-      await this.showToast('Cuenta creada exitosamente', 'success');
-      client.cuentasActivas++;
-      this.calculateStats();
+      await this.toastService.success('Cuenta creada exitosamente');
+      // Actualizar el cliente localmente
+      const customers = this.customers().map(c =>
+        c.id === customer.id
+          ? { ...c, cuentasActivas: c.cuentasActivas + 1 }
+          : c
+      );
+      this.customers.set(customers);
+      this.filteredCustomers.set(customers.filter(c =>
+        this.searchTerm().trim() === '' ||
+        c.nombre.toLowerCase().includes(this.searchTerm().toLowerCase()) ||
+        c.email.toLowerCase().includes(this.searchTerm().toLowerCase()) ||
+        c.identificacion.includes(this.searchTerm())
+      ));
     } catch (error) {
-      console.error('Error creating account:', error);
-      await this.showToast('Error al crear la cuenta', 'danger');
+      console.error('Error al crear la cuenta:', error);
+      await this.toastService.error('Error al crear la cuenta');
     }
   }
 
   async handleRefresh(event: any) {
-    await this.loadClients();
+    await this.loadCustomers();
     event.target.complete();
   }
-
-  private async showToast(message: string, color: string = 'primary') {
-    const toast = await this.toastController.create({
-      message,
-      duration: 2500,
-      position: 'top',
-      color
-    });
-    await toast.present();
-  }
-
 }

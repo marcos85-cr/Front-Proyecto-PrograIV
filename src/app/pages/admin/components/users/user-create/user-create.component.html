@@ -15,9 +15,9 @@
       <form [formGroup]="userForm" (ngSubmit)="saveUser()">
 
         <!-- Información básica del usuario -->
-        <div class="bank-glass-card p-md mb-md">
-          <div class="bank-section-header mb-md">
-            <h3 style="color: black;">Información Básica</h3>
+        <div class="bank-section">
+          <div class="bank-section-header">
+            <h3>Información Básica</h3>
           </div>
 
           <!-- Nombre completo -->
@@ -121,8 +121,8 @@
 
         <!-- Credenciales de acceso - Solo visible en modo creación -->
         @if (!isEditMode()) {
-        <div class="bank-glass-card p-md mb-md">
-          <div class="bank-section-header mb-md">
+        <div class="bank-section">
+          <div class="bank-section-header">
             <h3>Credenciales de Acceso</h3>
           </div>
 
@@ -167,8 +167,8 @@
         }
 
         <!-- Botones de acción -->
-        <div class="bank-glass-card p-md">
-          <div class="flex gap-md">
+        <div class="bank-section">
+          <div class="bank-button-group">
             <ion-button
               type="button"
               fill="outline"

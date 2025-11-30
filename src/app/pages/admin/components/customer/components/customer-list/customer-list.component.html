@@ -10,115 +10,66 @@
             </ion-button>
         </ion-buttons>
     </ion-toolbar>
-
-    <!-- Búsqueda -->
-    <ion-toolbar color="secondary">
-        <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="filterClients()" placeholder="Buscar cliente por nombre"
-            animated></ion-searchbar>
-    </ion-toolbar>
 </ion-header>
 
-<ion-content color="secondary">
-    <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
-        <ion-refresher-content></ion-refresher-content>
-    </ion-refresher>
-
-    <!-- Estadísticas de Cartera -->
-    <div class="stats-section">
-        <ion-card class="stat-card">
-            <ion-card-content>
-                <div class="stat-content">
-                    <div class="stat-icon">
-                        <ion-icon name="people" color="primary"></ion-icon>
-                    </div>
-                    <div class="stat-info">
-                        <h3>{{ stats.totalClients }}</h3>
-                        <p>Clientes Totales</p>
-                    </div>
-                </div>
-            </ion-card-content>
-        </ion-card>
-
-        <ion-card class="stat-card">
-            <ion-card-content>
-                <div class="stat-content">
-                    <div class="stat-icon">
-                        <ion-icon name="wallet" color="success"></ion-icon>
-                    </div>
-                    <div class="stat-info">
-                        <h3>{{ stats.totalAccounts }}</h3>
-                        <p>Cuentas Totales</p>
-                    </div>
-                </div>
-            </ion-card-content>
-        </ion-card>
-
-        <ion-card class="stat-card">
-            <ion-card-content>
-                <div class="stat-content">
-                    <div class="stat-icon">
-                        <ion-icon name="cash" color="tertiary"></ion-icon>
-                    </div>
-                    <div class="stat-info">
-                        <h3>₡{{ stats.totalVolume | number:'1.0-0' }}</h3>
-                        <p>Volumen Total</p>
-                    </div>
-                </div>
-            </ion-card-content>
-        </ion-card>
+<ion-content class="bank-gradient-bg">
+    <!-- Búsqueda -->
+    <div class="search-container">
+        <ion-searchbar [(ngModel)]="searchTerm" (ionInput)="filterCustomers()" placeholder="Buscar cliente por nombre"
+            animated></ion-searchbar>
     </div>
-
-    <div class="clients-container">
+    <div class="bank-content-container">
+        <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+            <ion-refresher-content></ion-refresher-content>
+        </ion-refresher>
         <!-- Lista de Clientes -->
-        <ion-list *ngIf="filteredClients.length > 0">
-            <ion-item-sliding *ngFor="let client of filteredClients">
-                <ion-item lines="full" button (click)="openClientDetail(client)">
-                    <ion-avatar slot="start">
-                        <img [src]="'https://ui-avatars.com/api/?name=' + client.nombre + '&background=random'" />
-                    </ion-avatar>
-                    <ion-label>
-                        <h2>{{ client.nombre }}</h2>
-                        <p>{{ client.email }}</p>
-                        <p class="identification">Cédula: {{ client.identificacion }}</p>
-                        <div class="client-meta">
-                            <ion-badge color="primary">
-                                {{ client.cuentasActivas }} cuentas
-                            </ion-badge>
-                            <span class="last-operation">
-                                Última operación: {{ client.ultimaOperacion | date:'shortDate' }}
-                            </span>
-                        </div>
-                    </ion-label>
-                    <div slot="end" class="client-actions">
-                        <ion-icon [name]="client.estado === 'Activo' ? 'checkmark-circle' : 'alert-circle'"
-                            [color]="client.estado === 'Activo' ? 'success' : 'warning'" size="large"></ion-icon>
+        <div class="bank-section">
+            <div class="bank-section-header">
+                <h3>Clientes Registrados</h3>
+                <span class="bank-badge-primary">{{ filteredCustomers().length }} clientes</span>
+            </div>
+            @if (filteredCustomers().length > 0) {
+            <div class="bank-simple-list">
+                @for (customer of filteredCustomers(); track customer.id) {
+                <div class="bank-glass-card bank-customer-item" (click)="openCustomerDetail(customer)">
+                    <div class="bank-customer-avatar">
+                        <img [src]="'https://ui-avatars.com/api/?name=' + customer.nombre + '&background=random'" [alt]="customer.nombre" />
                     </div>
-                </ion-item>
+                    <div class="bank-customer-info">
+                        <h4 class="bank-customer-name">{{ customer.nombre }}</h4>
+                        <p class="bank-customer-email">{{ customer.email }}</p>
+                        <div class="bank-customer-meta">
+                            <span class="bank-badge" [class.bank-badge-success]="customer.estado === 'Activo'" [class.bank-badge-danger]="customer.estado !== 'Activo'">
+                                {{ customer.estado }}
+                            </span>
+                            <span class="bank-text-small">{{ customer.cuentasActivas }} cuentas activas</span>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+            }
 
-                <ion-item-options side="end">
-                    <ion-item-option color="primary" (click)="viewClientAccounts(client)">
-                        <ion-icon slot="icon-only" name="wallet"></ion-icon>
-                    </ion-item-option>
-                    <ion-item-option color="tertiary" (click)="viewClientTransactions(client)">
-                        <ion-icon slot="icon-only" name="swap-horizontal"></ion-icon>
-                    </ion-item-option>
-                    <ion-item-option color="success" (click)="openCreateAccountForClient(client)">
-                        <ion-icon slot="icon-only" name="add-circle"></ion-icon>
-                    </ion-item-option>
-                </ion-item-options>
-            </ion-item-sliding>
-        </ion-list>
+            <!-- Sin Resultados -->
+            @if (filteredCustomers().length === 0 && !isLoading()) {
+            <div class="bank-empty-state">
+                <ion-icon name="search-outline" color="medium"></ion-icon>
+                <h3>No se encontraron clientes</h3>
+                <p>Intenta ajustar los criterios de búsqueda</p>
+                <ion-button fill="outline" (click)="searchTerm.set(''); filterCustomers();">
+                    <ion-icon name="refresh-outline" slot="start"></ion-icon>
+                    Mostrar todos
+                </ion-button>
+            </div>
+            }
 
-        <!-- Sin Resultados -->
-        <div class="empty-state" *ngIf="filteredClients.length === 0 && !isLoading">
-            <ion-icon name="people-outline" color="medium"></ion-icon>
-            <p>No se encontraron clientes</p>
-        </div>
-
-        <!-- Loading -->
-        <div class="loading-state" *ngIf="isLoading">
-            <ion-spinner name="crescent" color="primary"></ion-spinner>
-            <p>Cargando clientes...</p>
+            <!-- Loading -->
+            @if (isLoading()) {
+            <div class="bank-loading-state">
+                <ion-spinner name="crescent" color="primary"></ion-spinner>
+                <p>Cargando clientes...</p>
+            </div>
+            }
         </div>
     </div>
 </ion-content>
