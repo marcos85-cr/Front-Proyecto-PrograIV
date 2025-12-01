@@ -1,0 +1,131 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/customer/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mi Perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <div class="bank-content-container p-md">
+
+    @if (isLoading()) {
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando perfil...</p>
+    </div>
+    } @else if (profile()) {
+
+    <!-- Avatar y Nombre -->
+    <div class="profile-header">
+      <div class="avatar">
+        <ion-icon name="person"></ion-icon>
+      </div>
+      <h2 class="name">{{ profile()!.nombreCompleto }}</h2>
+      <ion-chip [color]="getEstadoColor(profile()!.estado)" size="small">
+        {{ profile()!.estado }}
+      </ion-chip>
+    </div>
+
+    <!-- Resumen de Cuentas -->
+    <div class="summary-card">
+      <div class="summary-item">
+        <span class="summary-value">{{ profile()!.cuentasActivas }}</span>
+        <span class="summary-label">Cuentas Activas</span>
+      </div>
+      <div class="summary-divider"></div>
+      <div class="summary-item">
+        <span class="summary-value">{{ formatCurrency(profile()!.saldoTotal) }}</span>
+        <span class="summary-label">Saldo Total</span>
+      </div>
+    </div>
+
+    <!-- Información Personal -->
+    <div class="info-card">
+      <h3 class="card-title">Información Personal</h3>
+
+      <div class="info-row">
+        <ion-icon name="card-outline"></ion-icon>
+        <div class="info-content">
+          <span class="info-label">Identificación</span>
+          <span class="info-value">{{ profile()!.identificacion }}</span>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <ion-icon name="mail-outline"></ion-icon>
+        <div class="info-content">
+          <span class="info-label">Email</span>
+          <span class="info-value">{{ profile()!.email }}</span>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <ion-icon name="call-outline"></ion-icon>
+        <div class="info-content">
+          <span class="info-label">Teléfono</span>
+          <span class="info-value">{{ profile()!.telefono }}</span>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <ion-icon name="location-outline"></ion-icon>
+        <div class="info-content">
+          <span class="info-label">Dirección</span>
+          <span class="info-value">{{ profile()!.direccion || 'No especificada' }}</span>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <div class="info-content">
+          <span class="info-label">Fecha de Nacimiento</span>
+          <span class="info-value">{{ formatDate(profile()!.fechaNacimiento) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información de Cuenta -->
+    <div class="info-card">
+      <h3 class="card-title">Información de Cuenta</h3>
+
+      <div class="info-row">
+        <ion-icon name="time-outline"></ion-icon>
+        <div class="info-content">
+          <span class="info-label">Cliente desde</span>
+          <span class="info-value">{{ formatDate(profile()!.fechaRegistro) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="actions-section">
+      <ion-button expand="block" fill="outline" (click)="changePassword()" [disabled]="isChangingPassword()">
+        <ion-icon name="key-outline" slot="start"></ion-icon>
+        @if (isChangingPassword()) {
+          Cambiando...
+        } @else {
+          Cambiar Contraseña
+        }
+      </ion-button>
+
+      <ion-button expand="block" color="danger" (click)="confirmLogout()">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        Cerrar Sesión
+      </ion-button>
+    </div>
+
+    } @else {
+    <div class="empty-state">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <h3>No se pudo cargar el perfil</h3>
+      <ion-button fill="clear" (click)="loadProfile()">
+        <ion-icon name="refresh-outline" slot="start"></ion-icon>
+        Reintentar
+      </ion-button>
+    </div>
+    }
+
+  </div>
+</ion-content>

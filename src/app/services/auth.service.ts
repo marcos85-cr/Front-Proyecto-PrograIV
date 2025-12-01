@@ -91,14 +91,6 @@ private token!: string;
     return this.isLogged() ? this.getToken() : null;
   }
 
-  menuRole(role: any) {
-    let headers = new HttpHeaders({
-      Authorization: 'Bearer ' + localStorage.getItem('ACCESS_TOKEN_BANCO'),
-      'Content-type': 'application/json',
-    });
-    return this.http.get(`${this.baseUrl}/menu/treeRole/${role}`, { headers: headers });
-  }
-
 
   signIn(data: any): Observable<Result> {
     return this.http

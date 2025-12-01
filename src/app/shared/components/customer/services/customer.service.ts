@@ -36,6 +36,13 @@ export class CustomerService {
     );
   }
 
+   getUserById(id: string): Observable<Result> {
+    const url = `${this.baseUrl}/por-usuario/${id}`;
+    return this.http.get<Result>(url).pipe(
+      catchError((error) => this.errorHandler.handleError(error, 'getCustomerById'))
+    );
+  }
+
   /**
    * Crea un nuevo cliente
    */
@@ -82,6 +89,13 @@ export class CustomerService {
     const url = `${environment.apiUrl}/users`;
     return this.http.get<Result>(url).pipe(
       catchError((error) => this.errorHandler.handleError(error, 'getGestores'))
+    );
+  }
+
+  changePassword(data: { usuarioId: string; contrasenaActual: string; nuevaContrasena: string }): Observable<Result> {
+    const url = `${environment.apiUrl}/users/${data.usuarioId}/change-password`;
+    return this.http.put<Result>(url, data).pipe(
+      catchError((error) => this.errorHandler.handleError(error, 'changePassword'))
     );
   }
 }

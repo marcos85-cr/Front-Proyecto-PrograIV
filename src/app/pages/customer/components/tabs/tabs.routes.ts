@@ -24,11 +24,16 @@ import { PaymentHistoryComponent } from '../payments/payment-history/payment-his
 import { AccountStatementComponent } from '../reports/account-statement/account-statement.component';
 import { CustomerSummaryComponent } from '../reports/customer-summary/customer-summary.component';
 import { DetailTransferComponent } from '../transfers/detail-transfer/detail-transfer.component';
+import { ProfileComponent } from '../profile/profile.component';
 
 export const TABS_ROUTES: Routes = [
   {
     path: 'dashboard',
     component: CustomerDashboardComponent
+  },
+  {
+    path: 'profile',
+    component: ProfileComponent
   },
 
   // Tab: Cuentas

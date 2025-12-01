@@ -19,7 +19,7 @@ import { OperacionDetalle } from '../../../../../shared/models/gestor.model';
 export class OperationDetailComponent implements OnInit {
   operacion = signal<OperacionDetalle | null>(null);
   isLoading = signal(false);
-  operationId: number = 0;
+  operationId = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -32,15 +32,12 @@ export class OperationDetailComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.operationId = +params['id'];
-      if (this.operationId) {
-        this.loadOperacion();
-      }
+      if (this.operationId) this.loadOperacion();
     });
   }
 
   loadOperacion() {
     this.isLoading.set(true);
-
     this.gestorService.getOperacionDetalle(this.operationId).pipe(
       tap(response => {
         if (response.success && response.data) {
@@ -49,8 +46,7 @@ export class OperationDetailComponent implements OnInit {
           this.toastService.error(response.message || 'Error al cargar la operación');
         }
       }),
-      catchError(error => {
-        console.error('Error loading operation:', error);
+      catchError(() => {
         this.toastService.error('Error al cargar la operación');
         return EMPTY;
       }),
@@ -65,60 +61,34 @@ export class OperationDetailComponent implements OnInit {
 
   formatDateTime(date: Date | string): string {
     if (!date) return 'N/A';
-    const d = new Date(date);
-    return d.toLocaleDateString('es-CR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(date).toLocaleDateString('es-CR', {
+      day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
     });
   }
 
   getEstadoColor(estado: string): string {
-    switch (estado?.toLowerCase()) {
-      case 'exitosa':
-        return 'success';
-      case 'pendienteaprobacion':
-        return 'warning';
-      case 'rechazada':
-        return 'danger';
-      case 'cancelada':
-        return 'medium';
-      default:
-        return 'primary';
-    }
+    const colors: Record<string, string> = {
+      exitosa: 'success', pendienteaprobacion: 'warning', rechazada: 'danger', cancelada: 'medium'
+    };
+    return colors[estado?.toLowerCase()] || 'primary';
   }
 
   getEstadoLabel(estado: string): string {
-    switch (estado?.toLowerCase()) {
-      case 'exitosa':
-        return 'Exitosa';
-      case 'pendienteaprobacion':
-        return 'Pendiente';
-      case 'rechazada':
-        return 'Rechazada';
-      case 'cancelada':
-        return 'Cancelada';
-      default:
-        return estado;
-    }
+    const labels: Record<string, string> = {
+      exitosa: 'Exitosa', pendienteaprobacion: 'Pendiente', rechazada: 'Rechazada', cancelada: 'Cancelada'
+    };
+    return labels[estado?.toLowerCase()] || estado;
   }
 
   getTipoIcon(tipo: string): string {
-    switch (tipo?.toLowerCase()) {
-      case 'transferencia':
-        return 'swap-horizontal-outline';
-      case 'deposito':
-        return 'arrow-down-outline';
-      case 'retiro':
-        return 'arrow-up-outline';
-      case 'pago':
-      case 'pagoservicio':
-        return 'card-outline';
-      default:
-        return 'cash-outline';
-    }
+    const icons: Record<string, string> = {
+      transferencia: 'swap-horizontal-outline',
+      deposito: 'arrow-down-outline',
+      retiro: 'arrow-up-outline',
+      pago: 'card-outline',
+      pagoservicio: 'card-outline'
+    };
+    return icons[tipo?.toLowerCase()] || 'cash-outline';
   }
 
   puedeAprobar(): boolean {
@@ -136,8 +106,7 @@ export class OperationDetailComponent implements OnInit {
     if (!op) return;
 
     if (!this.gestorService.puedeAprobarOperacion(op.monto, op.moneda)) {
-      const message = this.gestorService.getMensajeLimiteExcedido(op.monto, op.moneda);
-      this.toastService.error(message);
+      this.toastService.error(this.gestorService.getMensajeLimiteExcedido(op.monto, op.moneda));
       return;
     }
 
@@ -146,13 +115,7 @@ export class OperationDetailComponent implements OnInit {
       message: `¿Está seguro de aprobar esta operación de ${this.formatCurrency(op.monto, op.moneda)}?`,
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Aprobar',
-          handler: () => {
-            this.executeApprove();
-            return true;
-          }
-        }
+        { text: 'Aprobar', handler: () => { this.executeApprove(); return true; } }
       ]
     });
     await alert.present();
@@ -178,30 +141,24 @@ export class OperationDetailComponent implements OnInit {
   async rejectOperation() {
     const alert = await this.alertController.create({
       header: 'Rechazar Operación',
-      inputs: [
-        {
-          name: 'razon',
-          type: 'textarea',
-          placeholder: 'Ingrese la razón del rechazo...',
-          attributes: {
-            minlength: 10,
-            required: true
-          }
-        }
-      ],
+      inputs: [{
+        name: 'razon',
+        type: 'textarea',
+        placeholder: 'Ingrese la razón del rechazo...',
+        attributes: { minlength: 10, required: true }
+      }],
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {
           text: 'Rechazar',
           role: 'destructive',
           handler: (data) => {
-            if (data.razon && data.razon.trim().length >= 10) {
+            if (data.razon?.trim().length >= 10) {
               this.executeReject(data.razon.trim());
               return true;
-            } else {
-              this.toastService.warning('La razón debe tener al menos 10 caracteres');
-              return false;
             }
+            this.toastService.warning('La razón debe tener al menos 10 caracteres');
+            return false;
           }
         }
       ]
