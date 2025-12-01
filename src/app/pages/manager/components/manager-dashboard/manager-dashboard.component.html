@@ -1,0 +1,143 @@
+<ion-header class="ion-no-border">
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-menu-button></ion-menu-button>
+        </ion-buttons>
+        <ion-title>Panel de Gestor</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="logout()">
+                <ion-icon slot="icon-only" name="log-out-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+    <div class="bank-content-container" style="padding: 2rem;">
+
+        <!-- Bienvenida -->
+        <div class="bank-welcome-section" style="text-align: center; margin-bottom: 2rem;">
+            <h1 class="bank-welcome-title" style="color: white; font-size: 2rem; font-weight: 700; margin: 0 0 0.5rem;">Bienvenido, {{ userName() }}</h1>
+            <p class="bank-welcome-subtitle" style="color: rgba(255, 255, 255, 0.9); font-size: 1.1rem; margin: 0;">Panel de Gestión de Clientes</p>
+        </div>
+
+        <!-- Estadísticas Rápidas -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <div class="bank-glass-card bank-stat-item" style="background: rgba(255, 255, 255, 0.95); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; animation-delay: 0.1s;">
+                <ion-icon name="people-outline" color="primary" style="font-size: 1.75rem;"></ion-icon>
+                <div>
+                    <span class="bank-stat-number" style="font-size: 1.75rem; font-weight: 700; color: #1e293b; display: block;">{{ stats().myClients | number }}</span>
+                    <span class="bank-stat-label" style="font-size: 0.875rem; color: #475569; font-weight: 500;">Mis Clientes</span>
+                </div>
+            </div>
+
+            <div class="bank-glass-card bank-stat-item" style="background: rgba(255, 255, 255, 0.95); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; animation-delay: 0.2s;">
+                <ion-icon name="wallet-outline" color="success" style="font-size: 1.75rem;"></ion-icon>
+                <div>
+                    <span class="bank-stat-number" style="font-size: 1.75rem; font-weight: 700; color: #1e293b; display: block;">{{ stats().activeAccounts | number }}</span>
+                    <span class="bank-stat-label" style="font-size: 0.875rem; color: #475569; font-weight: 500;">Cuentas Activas</span>
+                </div>
+            </div>
+
+            <div class="bank-glass-card bank-stat-item" style="background: rgba(255, 255, 255, 0.95); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; animation-delay: 0.3s;">
+                <ion-icon name="swap-horizontal-outline" color="tertiary" style="font-size: 1.75rem;"></ion-icon>
+                <div>
+                    <span class="bank-stat-number" style="font-size: 1.75rem; font-weight: 700; color: #1e293b; display: block;">{{ stats().todayOperations | number }}</span>
+                    <span class="bank-stat-label" style="font-size: 0.875rem; color: #475569; font-weight: 500;">Operaciones Hoy</span>
+                </div>
+            </div>
+
+            <div class="bank-glass-card bank-stat-item" style="background: rgba(255, 255, 255, 0.95); border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; gap: 1rem; animation-delay: 0.4s;">
+                <ion-icon name="time-outline" color="warning" style="font-size: 1.75rem;"></ion-icon>
+                <div>
+                    <span class="bank-stat-number" style="font-size: 1.75rem; font-weight: 700; color: #1e293b; display: block;">{{ stats().pendingApprovals }}</span>
+                    <span class="bank-stat-label" style="font-size: 0.875rem; color: #475569; font-weight: 500;">Pendientes</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menú de Opciones -->
+        <div class="bank-section mb-xl">
+            <div class="bank-section-header">
+                <h3>Acciones Rápidas</h3>
+            </div>
+            <div class="bank-menu-grid">
+                <a class="bank-glass-card bank-menu-item" (click)="openAccount()">
+                    <ion-icon name="add-circle"></ion-icon>
+                    <span>Abrir Cuenta</span>
+                </a>
+                <a class="bank-glass-card bank-menu-item" routerLink="/gestor/clients">
+                    <ion-icon name="people"></ion-icon>
+                    <span>Clientes</span>
+                </a>
+                <a class="bank-glass-card bank-menu-item" routerLink="/gestor/transactions">
+                    <ion-icon name="list"></ion-icon>
+                    <span>Operaciones</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Operaciones Pendientes de Aprobación -->
+        @if (pendingOperations().length > 0) {
+        <div class="bank-section mb-xl">
+            <div class="bank-section-header">
+                <h3>Operaciones Pendientes</h3>
+                <span class="bank-badge-warning">{{ pendingOperations().length }}</span>
+            </div>
+            <div class="bank-list-grid">
+                @for (operation of pendingOperations(); track operation.id) {
+                <div class="bank-glass-card bank-pending-item">
+                    <div class="bank-pending-info">
+                        <div class="bank-pending-client">{{ operation.clienteNombre }}</div>
+                        <div class="bank-pending-description">{{ operation.descripcion }}</div>
+                        <div class="bank-pending-details">
+                            <span class="bank-amount">{{ operation.moneda }} {{ operation.monto | number:'1.0-0' }}</span>
+                        </div>
+                    </div>
+                    <div class="bank-action-buttons">
+                        <button class="bank-btn-action bank-btn-approve" (click)="approveOperation(operation.id)">✓</button>
+                        <button class="bank-btn-action bank-btn-reject" (click)="rejectOperation(operation.id)">✗</button>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+        }
+
+        <!-- Mis Clientes Recientes -->
+        @if (myClients().length > 0) {
+        <div class="bank-section">
+            <div class="bank-section-header">
+                <h3>Mis Clientes</h3>
+                <ion-button fill="clear" size="small" routerLink="/gestor/clients">
+                    Ver todos
+                    <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+                </ion-button>
+            </div>
+            <div class="bank-list-grid">
+                @for (client of myClients().slice(0, 3); track client.id) {
+                <div class="bank-glass-card bank-client-item">
+                    <div class="bank-client-info">
+                        <div class="bank-client-name">{{ client.nombre }}</div>
+                        <div class="bank-client-details">
+                            <span class="bank-client-id">{{ client.identificacion }}</span>
+                            <span class="bank-client-accounts">{{ client.cuentasActivas }} cuentas</span>
+                        </div>
+                        <div class="bank-client-status">
+                            <span class="bank-status-active" *ngIf="client.estado === 'Activo'">Activo</span>
+                            <span class="bank-status-inactive" *ngIf="client.estado === 'Inactivo'">Inactivo</span>
+                        </div>
+                    </div>
+                    @if (client.volumenTotal) {
+                        <div class="bank-client-volume">
+                            <span class="bank-amount">{{ client.volumenTotal | number:'1.0-0' }}</span>
+                        </div>
+                    }
+                </div>
+                }
+            </div>
+        </div>
+        }
+
+    </div>
+</ion-content>
