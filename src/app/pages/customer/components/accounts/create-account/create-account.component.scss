@@ -84,7 +84,7 @@
 
   ion-icon {
     font-size: 1.75rem;
-    color: var(--ion-color-primary-contrast);
+    color: #ffffff;
   }
 
   .currency-symbol {
@@ -213,13 +213,13 @@
 
   ion-button {
     --border-radius: 12px;
-    --background: var(--ion-color-primary);
+    color: #ffffff;
     font-weight: 600;
     font-size: 1rem;
     height: 52px;
 
     &:hover {
-      --background: var(--ion-color-primary-shade);
+      --background:  #ffffff;
     }
 
     ion-spinner {

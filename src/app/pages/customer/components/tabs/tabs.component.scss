@@ -2,29 +2,38 @@ ion-tabs {
     ion-tab-bar {
         position: relative;
         width: 90%;
-        transform: translate(-50%, -50%); // Center the tab bar
+        transform: translate(-50%, -50%);
         left: 50%;
         border-radius: 30px;
         padding-bottom: 0;
-        border: 1px solid var(2, 52, 54, 0.08); // Borde sutil
+        border: 1px solid rgba(2, 52, 54, 0.08);
         overflow: hidden;
-        box-shadow: 0px -5px 10px rgba(2 181 170 / 8%); // Sombra suave
-        height: 70px;
-        --background: var(--ion-color-light);
+        box-shadow: 0px -5px 10px rgba(2, 181, 170, 0.08);
+
         // color de los iconos
         ion-tab-button {
             --background: var(--ion-color-light);
             --color: #ffffff;
+            min-height: 64px;
             ion-icon {
                 font-size: 1.4rem;
             }
+
             ion-label {
                 font-size: 0.65rem;
                 margin-top: 2px;
                 font-weight: 500;
             }
-
         }
-
     }
+}
+
+// Asegurar que el contenido tenga espacio suficiente para no solaparse con el tab bar
+::ng-deep ion-tab-bar {
+    margin-bottom: env(safe-area-inset-bottom, 20px) !important;
+}
+
+// Agregar espacio al contenido de las pestañas
+::ng-deep ion-content {
+    --padding-bottom: 50px !important; // Espacio extra para el tab bar
 }
