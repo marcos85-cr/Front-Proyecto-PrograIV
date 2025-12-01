@@ -285,7 +285,7 @@ export class ManagerDashboardComponent implements OnInit {
 
   private openCreateAccountForClient(client: ClienteGestor): void {
     // Navigate to account creation page
-    this.router.navigate([`/gestor/clientes/${client.id}/crear-cuenta`]);
+    this.router.navigate([`/manager/clientes/${client.id}/crear-cuenta`]);
   }
 
   navegation(url: string) {

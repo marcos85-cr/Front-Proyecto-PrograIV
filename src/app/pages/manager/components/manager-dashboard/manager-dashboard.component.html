@@ -70,7 +70,7 @@
                     <ion-icon name="people"></ion-icon>
                     <span>Clientes</span>
                 </a>
-                <a class="bank-glass-card bank-menu-item" routerLink="/gestor/transactions">
+                <a class="bank-glass-card bank-menu-item" (click)="navegation('/manager/operations')">
                     <ion-icon name="list"></ion-icon>
                     <span>Operaciones</span>
                 </a>
@@ -114,7 +114,7 @@
         <div class="bank-section">
             <div class="bank-section-header">
                 <h3>Mis Clientes</h3>
-                <ion-button fill="clear" size="small" routerLink="/gestor/clients">
+                <ion-button fill="clear" size="small" (click)="navegation('/manager/customers')">
                     Ver todos
                     <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
                 </ion-button>

@@ -19,17 +19,7 @@ import { EMPTY, forkJoin } from 'rxjs';
 import { USER_ROLES } from 'src/app/shared/constants/user-roles.constants';
 import { Account } from '../../../../../pages/admin/components/accounts/models/account.dto';
 import { AccountsService } from '../../../../../pages/admin/components/accounts/services/accounts.service';
-
-// Constantes para tipos de cuenta y monedas
-export const ACCOUNT_TYPES = [
-  { value: 'Ahorro', label: 'Ahorro' },
-  { value: 'Corriente', label: 'Corriente' },
-] as const;
-
-export const CURRENCIES = [
-  { value: 'CRC', label: 'Colones (CRC)' },
-  { value: 'USD', label: 'Dólares (USD)' },
-] as const;
+import { ACCOUNT_TYPES, CURRENCIES } from 'src/app/shared/constants/account.constants';
 
 @Component({
   selector: 'app-customer-create',

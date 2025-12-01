@@ -152,7 +152,7 @@ export class OperacionesListComponent implements OnInit {
 
   async viewOperacionDetail(operacion: OperacionGestor) {
     // Navigate to operation detail or show modal
-    this.router.navigate([`/gestor/operaciones/${operacion.id}`]);
+    this.router.navigate([`/manager/operations/${operacion.id}`]);
   }
 
   approveOperation(operacion: OperacionGestor) {
@@ -348,11 +348,11 @@ export class OperacionesListComponent implements OnInit {
 
   // Go back
   goBack() {
-    this.router.navigate(['/gestor/dashboard']);
+    this.router.navigate(['/manager/dashboard']);
   }
 
   goToDashboard() {
-    this.router.navigate(['/gestor/dashboard']);
+    this.router.navigate(['/manager/dashboard']);
   }
 
   // Refresh
