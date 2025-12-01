@@ -1,0 +1,95 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Gestión de Proveedores</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="refreshProviders()">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button (click)="goToCreateProvider()">
+        <ion-icon name="add-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <!-- Búsqueda -->
+  <div class="search-container">
+    <ion-searchbar [(ngModel)]="searchTerm" placeholder="Buscar proveedor por nombre" animated></ion-searchbar>
+  </div>
+
+  <div class="bank-content-container">
+
+    <!-- Estado de carga -->
+    @if (isLoading) {
+    <div class="bank-loading-section">
+      <div class="bank-glass-card loading-card">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando proveedores...</p>
+      </div>
+    </div>
+    }
+
+    <!-- Lista de Proveedores -->
+    <div class="bank-section">
+      <div class="bank-section-header">
+        <h3>Proveedores Registrados</h3>
+        <span class="bank-badge-primary">{{ filteredProviders.length }} proveedores</span>
+      </div>
+      @if (filteredProviders.length > 0 && !isLoading) {
+      <div class="bank-simple-list">
+        @for (provider of filteredProviders; track provider.id) {
+        <div class="bank-glass-card bank-customer-item">
+          <div class="user-main-content" (click)="goToEditProvider(provider.id)">
+            <div class="bank-customer-avatar">
+              <ion-icon name="business-outline" color="primary"></ion-icon>
+            </div>
+            <div class="bank-customer-info">
+              <h4 class="bank-customer-name">{{ provider.nombre }}</h4>
+              <p class="bank-customer-email">Regla: {{ provider.reglaValidacionContrato }}</p>
+              <div class="bank-customer-meta">
+                <span class="bank-text-small">
+                  <ion-icon name="document-text-outline"></ion-icon>
+                  Formato: {{ provider.formatoContrato }}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="user-actions">
+            <ion-button fill="clear" size="small" (click)="goToEditProvider(provider.id); $event.stopPropagation()">
+              <ion-icon name="create-outline" color="primary" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" size="small" color="danger" (click)="deleteProvider(provider); $event.stopPropagation()">
+              <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+        }
+      </div>
+      }
+
+      <!-- Sin Resultados -->
+      @if (filteredProviders.length === 0 && !isLoading) {
+      <div class="bank-empty-state">
+        <div class="empty-content">
+          <div class="empty-icon">
+            <ion-icon name="search-outline"></ion-icon>
+          </div>
+          <h3>No se encontraron proveedores</h3>
+          <p>Intenta ajustar los criterios de búsqueda</p>
+          <ion-button fill="outline" (click)="searchTerm = '';" class="empty-action-btn">
+            <ion-icon name="refresh-outline" slot="start"></ion-icon>
+            Mostrar todos
+          </ion-button>
+        </div>
+      </div>
+      }
+
+    </div>
+  </div>
+</ion-content>

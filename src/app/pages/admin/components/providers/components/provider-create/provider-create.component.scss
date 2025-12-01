@@ -1,0 +1,164 @@
+// ProviderCreateComponent - Estilos del formulario
+
+.bank-form-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  padding: 0.4rem 0.65rem;
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 500;
+
+  ion-icon {
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+}
+
+.bank-section-header h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.bank-form-group {
+  margin-bottom: 0.5rem;
+}
+
+.bank-section {
+  margin-bottom: 0.75rem;
+}
+
+.bank-input-item {
+  --background: rgba(255, 255, 255, 0.95);
+  --border-radius: 10px;
+  --padding-start: 12px;
+  --padding-end: 12px;
+  --inner-padding-end: 0;
+  --min-height: 56px;
+  margin-bottom: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &.item-has-focus {
+    --background: #ffffff;
+    border-color: #1a4d8f;
+  }
+
+  &.invalid {
+    border-color: #dc2626;
+
+    ion-label {
+      color: #dc2626 !important;
+    }
+  }
+
+  ion-label {
+    color: #1e293b !important;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  ion-input,
+  ion-select,
+  ion-textarea {
+    --color: #1e293b !important;
+    --placeholder-color: #64748b !important;
+    --placeholder-opacity: 1;
+    font-size: 1rem;
+    font-weight: 400;
+  }
+}
+
+:host ::ng-deep {
+  .bank-input-item {
+    ion-label.label-floating {
+      transform: translateY(50%) scale(1);
+    }
+
+    &.item-has-focus ion-label.label-floating,
+    &.item-has-value ion-label.label-floating {
+      transform: translateY(0) scale(0.82);
+    }
+  }
+
+  ion-input {
+    --color: #1e293b !important;
+
+    input {
+      color: #1e293b !important;
+    }
+
+    input::placeholder {
+      color: #64748b !important;
+      opacity: 1 !important;
+    }
+  }
+
+  ion-textarea {
+    --color: #1e293b !important;
+
+    textarea {
+      color: #1e293b !important;
+    }
+
+    textarea::placeholder {
+      color: #64748b !important;
+      opacity: 1 !important;
+    }
+  }
+
+  ion-select {
+    color: #1e293b !important;
+    --color: #1e293b !important;
+  }
+
+  ion-select::part(text) {
+    color: #1e293b !important;
+    opacity: 1 !important;
+  }
+
+  ion-select::part(placeholder) {
+    color: #64748b !important;
+    opacity: 1 !important;
+  }
+
+  ion-select::part(icon) {
+    color: #1e293b !important;
+    opacity: 1 !important;
+  }
+}
+
+.bank-form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+
+  ion-button {
+    height: 48px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    --border-radius: 10px;
+
+    &:hover {
+      transform: translateY(-1px);
+    }
+  }
+
+  .bank-submit-btn {
+    --box-shadow: 0 4px 12px rgba(26, 77, 143, 0.3);
+  }
+
+  .bank-cancel-btn {
+    --border-width: 1px;
+  }
+}

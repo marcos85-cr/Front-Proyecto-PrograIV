@@ -1,0 +1,137 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ title() }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <div class="bank-content-container">
+
+    <!-- Formulario de proveedor -->
+    <div class="bank-section">
+      <form [formGroup]="providerForm" (ngSubmit)="saveProvider()">
+
+        <!-- Información del proveedor -->
+        <div class="bank-section">
+          <div class="bank-section-header">
+            <h3>Información del Proveedor</h3>
+          </div>
+
+          <!-- Nombre -->
+          <div class="bank-form-group">
+            <ion-item class="bank-input-item">
+              <ion-label position="floating">Nombre del Proveedor</ion-label>
+              <ion-input
+                type="text"
+                formControlName="nombre"
+                placeholder="Ej: Compañía de Electricidad XYZ"
+                [class.invalid]="hasError('nombre', 'required') || hasError('nombre', 'minlength')">
+              </ion-input>
+            </ion-item>
+            @if (hasError('nombre', 'required') && providerForm.get('nombre')?.touched) {
+            <div class="bank-form-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              {{ getErrorMessage('nombre') }}
+            </div>
+            }
+            @if (hasError('nombre', 'minlength') && providerForm.get('nombre')?.touched) {
+            <div class="bank-form-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              {{ getErrorMessage('nombre') }}
+            </div>
+            }
+          </div>
+
+          <!-- Regla de Validación de Contrato -->
+          <div class="bank-form-group">
+            <ion-item class="bank-input-item">
+              <ion-label position="floating">Regla de Validación de Contrato</ion-label>
+              <ion-input
+                type="text"
+                formControlName="reglaValidacionContrato"
+                placeholder="Ej: 8-12 dígitos"
+                [class.invalid]="hasError('reglaValidacionContrato', 'required') || hasError('reglaValidacionContrato', 'minlength')">
+              </ion-input>
+            </ion-item>
+            @if (hasError('reglaValidacionContrato', 'required') && providerForm.get('reglaValidacionContrato')?.touched) {
+            <div class="bank-form-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              {{ getErrorMessage('reglaValidacionContrato') }}
+            </div>
+            }
+            @if (hasError('reglaValidacionContrato', 'minlength') && providerForm.get('reglaValidacionContrato')?.touched) {
+            <div class="bank-form-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              {{ getErrorMessage('reglaValidacionContrato') }}
+            </div>
+            }
+          </div>
+
+          <!-- Formato de Contrato -->
+          <div class="bank-form-group">
+            <ion-item class="bank-input-item">
+              <ion-label position="floating">Formato de Contrato (Ejemplo)</ion-label>
+              <ion-input
+                type="text"
+                formControlName="formatoContrato"
+                placeholder="Ej: 123456789012"
+                [class.invalid]="hasError('formatoContrato', 'required') || hasError('formatoContrato', 'minlength')">
+              </ion-input>
+            </ion-item>
+            @if (hasError('formatoContrato', 'required') && providerForm.get('formatoContrato')?.touched) {
+            <div class="bank-form-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              {{ getErrorMessage('formatoContrato') }}
+            </div>
+            }
+            @if (hasError('formatoContrato', 'minlength') && providerForm.get('formatoContrato')?.touched) {
+            <div class="bank-form-error">
+              <ion-icon name="alert-circle-outline"></ion-icon>
+              {{ getErrorMessage('formatoContrato') }}
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="bank-section">
+          <div class="bank-form-actions">
+            <ion-button
+              type="submit"
+              expand="block"
+              color="primary"
+              [disabled]="isLoading()"
+              class="bank-submit-btn">
+              @if (isLoading()) {
+                <ion-spinner name="crescent" slot="start"></ion-spinner>
+                {{ submitLoadingText() }}
+              } @else {
+                <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+                {{ submitButtonText() }}
+              }
+            </ion-button>
+
+            <ion-button
+              type="button"
+              expand="block"
+              fill="outline"
+              color="medium"
+              (click)="goBack()"
+              [disabled]="isLoading()"
+              class="bank-cancel-btn">
+              <ion-icon name="close-outline" slot="start"></ion-icon>
+              Cancelar
+            </ion-button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+</ion-content>

@@ -24,5 +24,11 @@ export const MAIN_ROUTES: Routes = [
       import('./components/accounts/account.route').then(
         (m) => m.ACCOUNT_ROUTES
       ),
+  },{
+    path: 'providers',
+    loadChildren: () =>
+      import('./components/providers/provider.routes').then(
+        (m) => m.PROVIDER_ROUTES
+      ),
   }
 ];

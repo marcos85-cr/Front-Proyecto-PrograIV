@@ -1,0 +1,131 @@
+.bank-simple-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bank-customer-item {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.15);
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.25);
+    transform: translateY(-1px);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .user-main-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .user-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+
+    ion-button {
+      --padding-start: 0.5rem;
+      --padding-end: 0.5rem;
+      margin: 0;
+      height: 36px;
+
+      ion-icon {
+        font-size: 1.2rem;
+      }
+    }
+  }
+}
+
+.bank-customer-avatar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+
+  ion-icon {
+    font-size: 1.5rem;
+  }
+}
+
+.bank-customer-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.bank-customer-name {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.2;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.bank-customer-email {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.bank-customer-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bank-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.bank-text-small {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  ion-icon {
+    font-size: 0.85rem;
+  }
+}
+
+// Estilos para el buscador
+ion-searchbar {
+  --background: rgba(0, 0, 0, 0.3);
+  --border-radius: 12px;
+  --box-shadow: none;
+  --placeholder-color: rgba(255, 255, 255, 0.6);
+  --color: white;
+  --icon-color: rgba(255, 255, 255, 0.7);
+  --clear-button-color: rgba(255, 255, 255, 0.7);
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+  padding: 0.5rem 0;
+  margin: 0;
+}
