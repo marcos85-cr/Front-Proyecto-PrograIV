@@ -1,0 +1,240 @@
+// Loading
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 1rem;
+
+  ion-spinner {
+    --color: white;
+    width: 40px;
+    height: 40px;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+  }
+}
+
+// Detail Card - Dark theme
+.detail-card {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  backdrop-filter: blur(10px);
+}
+
+// Header Card
+.header-card {
+  text-align: center;
+  padding: 1.5rem;
+
+  .header-top {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .tipo-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+
+    ion-icon {
+      font-size: 1.1rem;
+    }
+  }
+
+  .monto-section {
+    margin: 1.5rem 0;
+
+    .monto {
+      display: block;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .moneda {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.7);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  }
+
+  .cliente-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+
+    ion-icon {
+      color: rgba(255, 255, 255, 0.6);
+    }
+  }
+
+  .descripcion {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    border-left: 3px solid var(--ion-color-primary);
+    text-align: left;
+  }
+}
+
+// Section Title
+.section-title {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+// Detail Row
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .label {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.85rem;
+  }
+
+  .value {
+    color: #ffffff;
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-align: right;
+
+    &.mono {
+      font-family: monospace;
+      font-size: 0.8rem;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    &.highlight {
+      font-weight: 700;
+      color: var(--ion-color-primary-tint);
+      font-size: 1rem;
+    }
+  }
+}
+
+// Actions Section
+.actions-section {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  ion-button {
+    --border-radius: 12px;
+    height: 48px;
+    font-weight: 600;
+  }
+}
+
+// Warning Message
+.warning-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(245, 158, 11, 0.15);
+  border-radius: 12px;
+  border-left: 4px solid #f59e0b;
+  margin-top: 0.5rem;
+
+  ion-icon {
+    color: #f59e0b;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  span {
+    color: #fcd34d;
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+}
+
+// Empty State
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  text-align: center;
+  padding: 2rem;
+
+  ion-icon {
+    font-size: 4rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    color: white;
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 1rem 0;
+  }
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .header-card {
+    .monto-section .monto {
+      font-size: 1.75rem;
+    }
+  }
+
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+
+    .value {
+      text-align: left;
+    }
+  }
+}

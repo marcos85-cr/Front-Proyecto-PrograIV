@@ -126,20 +126,27 @@ export class OperacionesListComponent implements OnInit {
   }
 
   filterOperaciones(term: string) {
-    const operaciones = this.operaciones();
+    let operaciones = this.operaciones();
+
+    // Aplicar filtro de estado si existe
+    const estadoFilter = this.activeFilters().estado;
+    if (estadoFilter) {
+      operaciones = operaciones.filter(op => op.estado === estadoFilter);
+    }
+
+    // Aplicar búsqueda de texto
     if (!term.trim()) {
       this.filteredOperaciones.set(operaciones);
       return;
     }
 
-    const filtered = operaciones.filter(operacion =>
-      operacion.clienteNombre.toLowerCase().includes(term.toLowerCase()) ||
-      operacion.tipo?.toLowerCase().includes(term.toLowerCase()) ||
-      operacion.descripcion?.toLowerCase().includes(term.toLowerCase()) ||
-      operacion.estado?.toLowerCase().includes(term.toLowerCase()) ||
-      operacion.moneda?.toLowerCase().includes(term.toLowerCase()) ||
-      operacion.cuentaOrigenNumero?.includes(term) ||
-      operacion.cuentaDestinoNumero?.includes(term)
+    const filtered = operaciones.filter(op =>
+      op.clienteNombre.toLowerCase().includes(term.toLowerCase()) ||
+      op.tipo?.toLowerCase().includes(term.toLowerCase()) ||
+      op.descripcion?.toLowerCase().includes(term.toLowerCase()) ||
+      op.moneda?.toLowerCase().includes(term.toLowerCase()) ||
+      op.cuentaOrigenNumero?.includes(term) ||
+      op.cuentaDestinoNumero?.includes(term)
     );
 
     this.filteredOperaciones.set(filtered);
@@ -271,16 +278,23 @@ export class OperacionesListComponent implements OnInit {
     ).subscribe();
   }
 
-  // Filter methods
+  // Filter methods - Filtrado local sin petición al API
   filterByEstado(estado: any) {
-    const filters = { ...this.activeFilters(), estado };
-    this.loadOperacionesWithFilters(filters);
+    if (!estado || estado === '') {
+      this.activeFilters.set({});
+    } else {
+      this.activeFilters.set({ estado });
+    }
+
+    // Re-aplicar filtros con el término de búsqueda actual
+    const searchTerm = this.searchForm.get('searchTerm')?.value || '';
+    this.filterOperaciones(searchTerm);
   }
 
   clearFilters() {
     this.activeFilters.set({});
     this.searchForm.get('searchTerm')?.setValue('');
-    this.loadOperaciones();
+    this.filteredOperaciones.set(this.operaciones());
   }
 
   formatCurrency(amount: number, currency: string): string {
@@ -356,8 +370,8 @@ export class OperacionesListComponent implements OnInit {
   }
 
   // Refresh
-  async refresh(event: any) {
-    await this.loadOperaciones(this.activeFilters());
+  refresh(event: any) {
+    this.loadOperaciones(this.activeFilters());
     event.target.complete();
   }
 

@@ -1,0 +1,182 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/manager/operations"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle de Operación</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <div class="bank-content-container p-md">
+
+    @if (isLoading()) {
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando operación...</p>
+    </div>
+    } @else if (operacion()) {
+
+    <!-- Header Card -->
+    <div class="detail-card header-card">
+      <div class="header-top">
+        <div class="tipo-badge">
+          <ion-icon [name]="getTipoIcon(operacion()!.tipo)"></ion-icon>
+          <span>{{ operacion()!.tipo }}</span>
+        </div>
+        <ion-chip [color]="getEstadoColor(operacion()!.estado)" size="small">
+          {{ getEstadoLabel(operacion()!.estado) }}
+        </ion-chip>
+      </div>
+
+      <div class="monto-section">
+        <span class="monto">{{ formatCurrency(operacion()!.monto, operacion()!.moneda) }}</span>
+        <span class="moneda">{{ operacion()!.moneda }}</span>
+      </div>
+
+      <div class="cliente-info">
+        <ion-icon name="person-outline"></ion-icon>
+        <span>{{ operacion()!.clienteNombre }}</span>
+      </div>
+
+      @if (operacion()!.descripcion) {
+      <div class="descripcion">
+        {{ operacion()!.descripcion }}
+      </div>
+      }
+    </div>
+
+    <!-- Detalles de la Operación -->
+    <div class="detail-card">
+      <h3 class="section-title">Información de la Operación</h3>
+
+      <div class="detail-row">
+        <span class="label">Referencia</span>
+        <span class="value mono">{{ operacion()!.comprobanteReferencia || 'N/A' }}</span>
+      </div>
+
+      <div class="detail-row">
+        <span class="label">Fecha de Solicitud</span>
+        <span class="value">{{ formatDateTime(operacion()!.fecha) }}</span>
+      </div>
+
+      @if (operacion()!.fechaEjecucion) {
+      <div class="detail-row">
+        <span class="label">Fecha de Ejecución</span>
+        <span class="value">{{ formatDateTime(operacion()!.fechaEjecucion!) }}</span>
+      </div>
+      }
+
+      @if (operacion()!.cuentaOrigenNumero) {
+      <div class="detail-row">
+        <span class="label">Cuenta Origen</span>
+        <span class="value mono">{{ operacion()!.cuentaOrigenNumero }}</span>
+      </div>
+      }
+
+      @if (operacion()!.cuentaDestinoNumero) {
+      <div class="detail-row">
+        <span class="label">Cuenta Destino</span>
+        <span class="value mono">{{ operacion()!.cuentaDestinoNumero }}</span>
+      </div>
+      }
+    </div>
+
+    <!-- Detalles Financieros -->
+    <div class="detail-card">
+      <h3 class="section-title">Detalles Financieros</h3>
+
+      <div class="detail-row">
+        <span class="label">Monto</span>
+        <span class="value highlight">{{ formatCurrency(operacion()!.monto, operacion()!.moneda) }}</span>
+      </div>
+
+      @if (operacion()!.comision > 0) {
+      <div class="detail-row">
+        <span class="label">Comisión</span>
+        <span class="value">{{ formatCurrency(operacion()!.comision, operacion()!.moneda) }}</span>
+      </div>
+      }
+
+      @if (operacion()!.saldoAnterior !== undefined) {
+      <div class="detail-row">
+        <span class="label">Saldo Anterior</span>
+        <span class="value">{{ formatCurrency(operacion()!.saldoAnterior, operacion()!.moneda) }}</span>
+      </div>
+      }
+
+      @if (operacion()!.saldoPosterior !== undefined) {
+      <div class="detail-row">
+        <span class="label">Saldo Posterior</span>
+        <span class="value">{{ formatCurrency(operacion()!.saldoPosterior, operacion()!.moneda) }}</span>
+      </div>
+      }
+    </div>
+
+    <!-- Información Adicional -->
+    <div class="detail-card">
+      <h3 class="section-title">Información Adicional</h3>
+
+      <div class="detail-row">
+        <span class="label">Requiere Aprobación</span>
+        <span class="value">
+          <ion-chip [color]="operacion()!.requiereAprobacion ? 'warning' : 'success'" size="small">
+            {{ operacion()!.requiereAprobacion ? 'Sí' : 'No' }}
+          </ion-chip>
+        </span>
+      </div>
+
+      <div class="detail-row">
+        <span class="label">Es Urgente</span>
+        <span class="value">
+          <ion-chip [color]="operacion()!.esUrgente ? 'danger' : 'medium'" size="small">
+            {{ operacion()!.esUrgente ? 'Sí' : 'No' }}
+          </ion-chip>
+        </span>
+      </div>
+    </div>
+
+    <!-- Acciones para operaciones pendientes -->
+    @if (isPendiente()) {
+    <div class="actions-section">
+      <ion-button
+        expand="block"
+        color="success"
+        [disabled]="!puedeAprobar()"
+        (click)="approveOperation()">
+        <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+        Aprobar Operación
+      </ion-button>
+
+      <ion-button
+        expand="block"
+        color="danger"
+        fill="outline"
+        (click)="rejectOperation()">
+        <ion-icon name="close-outline" slot="start"></ion-icon>
+        Rechazar Operación
+      </ion-button>
+
+      @if (!puedeAprobar()) {
+      <div class="warning-message">
+        <ion-icon name="warning-outline"></ion-icon>
+        <span>Esta operación excede el límite de aprobación del gestor y requiere autorización de un administrador.</span>
+      </div>
+      }
+    </div>
+    }
+
+    } @else {
+    <div class="empty-state">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+      <h3>Operación no encontrada</h3>
+      <p>No se pudo cargar la información de esta operación.</p>
+      <ion-button fill="clear" (click)="goBack()">
+        <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+        Volver a Operaciones
+      </ion-button>
+    </div>
+    }
+
+  </div>
+</ion-content>

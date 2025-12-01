@@ -1,7 +1,7 @@
 <ion-header class="ion-no-border">
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/gestor/dashboard"></ion-back-button>
+      <ion-back-button defaultHref="/manager/dashboard"></ion-back-button>
     </ion-buttons>
     <ion-title>Operaciones</ion-title>
     <ion-buttons slot="end">
@@ -113,89 +113,52 @@
     <!-- Operations List -->
     <div class="bank-section">
       <div class="bank-list-grid">
-        @for (operacion of filteredOperaciones(); track operacion.id; let i = $index) {
-        <div class="bank-glass-card operation-card" style="animation-delay: {{ i * 0.1 }}s;">
-          <div class="operation-header">
-            <div class="operation-info">
-              <div class="operation-client">
-                <h4 class="client-name">{{ operacion.clienteNombre }}</h4>
-                <ion-chip [color]="getEstadoColor(operacion.estado || '')" size="small">
-                  {{ getEstadoLabel(operacion.estado || '') }}
-                </ion-chip>
-              </div>
-              <div class="operation-meta">
-                <span class="operation-type" [class]="'type-' + getTipoColor(operacion.tipo || '')">
-                  {{ operacion.tipo }}
-                </span>
-                @if (operacion.esUrgente) {
-                <ion-chip color="danger" size="small">
-                  <ion-icon name="alert-outline" slot="start"></ion-icon>
-                  Urgente
-                </ion-chip>
-                }
-              </div>
+        @for (operacion of filteredOperaciones(); track operacion.id) {
+        <div class="operation-card">
+          <!-- Header: Cliente + Estado + Monto -->
+          <div class="card-header">
+            <div class="card-header-left">
+              <span class="client-name">{{ operacion.clienteNombre }}</span>
+              <ion-chip [color]="getEstadoColor(operacion.estado || '')" size="small">
+                {{ getEstadoLabel(operacion.estado || '') }}
+              </ion-chip>
             </div>
-            <div class="operation-amount">
-              <span class="amount-value">{{ formatCurrency(operacion.monto, operacion.moneda) }}</span>
-              <span class="amount-currency">{{ operacion.moneda }}</span>
+            <div class="card-header-right">
+              <span class="amount">{{ formatCurrency(operacion.monto, operacion.moneda) }}</span>
+              <span class="currency">{{ operacion.moneda }}</span>
             </div>
           </div>
 
-          @if (operacion.descripcion) {
-          <div class="operation-description">
-            {{ operacion.descripcion }}
+          <!-- Tipo + Fecha -->
+          <div class="card-meta">
+            <span class="tipo">{{ operacion.tipo }}</span>
+            <span class="fecha">{{ formatDateTime(operacion.fecha) }}</span>
+          </div>
+
+          <!-- Cuentas -->
+          @if (operacion.cuentaOrigenNumero) {
+          <div class="card-cuenta">
+            <ion-icon name="wallet-outline"></ion-icon>
+            <span>{{ operacion.cuentaOrigenNumero }}</span>
           </div>
           }
 
-          <div class="operation-details">
-            <div class="detail-item">
-              <ion-icon name="calendar-outline"></ion-icon>
-              <span>{{ formatDateTime(operacion.fecha) }}</span>
-            </div>
-            @if (operacion.cuentaOrigenNumero) {
-            <div class="detail-item">
-              <ion-icon name="arrow-up-outline"></ion-icon>
-              <span>Origen: {{ operacion.cuentaOrigenNumero.substring(0, 10) }}...</span>
-            </div>
-            }
-            @if (operacion.cuentaDestinoNumero) {
-            <div class="detail-item">
-              <ion-icon name="arrow-down-outline"></ion-icon>
-              <span>Destino: {{ operacion.cuentaDestinoNumero.substring(0, 10) }}...</span>
-            </div>
-            }
-          </div>
-
-          <div class="operation-actions">
-            <!-- View Details -->
-            <ion-button
-              fill="outline"
-              size="small"
-              expand="block"
-              (click)="viewOperacionDetail(operacion)">
+          <!-- Acciones -->
+          <div class="card-actions">
+            <ion-button fill="outline" size="small" expand="block" (click)="viewOperacionDetail(operacion)">
               <ion-icon name="eye-outline" slot="start"></ion-icon>
               Ver Detalles
             </ion-button>
 
-            <!-- Action buttons for pending operations -->
             @if (operacion.estado === 'PendienteAprobacion') {
-            <div class="action-buttons-group">
-              <ion-button
-                fill="solid"
-                color="success"
-                size="small"
+            <div class="action-buttons">
+              <ion-button fill="solid" color="success" size="small"
                 [disabled]="!puedeAprobarOperacion(operacion.monto, operacion.moneda)"
-                [title]="puedeAprobarOperacion(operacion.monto, operacion.moneda) ? 'Aprobar operación' : getMensajeLimiteExcedido(operacion.monto, operacion.moneda)"
                 (click)="approveOperation(operacion)">
                 <ion-icon name="checkmark-outline" slot="start"></ion-icon>
                 Aprobar
               </ion-button>
-
-              <ion-button
-                fill="solid"
-                color="danger"
-                size="small"
-                (click)="rejectOperation(operacion)">
+              <ion-button fill="solid" color="danger" size="small" (click)="rejectOperation(operacion)">
                 <ion-icon name="close-outline" slot="start"></ion-icon>
                 Rechazar
               </ion-button>

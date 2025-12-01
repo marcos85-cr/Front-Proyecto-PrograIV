@@ -176,16 +176,16 @@ export class GestorService {
       return baseUrl;
     }
 
-    const params = new HttpParams();
+    let params = new HttpParams();
 
-    // Add filters to params
+    // Add filters to params (HttpParams es inmutable, hay que reasignar)
     Object.keys(filters).forEach(key => {
       const value = filters[key];
       if (value !== undefined && value !== null && value !== '') {
         if (value instanceof Date) {
-          params.append(key, value.toISOString());
+          params = params.append(key, value.toISOString());
         } else {
-          params.append(key, value.toString());
+          params = params.append(key, value.toString());
         }
       }
     });
