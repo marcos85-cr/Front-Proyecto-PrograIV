@@ -52,7 +52,7 @@ export interface ResumenClienteDto {
   cliente?: ClienteInfoDto;
   patrimonioTotalCRC?: number;
   patrimonioTotalUSD?: number;
-  cuentas?: CuentaListaDto[];
+  cuentas?: ResumenCuentasDto;
   ingresosMes?: number;
   gastosMes?: number;
   transferenciasMes?: number;

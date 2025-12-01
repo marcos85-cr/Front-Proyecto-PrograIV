@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError } from 'rxjs';
 import { ErrorHandlerService } from '../../../services/error-handler.service';
-import { environment } from 'src/environments/environment';
+
 import { Result } from '../../../shared/models/result.dto';
 import {
   PreCheckTransferenciaRequest,
   EjecutarTransferenciaRequest
 } from '../model/transferencia.model';
+import { environment } from './../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'

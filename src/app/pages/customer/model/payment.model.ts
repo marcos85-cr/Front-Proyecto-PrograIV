@@ -39,7 +39,7 @@ export interface ContratoValidadoDto {
 // Realizar pago
 export interface RealizarPagoRequest {
   cuentaOrigenId: number;
-  proveedorId: number;
+  proveedorId?: number;
   proveedorServicioId?: number;
   numeroContrato: string;
   monto: number;

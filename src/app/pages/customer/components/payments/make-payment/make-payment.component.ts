@@ -186,7 +186,7 @@ export class MakePaymentComponent implements OnInit {
 
   private executePayment(): void {
     const request: RealizarPagoRequest = {
-      proveedorId: this.providerId()!,
+      proveedorServicioId: this.providerId()!,
       numeroContrato: this.contractNumber().trim(),
       cuentaOrigenId: this.sourceAccountId()!,
       monto: this.amount(),

@@ -78,8 +78,47 @@
       </div>
     </div>
 
-    <!-- Resumen -->
+    <!-- Información de la Cuenta -->
     @if (statement()) {
+      <div class="bank-section">
+        <div class="bank-glass-card account-info-card">
+          <div class="account-header">
+            <div class="account-icon">
+              <ion-icon [name]="statement()?.cuenta?.tipo === 'Ahorro' ? 'wallet-outline' : 'card-outline'" color="primary"></ion-icon>
+            </div>
+            <div class="account-details">
+              <h3 class="account-number">****{{ statement()?.cuenta?.numero?.slice(-4) }}</h3>
+              <p class="account-type">{{ statement()?.cuenta?.tipo }} - {{ statement()?.cuenta?.moneda }}</p>
+              <p class="account-titular">Titular: {{ statement()?.cuenta?.titular }}</p>
+              <p class="account-status">Estado: {{ statement()?.cuenta?.estado }}</p>
+            </div>
+            <div class="account-balance">
+              <span class="balance-label">Saldo actual</span>
+              <span class="balance-amount">{{ formatCurrency(statement()?.cuenta?.saldo, statement()?.cuenta?.moneda) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Período del Extracto -->
+      <div class="bank-section">
+        <div class="bank-section-header">
+          <h3>Período del Extracto</h3>
+        </div>
+
+        <div class="period-card">
+          <div class="period-row">
+            <span class="period-label">Desde:</span>
+            <span class="period-value">{{ formatDate(statement()?.periodo?.desde) }}</span>
+          </div>
+          <div class="period-row">
+            <span class="period-label">Hasta:</span>
+            <span class="period-value">{{ formatDate(statement()?.periodo?.hasta) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen del Período -->
       <div class="bank-section">
         <div class="bank-section-header">
           <h3>Resumen del Período</h3>
@@ -88,19 +127,19 @@
         <div class="summary-card">
           <div class="summary-row">
             <span class="label">Saldo inicial</span>
-            <span class="value">{{ formatCurrency(statement()?.saldoInicial, selectedAccount()?.moneda) }}</span>
+            <span class="value">{{ formatCurrency(statement()?.saldo?.inicial, statement()?.cuenta?.moneda) }}</span>
           </div>
           <div class="summary-row">
             <span class="label">Total créditos</span>
-            <span class="value credit">+{{ formatCurrency(statement()?.totalCreditos, selectedAccount()?.moneda) }}</span>
+            <span class="value credit">+{{ formatCurrency(statement()?.resumen?.totalCreditos, statement()?.cuenta?.moneda) }}</span>
           </div>
           <div class="summary-row">
             <span class="label">Total débitos</span>
-            <span class="value debit">-{{ formatCurrency(statement()?.totalDebitos, selectedAccount()?.moneda) }}</span>
+            <span class="value debit">-{{ formatCurrency(statement()?.resumen?.totalDebitos, statement()?.cuenta?.moneda) }}</span>
           </div>
           <div class="summary-row total">
             <span class="label">Saldo final</span>
-            <span class="value">{{ formatCurrency(statement()?.saldoFinal, selectedAccount()?.moneda) }}</span>
+            <span class="value">{{ formatCurrency(statement()?.saldo?.final, statement()?.cuenta?.moneda) }}</span>
           </div>
         </div>
       </div>
@@ -125,9 +164,12 @@
                   @if (mov.referencia) {
                     <span class="movement-ref">Ref: {{ mov.referencia }}</span>
                   }
+                  @if (mov.estado) {
+                    <span class="movement-status">{{ mov.estado }}</span>
+                  }
                 </div>
                 <div class="movement-amount" [class]="mov.tipo.toLowerCase()">
-                  {{ mov.tipo === 'Credito' ? '+' : '-' }}{{ formatCurrency(mov.monto, selectedAccount()?.moneda) }}
+                  {{ mov.tipo === 'Credito' ? '+' : '-' }}{{ formatCurrency(mov.monto, statement()?.cuenta?.moneda) }}
                 </div>
               </div>
             }

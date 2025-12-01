@@ -16,6 +16,27 @@
 
   @if (summary() && !isLoading()) {
     <div class="bank-content-container">
+      <!-- Información del Cliente -->
+      <div class="bank-section">
+        <div class="bank-glass-card">
+          <div class="customer-header">
+            <div class="customer-avatar">
+              <ion-icon name="person-circle-outline" color="primary"></ion-icon>
+            </div>
+            <div class="customer-info">
+              <h2 class="customer-name">{{ summary()?.cliente?.nombre || 'Cliente' }}</h2>
+              <p class="customer-id">ID: {{ summary()?.cliente?.identificacion || 'N/A' }}</p>
+              <p class="customer-email">{{ summary()?.cliente?.correo || 'N/A' }}</p>
+              <p class="customer-phone">{{ summary()?.cliente?.telefono || 'N/A' }}</p>
+            </div>
+          </div>
+          <div class="customer-date">
+            <span class="date-label">Cliente desde:</span>
+            <span class="date-value">{{ formatDate(summary()?.cliente?.fechaRegistro) }}</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Patrimonio Total -->
       <div class="patrimony-card">
         <div class="bank-glass-card">
@@ -23,27 +44,30 @@
           <div class="patrimony-grid">
             <div class="patrimony-item">
               <span class="currency-label">Colones (CRC)</span>
-              <span class="patrimony-amount">{{ formatCurrency(summary()?.patrimonioTotalCRC, 'CRC') }}</span>
+              <span class="patrimony-amount">{{ formatCurrency(summary()?.cuentas?.saldoTotalCRC, 'CRC') }}</span>
             </div>
             <div class="patrimony-divider"></div>
             <div class="patrimony-item">
               <span class="currency-label">Dólares (USD)</span>
-              <span class="patrimony-amount">{{ formatCurrency(summary()?.patrimonioTotalUSD, 'USD') }}</span>
+              <span class="patrimony-amount">{{ formatCurrency(summary()?.cuentas?.saldoTotalUSD, 'USD') }}</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Cuentas -->
+      <!-- Resumen de Cuentas -->
       <div class="bank-section">
         <div class="bank-section-header">
           <h3>Mis Cuentas</h3>
-          <span class="bank-badge-primary">{{ summary()?.cuentas?.length || 0 }}</span>
+          <div class="account-summary">
+            <span class="bank-badge-primary">{{ summary()?.cuentas?.total || 0 }} totales</span>
+            <span class="bank-badge-success">{{ summary()?.cuentas?.activas || 0 }} activas</span>
+          </div>
         </div>
 
-        @if (summary()?.cuentas && summary()!.cuentas!.length > 0) {
+        @if (summary()?.cuentas?.detalle && summary()!.cuentas!.detalle!.length > 0) {
           <div class="bank-simple-list">
-            @for (cuenta of summary()!.cuentas; track cuenta.id) {
+            @for (cuenta of summary()!.cuentas!.detalle; track cuenta.id) {
               <div class="bank-glass-card account-item" (click)="goToAccount(cuenta.id)">
                 <div class="account-icon">
                   <ion-icon [name]="cuenta.tipo === 'Ahorro' ? 'wallet-outline' : 'card-outline'" color="primary"></ion-icon>
@@ -51,6 +75,7 @@
                 <div class="account-info">
                   <h4 class="account-number">****{{ cuenta.numero.slice(-4) }}</h4>
                   <p class="account-type">{{ cuenta.tipo }} - {{ cuenta.moneda }}</p>
+                  <p class="account-status">Estado: {{ cuenta.estado }}</p>
                 </div>
                 <div class="account-balance">
                   <span class="balance-amount">{{ formatCurrency(cuenta.saldo, cuenta.moneda) }}</span>
@@ -67,71 +92,45 @@
         }
       </div>
 
-      <!-- Estadísticas del Mes -->
+      <!-- Estadísticas de Actividad -->
       <div class="bank-section">
         <div class="bank-section-header">
-          <h3>Estadísticas del Mes</h3>
+          <h3>Estadísticas de Actividad</h3>
         </div>
 
         <div class="stats-card">
           <div class="stats-grid">
             <div class="stat-item">
-              <ion-icon name="arrow-down-circle-outline" color="success"></ion-icon>
+              <ion-icon name="repeat-outline" color="primary"></ion-icon>
               <div class="stat-content">
-                <span class="stat-label">Ingresos</span>
-                <span class="stat-value success">{{ formatCurrency(summary()?.ingresosMes) }}</span>
+                <span class="stat-label">Total Transacciones</span>
+                <span class="stat-value">{{ summary()?.actividad?.totalTransacciones || 0 }}</span>
               </div>
             </div>
             <div class="stat-item">
-              <ion-icon name="arrow-up-circle-outline" color="danger"></ion-icon>
+              <ion-icon name="calendar-outline" color="success"></ion-icon>
               <div class="stat-content">
-                <span class="stat-label">Gastos</span>
-                <span class="stat-value danger">{{ formatCurrency(summary()?.gastosMes) }}</span>
+                <span class="stat-label">Transacciones del Mes</span>
+                <span class="stat-value success">{{ summary()?.actividad?.transaccionesUltimoMes || 0 }}</span>
               </div>
             </div>
             <div class="stat-item">
-              <ion-icon name="swap-horizontal-outline" color="primary"></ion-icon>
+              <ion-icon name="swap-horizontal-outline" color="warning"></ion-icon>
               <div class="stat-content">
-                <span class="stat-label">Transferencias</span>
-                <span class="stat-value">{{ summary()?.transferenciasMes || 0 }}</span>
+                <span class="stat-label">Transferido del Mes</span>
+                <span class="stat-value warning">{{ formatCurrency(summary()?.actividad?.montoTransferidoMes, 'CRC') }}</span>
               </div>
             </div>
             <div class="stat-item">
-              <ion-icon name="receipt-outline" color="warning"></ion-icon>
+              <ion-icon name="time-outline" color="medium"></ion-icon>
               <div class="stat-content">
-                <span class="stat-label">Pagos</span>
-                <span class="stat-value">{{ summary()?.pagosMes || 0 }}</span>
+                <span class="stat-label">Última Transacción</span>
+                <span class="stat-value">{{ formatDate(summary()?.actividad?.ultimaTransaccion) }}</span>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- Últimas Transacciones -->
-      @if (summary()?.ultimasTransacciones && summary()!.ultimasTransacciones!.length > 0) {
-        <div class="bank-section">
-          <div class="bank-section-header">
-            <h3>Últimas Transacciones</h3>
-          </div>
-
-          <div class="bank-simple-list">
-            @for (trans of summary()!.ultimasTransacciones; track trans.id) {
-              <div class="bank-glass-card transaction-item">
-                <div class="transaction-icon" [class]="trans.tipo === 'Credito' ? 'credit' : 'debit'">
-                  <ion-icon [name]="trans.tipo === 'Credito' ? 'arrow-down-outline' : 'arrow-up-outline'"></ion-icon>
-                </div>
-                <div class="transaction-info">
-                  <h4 class="transaction-desc">{{ trans.descripcion }}</h4>
-                  <p class="transaction-date">{{ formatDate(trans.fecha) }}</p>
-                </div>
-                <span class="transaction-amount" [class]="trans.tipo === 'Credito' ? 'credit' : 'debit'">
-                  {{ trans.tipo === 'Credito' ? '+' : '-' }}{{ formatCurrency(trans.monto, trans.moneda) }}
-                </span>
-              </div>
-            }
-          </div>
-        </div>
-      }
     </div>
   }
 

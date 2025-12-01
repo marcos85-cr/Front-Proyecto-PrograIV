@@ -1,7 +1,95 @@
-// =====================================================
-// CUSTOMER SUMMARY COMPONENT STYLES
-// Siguiendo patrones de CustomerListComponent (DARK THEME)
-// =====================================================
+
+.customer-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.customer-avatar {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+
+  ion-icon {
+    font-size: 2.5rem;
+    color: var(--ion-color-primary);
+  }
+}
+
+.customer-info {
+  flex: 1;
+  min-width: 0;
+
+  .customer-name {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #000000;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  .customer-id,
+  .customer-email,
+  .customer-phone {
+    margin: 0 0 0.1rem 0;
+    font-size: 0.85rem;
+    color: rgba(0, 0, 0, 0.8);
+  }
+
+  .customer-id {
+    font-weight: 600;
+  }
+}
+
+.customer-date {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+  .date-label {
+    font-size: 0.8rem;
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  .date-value {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.9);
+  }
+}
+
+// Account Summary Badges
+.account-summary {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.bank-badge-success {
+  background: rgba(16, 185, 129, 0.2) !important;
+  color: #10b981 !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+  padding: 0.25rem 0.75rem !important;
+  border-radius: 999px !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+}
+
+.account-status {
+  margin: 0 !important;
+  font-size: 0.75rem !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-weight: 500 !important;
+}
 
 // Patrimony Card - Tarjeta de patrimonio principal
 .patrimony-card {
@@ -201,6 +289,10 @@
 
   &.danger {
     color: #f87171;
+  }
+
+  &.warning {
+    color: #f59e0b;
   }
 }
 

@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Result } from 'src/app/shared/models/result.dto';
-import { environment } from 'src/environments/environment';
+import { environment } from './../../../../environments/environment';
 import { HighValueOperation, HighValueOperationStatus, RiskLevel, ApproveOperationRequest, RejectOperationRequest, BlockOperationRequest } from '../models/high-value-operation.model';
 
 @Injectable({
