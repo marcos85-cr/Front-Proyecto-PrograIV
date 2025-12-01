@@ -1,0 +1,241 @@
+.client-info-card {
+  .client-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .client-avatar {
+      ion-icon {
+        font-size: 3rem;
+        color: #1a4d8f;
+      }
+    }
+
+    .client-info {
+      flex: 1;
+
+      .client-name {
+        margin: 0 0 0.25rem 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1e293b;
+      }
+
+      .client-details {
+        margin: 0 0 0.5rem 0;
+        font-size: 0.9rem;
+        color: #64748b;
+      }
+
+      .client-accounts-info {
+        margin: 0;
+      }
+    }
+  }
+}
+
+.account-limits-info {
+  background: rgba(26, 77, 143, 0.1);
+  border: 1px solid rgba(26, 77, 143, 0.2);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+
+  .limits-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    color: #1a4d8f;
+
+    ion-icon {
+      font-size: 1.1rem;
+    }
+  }
+
+  .limits-content {
+    p {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.9rem;
+      color: #475569;
+    }
+
+    .account-count {
+      font-weight: 700;
+      margin-left: 0.5rem;
+
+      &.warning {
+        color: #d97706;
+      }
+
+      &.danger {
+        color: #dc2626;
+      }
+    }
+
+    .limit-warning {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      background: rgba(217, 119, 6, 0.1);
+      border-radius: 6px;
+      color: #92400e;
+      font-size: 0.85rem;
+
+      ion-icon {
+        color: #d97706;
+      }
+    }
+
+    .limit-error {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      background: rgba(220, 38, 38, 0.1);
+      border-radius: 6px;
+      color: #991b1b;
+      font-size: 0.85rem;
+
+      ion-icon {
+        color: #dc2626;
+      }
+    }
+  }
+}
+
+.existing-accounts {
+  margin-bottom: 1.5rem;
+
+  .existing-header {
+    margin-bottom: 1rem;
+
+    h4 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+  }
+
+  .accounts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .account-preview-card {
+    background: rgba(248, 250, 252, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 0.75rem;
+
+    .account-preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+
+      .account-number {
+        font-family: monospace;
+        font-size: 0.8rem;
+        color: #64748b;
+        font-weight: 500;
+      }
+    }
+
+    .account-preview-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+
+      .account-type {
+        font-weight: 600;
+        color: #1e293b;
+      }
+
+      .account-currency {
+        color: #64748b;
+        font-weight: 500;
+      }
+
+      .account-balance {
+        font-weight: 700;
+        color: #059669;
+      }
+    }
+  }
+}
+
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2rem;
+
+  .action-button {
+    height: 48px;
+    font-weight: 600;
+
+    ion-spinner {
+      --color: white;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.info-card {
+  .info-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+
+    ion-icon {
+      font-size: 1.25rem;
+    }
+
+    h4 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+  }
+
+  .info-content {
+    .info-list {
+      margin: 0;
+      padding-left: 1.25rem;
+
+      li {
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+        color: #475569;
+        line-height: 1.5;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .accounts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .account-preview-card {
+    .account-preview-details {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+  }
+}

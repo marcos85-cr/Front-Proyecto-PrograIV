@@ -1,0 +1,231 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/gestor/clientes"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Crear Cuenta</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="goBack()">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <div class="bank-content-container">
+
+    @if (isLoading()) {
+    <!-- Loading State -->
+    <div class="bank-loading-section">
+      <div class="loading-card">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando información del cliente...</p>
+      </div>
+    </div>
+    } @else if (!hasCliente()) {
+    <!-- Error State -->
+    <div class="bank-empty-state">
+      <div class="empty-card">
+        <ion-icon name="person-outline" class="empty-icon"></ion-icon>
+        <h3>Cliente no encontrado</h3>
+        <p>No se pudo encontrar la información del cliente.</p>
+        <ion-button fill="clear" (click)="goBack()">
+          <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+          Volver a Clientes
+        </ion-button>
+      </div>
+    </div>
+    } @else {
+    <!-- Client Info Header -->
+    <div class="bank-section mb-xl">
+      <div class="bank-glass-card client-info-card">
+        <div class="client-header">
+          <div class="client-avatar">
+            <ion-icon name="person-circle-outline"></ion-icon>
+          </div>
+          <div class="client-info">
+            <h3 class="client-name">{{ cliente()?.nombre }}</h3>
+            <p class="client-details">
+              {{ cliente()?.identificacion }} • {{ cliente()?.email || 'Sin email' }}
+            </p>
+            <div class="client-accounts-info">
+              <ion-chip color="primary">{{ cliente()?.cuentasActivas || 0 }} cuentas activas</ion-chip>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="bank-section mb-xl">
+      <div class="bank-section-header">
+        <h3>Información de la Cuenta</h3>
+      </div>
+
+      <form [formGroup]="cuentaForm" (ngSubmit)="validateAndSubmit()">
+        <!-- Account Type -->
+        <div class="bank-form-group">
+          <ion-item class="bank-input-item" [class.invalid]="hasError('tipo', 'required')">
+            <ion-label position="floating">Tipo de Cuenta</ion-label>
+            <ion-select formControlName="tipo" placeholder="Seleccionar tipo">
+              @for (type of accountTypes; track type.value) {
+              <ion-select-option [value]="type.value">{{ type.label }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          @if (hasError('tipo', 'required') && cuentaForm.get('tipo')?.touched) {
+          <div class="bank-form-error">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            {{ getErrorMessage('tipo') }}
+          </div>
+          }
+        </div>
+
+        <!-- Currency -->
+        <div class="bank-form-group">
+          <ion-item class="bank-input-item" [class.invalid]="hasError('moneda', 'required')">
+            <ion-label position="floating">Moneda</ion-label>
+            <ion-select formControlName="moneda" placeholder="Seleccionar moneda">
+              @for (currency of currencies; track currency.value) {
+              <ion-select-option [value]="currency.value">{{ currency.label }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          @if (hasError('moneda', 'required') && cuentaForm.get('moneda')?.touched) {
+          <div class="bank-form-error">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            {{ getErrorMessage('moneda') }}
+          </div>
+          }
+        </div>
+
+        <!-- Initial Balance -->
+        <div class="bank-form-group">
+          <ion-item class="bank-input-item" [class.invalid]="hasError('saldoInicial', 'required') || hasError('saldoInicial', 'min')">
+            <ion-label position="floating">Saldo Inicial</ion-label>
+            <ion-input
+              type="number"
+              formControlName="saldoInicial"
+              placeholder="0.00"
+              min="0">
+            </ion-input>
+            <ion-icon name="wallet-outline" slot="start" color="medium"></ion-icon>
+          </ion-item>
+          @if ((hasError('saldoInicial', 'required') || hasError('saldoInicial', 'min')) && cuentaForm.get('saldoInicial')?.touched) {
+          <div class="bank-form-error">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            {{ getErrorMessage('saldoInicial') }}
+          </div>
+          }
+        </div>
+
+        <!-- Account Limits Warning -->
+        @let currentForm = cuentaForm.value;
+        @if (currentForm.tipo && currentForm.moneda) {
+          @let accountCount = getCuentasMismoTipo(currentForm.tipo, currentForm.moneda);
+          <div class="account-limits-info">
+            <div class="limits-header">
+              <ion-icon name="information-circle-outline"></ion-icon>
+              <span>Límite de Cuentas</span>
+            </div>
+            <div class="limits-content">
+              <p>
+                Cuentas <strong>{{ currentForm.tipo }}</strong> en <strong>{{ currentForm.moneda }}</strong>:
+                <span class="account-count" [class.warning]="accountCount >= 2" [class.danger]="accountCount >= 3">
+                  {{ accountCount }}/3
+                </span>
+              </p>
+              @if (accountCount >= 3) {
+              <div class="limit-error">
+                <ion-icon name="alert-circle-outline"></ion-icon>
+                <span>{{ getMensajeLimite(currentForm.tipo, currentForm.moneda) }}</span>
+              </div>
+              } @else if (accountCount === 2) {
+              <div class="limit-warning">
+                <ion-icon name="warning-outline"></ion-icon>
+                <span>Podrás crear solo 1 cuenta más de este tipo y moneda</span>
+              </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Existing Accounts Preview -->
+        @if (cuentasExistentes().length > 0) {
+        <div class="existing-accounts">
+          <div class="existing-header">
+            <h4>Cuentas Existentes del Cliente</h4>
+          </div>
+          <div class="accounts-grid">
+            @for (cuenta of cuentasExistentes(); track cuenta.id) {
+            <div class="account-preview-card">
+              <div class="account-preview-header">
+                <span class="account-number">{{ cuenta.numero.substring(0, 10) }}...</span>
+                <ion-chip [color]="getEstadoColor(cuenta.estado)" size="small">{{ cuenta.estado }}</ion-chip>
+              </div>
+              <div class="account-preview-details">
+                <span class="account-type">{{ cuenta.tipo }}</span>
+                <span class="account-currency">{{ cuenta.moneda }}</span>
+                <span class="account-balance">{{ formatCurrency(cuenta.saldo, cuenta.moneda) }}</span>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+        }
+
+        <!-- Submit Button -->
+        <div class="form-actions">
+          <ion-button
+            type="button"
+            fill="outline"
+            color="medium"
+            (click)="goBack()"
+            expand="block"
+            class="action-button">
+            <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+            Cancelar
+          </ion-button>
+
+          <ion-button
+            type="submit"
+            color="success"
+            [disabled]="cuentaForm.invalid || isLoading() || !puedeCrearMasCuentas(cuentaForm.value.tipo, cuentaForm.value.moneda)"
+            expand="block"
+            class="action-button">
+            @if (isLoading()) {
+            <ion-spinner name="crescent" slot="start"></ion-spinner>
+            Creando Cuenta...
+            } @else {
+            <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+            Crear Cuenta
+            }
+          </ion-button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Important Notes -->
+    <div class="bank-section">
+      <div class="bank-glass-card info-card">
+        <div class="info-header">
+          <ion-icon name="information-circle-outline" color="primary"></ion-icon>
+          <h4>Información Importante</h4>
+        </div>
+        <div class="info-content">
+          <ul class="info-list">
+            <li>Cada cliente puede tener máximo 3 cuentas del mismo tipo y moneda</li>
+            <li>El saldo inicial debe ser mayor o igual a 0</li>
+            <li>Las cuentas se crearán con estado "Activa" por defecto</li>
+            <li>El número de cuenta se generará automáticamente</li>
+            <li>Esta acción es irreversible y requiere confirmación</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    }
+
+  </div>
+</ion-content>

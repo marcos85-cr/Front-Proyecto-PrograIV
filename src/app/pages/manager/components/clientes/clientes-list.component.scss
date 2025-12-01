@@ -1,0 +1,156 @@
+.bank-search-container {
+  margin-bottom: 1rem;
+
+  ion-searchbar {
+    --background: rgba(255, 255, 255, 0.9);
+    --border-radius: 12px;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --placeholder-color: #64748b;
+    --placeholder-opacity: 1;
+    margin-bottom: 0;
+  }
+}
+
+.client-card {
+  animation: fadeIn 0.6s ease-out backwards;
+  margin-bottom: 1rem;
+
+  .client-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .client-avatar {
+    ion-icon {
+      font-size: 3rem;
+      color: #1a4d8f;
+      opacity: 0.8;
+    }
+  }
+
+  .client-info {
+    flex: 1;
+
+    .client-name {
+      margin: 0 0 0.25rem 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .client-email {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.9rem;
+      color: #64748b;
+    }
+
+    .client-status {
+      margin: 0;
+    }
+  }
+
+  .client-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    ion-button {
+      --padding-start: 0.5rem;
+      --padding-end: 0.5rem;
+      height: 36px;
+
+      ion-icon {
+        font-size: 1.1rem;
+      }
+    }
+  }
+
+  .client-details {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      ion-icon {
+        flex-shrink: 0;
+        font-size: 1.1rem;
+        color: #64748b;
+      }
+
+      .detail-label {
+        font-size: 0.8rem;
+        color: #64748b;
+        min-width: 80px;
+        font-weight: 500;
+      }
+
+      .detail-value {
+        font-size: 0.9rem;
+        color: #1e293b;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .client-footer {
+    display: flex;
+    gap: 0.75rem;
+
+    ion-button {
+      flex: 1;
+      height: 40px;
+      font-size: 0.85rem;
+
+      ion-icon {
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+.load-more-container {
+  padding: 1rem 0;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .client-card {
+    .client-header {
+      flex-direction: column;
+      text-align: center;
+      gap: 0.75rem;
+    }
+
+    .client-actions {
+      flex-direction: row;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .client-details {
+      .detail-item {
+        .detail-label {
+          min-width: 60px;
+        }
+      }
+    }
+
+    .client-footer {
+      flex-direction: column;
+    }
+  }
+}
+
+@for $i from 1 through 10 {
+  .client-card:nth-child(#{$i}) {
+    animation-delay: #{$i * 0.1}s;
+  }
+}

@@ -1,0 +1,212 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/gestor/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Operaciones</ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="goBack()">
+        <ion-icon name="home-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <div class="bank-content-container">
+
+    <!-- Summary Stats -->
+    <div class="bank-section mb-xl">
+      <div class="bank-stats-grid">
+        <div class="bank-glass-card bank-stat-item">
+          <ion-icon name="time-outline" color="warning"></ion-icon>
+          <div>
+            <span class="bank-stat-number">{{ summary().pending | number }}</span>
+            <span class="bank-stat-label">Pendientes</span>
+          </div>
+        </div>
+        <div class="bank-glass-card bank-stat-item">
+          <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
+          <div>
+            <span class="bank-stat-number">{{ summary().approved | number }}</span>
+            <span class="bank-stat-label">Aprobadas</span>
+          </div>
+        </div>
+        <div class="bank-glass-card bank-stat-item">
+          <ion-icon name="close-circle-outline" color="danger"></ion-icon>
+          <div>
+            <span class="bank-stat-number">{{ summary().rejected | number }}</span>
+            <span class="bank-stat-label">Rechazadas</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="bank-section mb-lg">
+      <div class="bank-search-container">
+        <ion-searchbar
+          #searchInput
+          placeholder="Buscar por cliente, tipo, descripción..."
+          (ionInput)="onSearch($event)"
+          [(ngModel)]="searchForm.value.searchTerm"
+          animated="true"
+          showClearButton="true">
+        </ion-searchbar>
+      </div>
+
+      <!-- Filter Buttons -->
+      <div class="filter-buttons">
+        <ion-segment (ionChange)="filterByEstado($event.detail.value)" [value]="activeFilters().estado || ''">
+          <ion-segment-button value="">
+            <ion-label>Todas</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="PendienteAprobacion">
+            <ion-label>Pendientes</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="Exitosa">
+            <ion-label>Aprobadas</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="Rechazada">
+            <ion-label>Rechazadas</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+
+        @if (hasFilters()) {
+        <ion-button fill="clear" size="small" (click)="clearFilters()">
+          <ion-icon name="refresh-outline" slot="start"></ion-icon>
+          Limpiar Filtros
+        </ion-button>
+        }
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (isLoading() && !hasOperaciones()) {
+    <div class="bank-loading-section">
+      <div class="loading-card">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando operaciones...</p>
+      </div>
+    </div>
+    } @else if (!hasOperaciones()) {
+    <!-- Empty State -->
+    <div class="bank-empty-state">
+      <div class="empty-card">
+        <ion-icon name="list-outline" class="empty-icon"></ion-icon>
+        <h3>No hay operaciones</h3>
+        <p>No hay operaciones que coincidan con los filtros actuales.</p>
+        @if (hasFilters()) {
+        <ion-button fill="clear" (click)="clearFilters()">
+          <ion-icon name="refresh-outline" slot="start"></ion-icon>
+          Limpiar Filtros
+        </ion-button>
+        } @else {
+        <ion-button fill="clear" (click)="goBack()">
+          <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+          Volver al Dashboard
+        </ion-button>
+        }
+      </div>
+    </div>
+    } @else {
+    <!-- Operations List -->
+    <div class="bank-section">
+      <div class="bank-list-grid">
+        @for (operacion of filteredOperaciones(); track operacion.id; let i = $index) {
+        <div class="bank-glass-card operation-card" style="animation-delay: {{ i * 0.1 }}s;">
+          <div class="operation-header">
+            <div class="operation-info">
+              <div class="operation-client">
+                <h4 class="client-name">{{ operacion.clienteNombre }}</h4>
+                <ion-chip [color]="getEstadoColor(operacion.estado || '')" size="small">
+                  {{ getEstadoLabel(operacion.estado || '') }}
+                </ion-chip>
+              </div>
+              <div class="operation-meta">
+                <span class="operation-type" [class]="'type-' + getTipoColor(operacion.tipo || '')">
+                  {{ operacion.tipo }}
+                </span>
+                @if (operacion.esUrgente) {
+                <ion-chip color="danger" size="small">
+                  <ion-icon name="alert-outline" slot="start"></ion-icon>
+                  Urgente
+                </ion-chip>
+                }
+              </div>
+            </div>
+            <div class="operation-amount">
+              <span class="amount-value">{{ formatCurrency(operacion.monto, operacion.moneda) }}</span>
+              <span class="amount-currency">{{ operacion.moneda }}</span>
+            </div>
+          </div>
+
+          @if (operacion.descripcion) {
+          <div class="operation-description">
+            {{ operacion.descripcion }}
+          </div>
+          }
+
+          <div class="operation-details">
+            <div class="detail-item">
+              <ion-icon name="calendar-outline"></ion-icon>
+              <span>{{ formatDateTime(operacion.fecha) }}</span>
+            </div>
+            @if (operacion.cuentaOrigenNumero) {
+            <div class="detail-item">
+              <ion-icon name="arrow-up-outline"></ion-icon>
+              <span>Origen: {{ operacion.cuentaOrigenNumero.substring(0, 10) }}...</span>
+            </div>
+            }
+            @if (operacion.cuentaDestinoNumero) {
+            <div class="detail-item">
+              <ion-icon name="arrow-down-outline"></ion-icon>
+              <span>Destino: {{ operacion.cuentaDestinoNumero.substring(0, 10) }}...</span>
+            </div>
+            }
+          </div>
+
+          <div class="operation-actions">
+            <!-- View Details -->
+            <ion-button
+              fill="outline"
+              size="small"
+              expand="block"
+              (click)="viewOperacionDetail(operacion)">
+              <ion-icon name="eye-outline" slot="start"></ion-icon>
+              Ver Detalles
+            </ion-button>
+
+            <!-- Action buttons for pending operations -->
+            @if (operacion.estado === 'PendienteAprobacion') {
+            <div class="action-buttons-group">
+              <ion-button
+                fill="solid"
+                color="success"
+                size="small"
+                [disabled]="!puedeAprobarOperacion(operacion.monto, operacion.moneda)"
+                [title]="puedeAprobarOperacion(operacion.monto, operacion.moneda) ? 'Aprobar operación' : getMensajeLimiteExcedido(operacion.monto, operacion.moneda)"
+                (click)="approveOperation(operacion)">
+                <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+                Aprobar
+              </ion-button>
+
+              <ion-button
+                fill="solid"
+                color="danger"
+                size="small"
+                (click)="rejectOperation(operacion)">
+                <ion-icon name="close-outline" slot="start"></ion-icon>
+                Rechazar
+              </ion-button>
+            </div>
+            }
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+  </div>
+</ion-content>

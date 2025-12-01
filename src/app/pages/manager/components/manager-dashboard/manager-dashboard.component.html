@@ -89,13 +89,18 @@
                 <div class="bank-glass-card bank-pending-item">
                     <div class="bank-pending-info">
                         <div class="bank-pending-client">{{ operation.clienteNombre }}</div>
-                        <div class="bank-pending-description">{{ operation.descripcion }}</div>
+                        <div class="bank-pending-description">{{ operation.descripcion || 'Sin descripción' }}</div>
                         <div class="bank-pending-details">
                             <span class="bank-amount">{{ operation.moneda }} {{ operation.monto | number:'1.0-0' }}</span>
+                            @if (operation.esUrgente) {
+                                <span class="bank-badge-warning">Urgente</span>
+                            }
                         </div>
                     </div>
                     <div class="bank-action-buttons">
-                        <button class="bank-btn-action bank-btn-approve" (click)="approveOperation(operation.id)">✓</button>
+                        <button class="bank-btn-action bank-btn-approve" (click)="approveOperation(operation.id)"
+                                [disabled]="!puedeAprobarOperacion()(operation.monto, operation.moneda)"
+                                [title]="puedeAprobarOperacion()(operation.monto, operation.moneda) ? 'Aprobar operación' : getMensajeLimiteExcedido()(operation.monto, operation.moneda)">✓</button>
                         <button class="bank-btn-action bank-btn-reject" (click)="rejectOperation(operation.id)">✗</button>
                     </div>
                 </div>

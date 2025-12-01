@@ -1,5 +1,5 @@
-export interface Result {
+export interface Result<T = any> {
     success?: boolean;
     message?: string;
-    data?:any | any[];
+    data?: T;
 }

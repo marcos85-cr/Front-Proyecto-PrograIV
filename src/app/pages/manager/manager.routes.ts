@@ -1,9 +1,39 @@
 import { Routes } from "@angular/router";
 import { ManagerDashboardComponent } from "./components/manager-dashboard/manager-dashboard.component";
+import { ClientesListComponent } from "./components/clientes/clientes-list.component";
+import { ClienteDetalleComponent } from "./components/clientes/cliente-detalle.component";
+import { CrearCuentaFormComponent } from "./components/cuentas/crear-cuenta-form.component";
+import { OperacionesListComponent } from "./components/operaciones/operaciones-list.component";
 
 export const MANAGER_ROUTES: Routes = [
   {
+    path: '',
+    redirectTo: 'dashboard',
+    pathMatch: 'full'
+  },
+  {
     path: 'dashboard',
     component: ManagerDashboardComponent,
-  }
+  },
+  {
+    path: 'clientes',
+    component: ClientesListComponent,
+  },
+  {
+    path: 'clientes/:id',
+    component: ClienteDetalleComponent,
+  },
+  {
+    path: 'clientes/:id/crear-cuenta',
+    component: CrearCuentaFormComponent,
+  },
+  {
+    path: 'operaciones',
+    component: OperacionesListComponent,
+  },
+  // Placeholder for future operation detail
+  // {
+  //   path: 'operaciones/:id',
+  //   component: OperacionDetalleComponent,
+  // }
 ]
