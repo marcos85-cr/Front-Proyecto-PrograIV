@@ -1,0 +1,157 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Extracto de Cuenta</ion-title>
+    <ion-buttons slot="end">
+      <ion-button [disabled]="!statement() || isExporting()" (click)="export('pdf')">
+        <ion-icon slot="icon-only" name="download-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <div class="bank-content-container">
+    <!-- Filtros -->
+    <div class="bank-section">
+      <div class="bank-section-header">
+        <h3>Parámetros del Extracto</h3>
+      </div>
+
+      <div class="filter-card">
+        <div class="form-group">
+          <ion-label class="form-label">Cuenta</ion-label>
+          <ion-item class="bank-form-item" lines="none">
+            <ion-select
+              [value]="accountId()"
+              (ionChange)="accountId.set($any($event).detail.value)"
+              placeholder="Seleccione cuenta"
+              interface="popover">
+              @for (cuenta of myAccounts(); track cuenta.id) {
+                <ion-select-option [value]="cuenta.id">
+                  ****{{ cuenta.numero.slice(-4) }} - {{ cuenta.tipo }} ({{ cuenta.moneda }})
+                </ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+        </div>
+
+        <div class="date-row">
+          <div class="form-group">
+            <ion-label class="form-label">Desde</ion-label>
+            <ion-item class="bank-form-item" lines="none">
+              <ion-input
+                type="date"
+                [value]="startDate()"
+                (ionInput)="startDate.set($any($event).target.value)">
+              </ion-input>
+            </ion-item>
+          </div>
+
+          <div class="form-group">
+            <ion-label class="form-label">Hasta</ion-label>
+            <ion-item class="bank-form-item" lines="none">
+              <ion-input
+                type="date"
+                [value]="endDate()"
+                (ionInput)="endDate.set($any($event).target.value)">
+              </ion-input>
+            </ion-item>
+          </div>
+        </div>
+
+        <ion-button
+          expand="block"
+          [disabled]="!accountId() || isLoading()"
+          (click)="loadStatement()">
+          @if (isLoading()) {
+            <ion-spinner name="crescent"></ion-spinner>
+          } @else {
+            <ion-icon name="search-outline" slot="start"></ion-icon>
+            Consultar
+          }
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Resumen -->
+    @if (statement()) {
+      <div class="bank-section">
+        <div class="bank-section-header">
+          <h3>Resumen del Período</h3>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-row">
+            <span class="label">Saldo inicial</span>
+            <span class="value">{{ formatCurrency(statement()?.saldoInicial, selectedAccount()?.moneda) }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">Total créditos</span>
+            <span class="value credit">+{{ formatCurrency(statement()?.totalCreditos, selectedAccount()?.moneda) }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="label">Total débitos</span>
+            <span class="value debit">-{{ formatCurrency(statement()?.totalDebitos, selectedAccount()?.moneda) }}</span>
+          </div>
+          <div class="summary-row total">
+            <span class="label">Saldo final</span>
+            <span class="value">{{ formatCurrency(statement()?.saldoFinal, selectedAccount()?.moneda) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Movimientos -->
+      <div class="bank-section">
+        <div class="bank-section-header">
+          <h3>Movimientos</h3>
+          <span class="bank-badge-primary">{{ statement()?.movimientos?.length || 0 }}</span>
+        </div>
+
+        @if (statement()?.movimientos && statement()!.movimientos!.length > 0) {
+          <div class="bank-simple-list">
+            @for (mov of statement()!.movimientos; track mov.id) {
+              <div class="bank-glass-card movement-item">
+                <div class="movement-icon" [class]="mov.tipo.toLowerCase()">
+                  <ion-icon [name]="getMovementIcon(mov.tipo)"></ion-icon>
+                </div>
+                <div class="movement-info">
+                  <h4 class="movement-desc">{{ mov.descripcion }}</h4>
+                  <p class="movement-date">{{ formatDate(mov.fecha) }}</p>
+                  @if (mov.referencia) {
+                    <span class="movement-ref">Ref: {{ mov.referencia }}</span>
+                  }
+                </div>
+                <div class="movement-amount" [class]="mov.tipo.toLowerCase()">
+                  {{ mov.tipo === 'Credito' ? '+' : '-' }}{{ formatCurrency(mov.monto, selectedAccount()?.moneda) }}
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="bank-empty-state">
+            <ion-icon name="document-text-outline" color="medium"></ion-icon>
+            <h3>Sin movimientos</h3>
+            <p>No hay movimientos en el período seleccionado</p>
+          </div>
+        }
+      </div>
+
+      <!-- Botones de Exportación -->
+      <div class="export-buttons">
+        <ion-button fill="outline" [disabled]="isExporting()" (click)="export('pdf')">
+          <ion-icon name="document-outline" slot="start"></ion-icon>
+          Descargar PDF
+        </ion-button>
+        <ion-button fill="outline" [disabled]="isExporting()" (click)="export('csv')">
+          <ion-icon name="grid-outline" slot="start"></ion-icon>
+          Descargar CSV
+        </ion-button>
+      </div>
+    }
+  </div>
+</ion-content>

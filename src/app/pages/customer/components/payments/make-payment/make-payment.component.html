@@ -1,0 +1,255 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Pagar Servicio</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <div class="bank-content-container">
+    <!-- Indicador de Pasos -->
+    <div class="step-indicator">
+      @for (step of [1, 2, 3, 4]; track step) {
+        <div class="step" [class.active]="currentStep() >= step" [class.current]="currentStep() === step">
+          <div class="step-circle">{{ step }}</div>
+          <span class="step-label">
+            @switch (step) {
+              @case (1) { Servicio }
+              @case (2) { Contrato }
+              @case (3) { Monto }
+              @case (4) { Confirmar }
+            }
+          </span>
+        </div>
+        @if (step < 4) {
+          <div class="step-line" [class.active]="currentStep() > step"></div>
+        }
+      }
+    </div>
+
+    <!-- Paso 1: Seleccionar Proveedor -->
+    @if (currentStep() === 1) {
+      <div class="bank-section">
+        <div class="bank-section-header">
+          <h3>Seleccione el servicio</h3>
+        </div>
+
+        <div class="form-card">
+          @if (providers().length > 0 && !isLoading()) {
+            <div class="provider-grid">
+              @for (provider of providers(); track provider.id) {
+                <div class="provider-card"
+                     [class.selected]="providerId() === provider.id"
+                     (click)="providerId.set(provider.id)">
+                  <div class="provider-icon">
+                    <ion-icon [name]="getProviderIcon(provider.categoria)" color="primary"></ion-icon>
+                  </div>
+                  <span class="provider-name">{{ provider.nombre }}</span>
+                  @if (provider.categoria) {
+                    <span class="provider-category">{{ provider.categoria }}</span>
+                  }
+                  @if (providerId() === provider.id) {
+                    <ion-icon name="checkmark-circle" color="success" class="check-icon"></ion-icon>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          @if (isLoading()) {
+            <div class="loading-container">
+              <ion-spinner name="crescent" color="primary"></ion-spinner>
+              <p>Cargando proveedores...</p>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Paso 2: Número de Contrato -->
+    @if (currentStep() === 2) {
+      <div class="bank-section">
+        <div class="bank-section-header">
+          <h3>Ingrese el número de contrato</h3>
+        </div>
+
+        <div class="form-card">
+          <div class="selected-provider">
+            <div class="provider-icon">
+              <ion-icon [name]="getProviderIcon(selectedProvider()?.categoria)" color="primary"></ion-icon>
+            </div>
+            <span>{{ selectedProvider()?.nombre }}</span>
+          </div>
+
+          <div class="form-group">
+            <ion-label class="form-label">Número de contrato o referencia</ion-label>
+            <ion-item class="bank-form-item" lines="none">
+              <ion-input
+                type="text"
+                [value]="contractNumber()"
+                (ionInput)="contractNumber.set($any($event).target.value)"
+                [placeholder]="selectedProvider()?.formatoContrato || 'Ingrese número'">
+              </ion-input>
+            </ion-item>
+            @if (selectedProvider()?.reglaValidacionContrato) {
+              <p class="helper-text">
+                <ion-icon name="information-circle-outline"></ion-icon>
+                Formato: {{ selectedProvider()?.formatoContrato }}
+              </p>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Paso 3: Monto y Cuenta -->
+    @if (currentStep() === 3 && validatedContract()) {
+      <div class="bank-section">
+        <div class="bank-section-header">
+          <h3>Datos del pago</h3>
+        </div>
+
+        <!-- Info del contrato -->
+        <div class="bank-glass-card contract-info">
+          <div class="contract-row">
+            <span class="label">Titular</span>
+            <span class="value">{{ validatedContract()?.nombreTitular }}</span>
+          </div>
+          @if (validatedContract()?.saldoPendiente !== undefined) {
+            <div class="contract-row">
+              <span class="label">Saldo pendiente</span>
+              <span class="value highlight">{{ formatCurrency(validatedContract()?.saldoPendiente ?? 0) }}</span>
+            </div>
+          }
+          @if (validatedContract()?.fechaVencimiento) {
+            <div class="contract-row">
+              <span class="label">Vencimiento</span>
+              <span class="value">{{ validatedContract()?.fechaVencimiento }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="form-card">
+          <div class="form-group">
+            <ion-label class="form-label">Monto a pagar</ion-label>
+            <ion-item class="bank-form-item amount-input" lines="none">
+              <span class="currency-prefix">₡</span>
+              <ion-input
+                type="number"
+                [value]="amount()"
+                (ionInput)="amount.set(+$any($event).target.value)"
+                placeholder="0.00">
+              </ion-input>
+            </ion-item>
+          </div>
+
+          <div class="form-group">
+            <ion-label class="form-label">Pagar desde</ion-label>
+            <div class="account-options">
+              @for (cuenta of myAccounts(); track cuenta.id) {
+                <div class="account-option"
+                     [class.selected]="sourceAccountId() === cuenta.id"
+                     (click)="sourceAccountId.set(cuenta.id)">
+                  <div class="account-info">
+                    <ion-icon [name]="cuenta.tipo === 'Ahorro' ? 'wallet-outline' : 'card-outline'" color="primary"></ion-icon>
+                    <div class="account-details">
+                      <span class="account-number">****{{ cuenta.numero.slice(-4) }}</span>
+                      <span class="account-type">{{ cuenta.tipo }} - {{ cuenta.moneda }}</span>
+                    </div>
+                  </div>
+                  <span class="account-balance">{{ formatCurrency(cuenta.saldo, cuenta.moneda) }}</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="form-group">
+            <ion-label class="form-label">Descripción (opcional)</ion-label>
+            <ion-item class="bank-form-item" lines="none">
+              <ion-input
+                type="text"
+                [value]="description()"
+                (ionInput)="description.set($any($event).target.value)"
+                placeholder="Referencia del pago">
+              </ion-input>
+            </ion-item>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Paso 4: Confirmación -->
+    @if (currentStep() === 4) {
+      <div class="bank-section">
+        <div class="bank-section-header">
+          <h3>Confirmar Pago</h3>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-header">
+            <div class="provider-icon large">
+              <ion-icon [name]="getProviderIcon(selectedProvider()?.categoria)" color="primary"></ion-icon>
+            </div>
+            <h4>{{ selectedProvider()?.nombre }}</h4>
+          </div>
+
+          <div class="summary-row">
+            <span class="label">Contrato</span>
+            <span class="value">{{ contractNumber() }}</span>
+          </div>
+
+          <div class="summary-row">
+            <span class="label">Titular</span>
+            <span class="value">{{ validatedContract()?.nombreTitular }}</span>
+          </div>
+
+          <div class="summary-row">
+            <span class="label">Cuenta origen</span>
+            <span class="value">****{{ sourceAccount()?.numero?.slice(-4) ?? '----' }}</span>
+          </div>
+
+          <div class="summary-row total">
+            <span class="label">Monto a pagar</span>
+            <span class="value">{{ formatCurrency(amount()) }}</span>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Botones de Navegación -->
+    <div class="action-container">
+      @if (currentStep() < 4) {
+        <ion-button
+          expand="block"
+          size="large"
+          [disabled]="isValidating()"
+          (click)="nextStep()">
+          @if (isValidating()) {
+            <ion-spinner name="crescent"></ion-spinner>
+          } @else {
+            Continuar
+            <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+          }
+        </ion-button>
+      } @else {
+        <ion-button
+          expand="block"
+          size="large"
+          color="success"
+          [disabled]="isSubmitting()"
+          (click)="confirmPayment()">
+          @if (isSubmitting()) {
+            <ion-spinner name="crescent"></ion-spinner>
+          } @else {
+            <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+            Confirmar Pago
+          }
+        </ion-button>
+      }
+    </div>
+  </div>
+</ion-content>

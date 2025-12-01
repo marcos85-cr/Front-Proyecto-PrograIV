@@ -1,0 +1,147 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Detalle de Cuenta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (account() && !isLoading()) {
+    <!-- Tarjeta Principal -->
+    <div class="account-hero">
+      <div class="bank-glass-card hero-card">
+        <div class="account-header">
+          <div class="account-type">
+            <ion-icon [name]="account()?.tipo === 'Ahorro' ? 'wallet-outline' : 'card-outline'"></ion-icon>
+            <span>{{ account()?.tipo }} {{ account()?.moneda }}</span>
+          </div>
+          <ion-badge [color]="getStatusColor(account()?.estado)">{{ account()?.estado }}</ion-badge>
+        </div>
+
+        <div class="account-number">
+          <span class="label">Número de cuenta</span>
+          <span class="number">{{ account()?.numero }}</span>
+        </div>
+
+        <div class="balance-section">
+          <div class="balance-item main">
+            <span class="balance-label">Saldo Disponible</span>
+            <span class="balance-amount">{{ formatCurrency(balance()?.disponible, account()?.moneda) }}</span>
+          </div>
+          <div class="balance-row">
+            <div class="balance-item">
+              <span class="balance-label">Total</span>
+              <span class="balance-value">{{ formatCurrency(balance()?.total, account()?.moneda) }}</span>
+            </div>
+            <div class="balance-item">
+              <span class="balance-label">Retenido</span>
+              <span class="balance-value warning">{{ formatCurrency(balance()?.retenido, account()?.moneda) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Acciones Rápidas -->
+    @if (account()?.estado === 'Activa') {
+      <div class="quick-actions">
+        <div class="actions-card">
+          <div class="action-button" (click)="goToTransfer()">
+            <div class="action-icon">
+              <ion-icon name="swap-horizontal-outline"></ion-icon>
+            </div>
+            <span>Transferir</span>
+          </div>
+          <div class="action-button" (click)="goToStatement()">
+            <div class="action-icon">
+              <ion-icon name="document-text-outline"></ion-icon>
+            </div>
+            <span>Extracto</span>
+          </div>
+          <div class="action-button" (click)="toggleLock()">
+            <div class="action-icon warning">
+              <ion-icon name="lock-closed-outline"></ion-icon>
+            </div>
+            <span>Bloquear</span>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Información de la Cuenta -->
+    <div class="bank-content-container">
+      <div class="bank-section">
+        <div class="bank-section-header">
+          <h3>Información de la Cuenta</h3>
+        </div>
+
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">IBAN</span>
+            <span class="info-value">{{ account()?.iban }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Tipo de cuenta</span>
+            <span class="info-value">{{ account()?.tipo }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Moneda</span>
+            <span class="info-value">{{ account()?.moneda }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Fecha de apertura</span>
+            <span class="info-value">{{ formatDate(account()?.fechaApertura) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones de Gestión -->
+      @if (account()?.estado !== 'Cerrada') {
+        <div class="bank-section">
+          <div class="bank-section-header">
+            <h3>Gestión de la Cuenta</h3>
+          </div>
+
+          <div class="management-card">
+            @if (account()?.estado === 'Bloqueada') {
+              <ion-button expand="block" fill="outline" color="success" (click)="toggleLock()">
+                <ion-icon name="lock-open-outline" slot="start"></ion-icon>
+                Desbloquear Cuenta
+              </ion-button>
+            }
+
+            @if (canClose()) {
+              <ion-button expand="block" fill="outline" color="danger" (click)="closeAccount()">
+                <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+                Cerrar Cuenta
+              </ion-button>
+            }
+
+            @if (!canClose() && account()?.estado === 'Activa') {
+              <div class="info-message">
+                <ion-icon name="information-circle-outline" color="primary"></ion-icon>
+                <p>Para cerrar la cuenta, el saldo disponible debe ser 0.</p>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Estado de Carga -->
+  @if (isLoading()) {
+    <div class="bank-loading-state">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Cargando información...</p>
+    </div>
+  }
+</ion-content>

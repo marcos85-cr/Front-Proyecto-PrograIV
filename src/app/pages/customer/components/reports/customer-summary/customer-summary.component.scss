@@ -1,0 +1,280 @@
+// =====================================================
+// CUSTOMER SUMMARY COMPONENT STYLES
+// Siguiendo patrones de CustomerListComponent (DARK THEME)
+// =====================================================
+
+// Patrimony Card - Tarjeta de patrimonio principal
+.patrimony-card {
+  padding: 1rem;
+}
+
+.patrimony-card .bank-glass-card {
+  padding: 1.5rem !important;
+  background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%) !important;
+  border: none !important;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3) !important;
+}
+
+.patrimony-title {
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.patrimony-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.patrimony-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.currency-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.patrimony-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.patrimony-divider {
+  width: 1px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+// Account List
+.bank-simple-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.account-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+}
+
+// Account Icon
+.account-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+
+  ion-icon {
+    font-size: 1.4rem;
+    color: #ffffff;
+  }
+}
+
+// Account Info
+.account-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.account-number {
+  margin: 0 0 0.15rem 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.account-type {
+  margin: 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+// Account Balance
+.account-balance {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+
+  .balance-amount {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #4ade80;
+  }
+
+  .balance-label {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.account-actions {
+  ion-button {
+    --padding-start: 0.4rem;
+    --padding-end: 0.4rem;
+    margin: 0;
+    height: 36px;
+
+    ion-icon {
+      font-size: 1.15rem;
+    }
+  }
+}
+
+// Stats Card
+.stats-card {
+  padding: 1.25rem !important;
+  background: rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  ion-icon {
+    font-size: 1.75rem;
+    color: var(--ion-color-primary-contrast);
+  }
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.stat-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+
+  &.success {
+    color: #4ade80;
+  }
+
+  &.danger {
+    color: #f87171;
+  }
+}
+
+// Transaction Item
+.transaction-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+}
+
+// Transaction Icon
+.transaction-icon {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+  ion-icon {
+    font-size: 1.15rem;
+    color: #ffffff;
+  }
+
+  &.credit {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  }
+
+  &.debit {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+}
+
+// Transaction Info
+.transaction-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.transaction-desc {
+  margin: 0 0 0.15rem 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.transaction-date {
+  margin: 0;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+// Transaction Amount
+.transaction-amount {
+  font-size: 0.9rem;
+  font-weight: 700;
+
+  &.credit {
+    color: #4ade80;
+  }
+
+  &.debit {
+    color: #f87171;
+  }
+}

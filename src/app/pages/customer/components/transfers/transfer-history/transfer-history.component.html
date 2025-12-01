@@ -1,0 +1,114 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Historial de Transferencias</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToNewTransfer()">
+        <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Búsqueda y Filtros -->
+  <div class="search-container">
+    <ion-searchbar
+      [value]="searchTerm()"
+      (ionInput)="searchTerm.set($any($event).target.value); filterTransfers()"
+      placeholder="Buscar transferencia..."
+      animated>
+    </ion-searchbar>
+
+    <div class="filters-container">
+      <ion-segment [value]="statusFilter()" (ionChange)="statusFilter.set($any($event).detail.value); filterTransfers()">
+        <ion-segment-button value="todos">
+          <ion-label>Todas</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="Exitosa">
+          <ion-label>Exitosas</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="PendienteAprobacion">
+          <ion-label>Pendientes</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+  </div>
+
+  <div class="bank-content-container">
+    <div class="bank-section">
+      <div class="bank-section-header">
+        <h3>Transferencias</h3>
+        <span class="bank-badge-primary">{{ filteredTransfers().length }} registros</span>
+      </div>
+
+      @if (filteredTransfers().length > 0 && !isLoading()) {
+        <div class="bank-simple-list">
+          @for (transfer of filteredTransfers(); track transfer.id) {
+            <div class="bank-glass-card transaction-item" (click)="goToDetail(transfer.id)">
+              <div class="transaction-icon" [class]="'status-' + transfer.estado.toLowerCase()">
+                <ion-icon [name]="getStatusIcon(transfer.estado)"></ion-icon>
+              </div>
+              <div class="transaction-info">
+                <h4 class="transaction-description">{{ transfer.descripcion || 'Transferencia' }}</h4>
+                <p class="transaction-date">{{ formatDate(transfer.fechaCreacion) }}</p>
+                <div class="transaction-meta">
+                  <ion-badge [color]="getStatusColor(transfer.estado)">
+                    {{ getStatusLabel(transfer.estado) }}
+                  </ion-badge>
+                  @if (transfer.comprobanteReferencia) {
+                    <span class="reference">Ref: {{ transfer.comprobanteReferencia }}</span>
+                  }
+                </div>
+              </div>
+              <div class="transaction-amount">
+                <span class="amount">{{ formatCurrency(transfer.monto, transfer.moneda) }}</span>
+                @if (transfer.comision > 0) {
+                  <span class="fee">Comisión: {{ formatCurrency(transfer.comision, transfer.moneda) }}</span>
+                }
+              </div>
+              <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Sin Resultados -->
+      @if (filteredTransfers().length === 0 && !isLoading()) {
+        <div class="transfer-empty-state">
+          <div class="empty-icon-container">
+            <ion-icon name="swap-horizontal-outline" class="empty-icon"></ion-icon>
+          </div>
+          <h3 class="empty-title">No hay transferencias</h3>
+          <p class="empty-description">No se encontraron transferencias con los filtros aplicados</p>
+          <div class="empty-actions">
+            <ion-button fill="outline" class="empty-action-btn" (click)="clearFilters()">
+              <ion-icon name="refresh-outline" slot="start"></ion-icon>
+              Limpiar Filtros
+            </ion-button>
+            <ion-button fill="solid" class="empty-action-btn" (click)="goToNewTransfer()">
+              <ion-icon name="add-outline" slot="start"></ion-icon>
+              Nueva Transferencia
+            </ion-button>
+          </div>
+        </div>
+      }
+
+      <!-- Cargando -->
+      @if (isLoading()) {
+        <div class="bank-loading-state">
+          <ion-spinner name="crescent" color="primary"></ion-spinner>
+          <p>Cargando transferencias...</p>
+        </div>
+      }
+    </div>
+  </div>
+</ion-content>

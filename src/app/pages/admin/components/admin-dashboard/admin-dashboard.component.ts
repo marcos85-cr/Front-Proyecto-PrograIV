@@ -1,26 +1,34 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { CommonModule, Location } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../../services/auth.service';
 import { TransactionService } from 'src/app/services/transaction.service';
 import { HighValueOperationService } from '../../services/high-value-operation.service';
+import { AdminDashboardService, DashboardStats } from '../../services/admin-dashboard.service';
 import { ToastService } from '../../../../services/toast.service';
 import { ErrorHandlerService } from '../../../../services/error-handler.service';
 import { IonicModule, AlertController } from '@ionic/angular';
-import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule],
+  imports: [CommonModule, FormsModule, IonicModule, RouterModule],
 })
 export class AdminDashboardComponent  implements OnInit {
 userName: string = '';
-  stats = {
-    totalUsers: 0,
-    totalAccounts: 0,
-    todayTransactions: 0,
-    pendingApprovals: 0
+  stats: DashboardStats = {
+    totalUsuarios: 0,
+    usuariosActivos: 0,
+    usuariosBloqueados: 0,
+    totalClientes: 0,
+    totalCuentas: 0,
+    cuentasActivas: 0,
+    totalProveedores: 0,
+    operacionesHoy: 0,
+    volumenTotal: 0
   };
   pendingTransactions: any[] = [];
 
@@ -28,6 +36,7 @@ userName: string = '';
     private authService: AuthService,
     private transactionService: TransactionService,
     private operationService: HighValueOperationService,
+    private adminDashboardService: AdminDashboardService,
     private router: Router,
     private alertController: AlertController,
     private toastService: ToastService,
@@ -46,25 +55,27 @@ userName: string = '';
   }
 
   loadStats() {
-    // Obtener operaciones de alto valor pendientes
-    this.operationService.getPendingOperations().subscribe({
-      next: (operations) => {
-        this.stats = {
-          totalUsers: 145,
-          totalAccounts: 328,
-          todayTransactions: 52,
-          pendingApprovals: operations?.data?.length || 8
-        };
+    // Obtener estadísticas del dashboard desde la API
+    this.adminDashboardService.getDashboardStats().subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.stats = response.data;
+        }
       },
       error: (error) => {
         this.errorHandler.handleError(error?.message, 'loadStats').subscribe({
           error: () => {
             // Valores por defecto en caso de error
             this.stats = {
-              totalUsers: 0,
-              totalAccounts: 0,
-              todayTransactions: 0,
-              pendingApprovals: 0
+              totalUsuarios: 0,
+              usuariosActivos: 0,
+              usuariosBloqueados: 0,
+              totalClientes: 0,
+              totalCuentas: 0,
+              cuentasActivas: 0,
+              totalProveedores: 0,
+              operacionesHoy: 0,
+              volumenTotal: 0
             };
           }
         });

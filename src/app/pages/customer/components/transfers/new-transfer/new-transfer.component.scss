@@ -1,0 +1,489 @@
+// =====================================================
+// NEW TRANSFER COMPONENT STYLES
+// Siguiendo patrones de CustomerCreateComponent
+// =====================================================
+
+// Step Indicator - Indicador de pasos del wizard
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+  gap: 0;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 1;
+
+  .step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.95);
+    color: #94a3b8;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+  }
+
+  .step-label {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+    max-width: 60px;
+    font-weight: 500;
+  }
+
+  &.active .step-circle {
+    background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  &.active .step-label {
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 600;
+  }
+
+  &.current .step-circle {
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2), 0 4px 12px rgba(59, 130, 246, 0.3);
+    transform: scale(1.1);
+  }
+}
+
+.step-line {
+  flex: 1;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 0 0.5rem;
+  margin-bottom: 1.5rem;
+  max-width: 50px;
+  transition: all 0.3s ease;
+  border-radius: 2px;
+
+  &.active {
+    background: linear-gradient(90deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%);
+  }
+}
+
+// Form Card - Tarjeta de formulario con fondo blanco
+.form-card {
+  padding: 1.5rem !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  ion-segment {
+    --background: #f1f5f9;
+    border-radius: 10px;
+    padding: 4px;
+
+    ion-segment-button {
+      --color: #64748b;
+      --color-checked: white;
+      --indicator-color: var(--ion-color-primary);
+      --indicator-box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+      font-size: 0.85rem;
+      font-weight: 600;
+      min-height: 42px;
+      border-radius: 8px;
+    }
+  }
+}
+
+.form-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #000000;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// Account & Beneficiary Options
+.account-options, .beneficiary-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.account-option, .beneficiary-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.selected {
+    background: rgba(59, 130, 246, 0.08);
+    border-color: var(--ion-color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  &:hover:not(.selected) {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+  }
+}
+
+.account-info, .beneficiary-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+
+  ion-icon {
+    font-size: 1.5rem;
+    color: var(--ion-color-primary);
+  }
+}
+
+.beneficiary-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+
+  ion-icon {
+    font-size: 1.25rem;
+    color: #ffffff;
+  }
+}
+
+.beneficiary-info {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+}
+
+.account-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.account-number, .beneficiary-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #000000;
+}
+
+.account-type, .beneficiary-account {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.account-balance {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.check-icon {
+  font-size: 1.25rem;
+  margin-left: auto;
+  color: var(--ion-color-primary);
+}
+
+.empty-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem 1rem;
+  text-align: center;
+
+  ion-icon {
+    font-size: 3rem;
+    color: #94a3b8;
+  }
+
+  p {
+    margin: 0;
+    color: #64748b;
+  }
+}
+
+// Form Input Items - Campos de entrada con fondo blanco
+.bank-form-item {
+  --background: rgba(255, 255, 255, 0.95);
+  --border-radius: 12px;
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+
+  &:focus-within {
+    border-color: var(--ion-color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  ion-input, ion-textarea {
+    --color: #000000;
+    --placeholder-color: #94a3b8;
+    font-size: 1rem;
+  }
+
+  &.amount-input {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.95);
+
+    .currency-prefix {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--ion-color-primary);
+      padding-left: 1rem;
+    }
+
+    ion-input {
+      font-size: 1.5rem;
+      font-weight: 700;
+      --color: #000000;
+    }
+  }
+}
+
+.helper-text {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.5rem 0 0 0;
+  font-size: 0.75rem;
+  color: #64748b;
+
+  ion-icon {
+    font-size: 0.9rem;
+    color: var(--ion-color-primary);
+  }
+}
+
+// Options Container - Selección de moneda
+.options-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.option-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  .currency-symbol {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ion-color-primary);
+  }
+
+  span:not(.currency-symbol) {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #000000;
+  }
+
+  &.selected {
+    background: rgba(59, 130, 246, 0.08);
+    border-color: var(--ion-color-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  &:hover:not(.selected) {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+  }
+}
+
+// Info Card - Información adicional
+.info-card {
+  padding: 1rem !important;
+  margin-top: 1rem;
+  background: rgba(59, 130, 246, 0.05) !important;
+  border: 1px solid rgba(59, 130, 246, 0.15) !important;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+
+  ion-icon {
+    font-size: 1.25rem;
+    color: var(--ion-color-primary);
+  }
+
+  span {
+    font-size: 0.85rem;
+    color: #475569;
+  }
+
+  &.warning {
+    ion-icon {
+      color: #f59e0b;
+    }
+    span {
+      color: #92400e;
+    }
+  }
+}
+
+// Summary Card - Resumen de transferencia
+.summary-card {
+  padding: 1.5rem !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.summary-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+
+  ion-icon {
+    font-size: 1.5rem;
+    color: var(--ion-color-primary);
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #000000;
+  }
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+
+  .label {
+    font-size: 0.9rem;
+    color: #64748b;
+  }
+
+  .value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #000000;
+    text-align: right;
+
+    &.amount {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #10b981;
+    }
+  }
+
+  &.total {
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    border-top: 2px solid rgba(0, 0, 0, 0.08);
+    border-bottom: none;
+
+    .label, .value {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .value {
+      color: var(--ion-color-primary);
+      font-size: 1.1rem;
+    }
+  }
+}
+
+// Approval Warning - Advertencia de aprobación
+.approval-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 10px;
+  border-left: 3px solid #f59e0b;
+
+  ion-icon {
+    font-size: 1.25rem;
+    color: #f59e0b;
+  }
+
+  span {
+    font-size: 0.85rem;
+    color: #92400e;
+    font-weight: 500;
+  }
+}
+
+// Action Container - Botones de acción
+.action-container {
+  padding: 1rem 0;
+
+  ion-button {
+    --border-radius: 12px;
+    --box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+    font-weight: 600;
+    font-size: 1rem;
+    height: 52px;
+
+    ion-spinner {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}

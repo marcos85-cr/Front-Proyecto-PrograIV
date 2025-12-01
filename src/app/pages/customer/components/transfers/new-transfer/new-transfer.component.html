@@ -1,0 +1,303 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Nueva Transferencia</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <div class="bank-content-container">
+    <!-- Indicador de Pasos -->
+    <div class="step-indicator">
+      @for (step of [1, 2, 3, 4]; track step) {
+        <div class="step" [class.active]="currentStep() >= step" [class.current]="currentStep() === step">
+          <div class="step-circle">{{ step }}</div>
+          <span class="step-label">
+            @switch (step) {
+              @case (1) { Origen }
+              @case (2) { Destino }
+              @case (3) { Monto }
+              @case (4) { Confirmar }
+            }
+          </span>
+        </div>
+        @if (step < 4) {
+          <div class="step-line" [class.active]="currentStep() > step"></div>
+        }
+      }
+    </div>
+
+    <!-- Paso 1: Cuenta Origen -->
+    @if (currentStep() === 1) {
+      <div class="bank-section">
+        <div class="bank-section-header">
+          <h3>Seleccione cuenta de origen</h3>
+        </div>
+
+        <div class="form-card">
+          @if (myAccounts().length > 0) {
+            <div class="account-options">
+              @for (account of myAccounts(); track account.id) {
+                <div class="account-option"
+                     [class.selected]="sourceAccountId() === account.id"
+                     (click)="sourceAccountId.set(account.id)">
+                  <div class="account-info">
+                    <ion-icon [name]="account.tipo === 'Ahorro' ? 'wallet-outline' : 'card-outline'" color="primary"></ion-icon>
+                    <div class="account-details">
+                      <span class="account-number">****{{ account.numero.slice(-4) }}</span>
+                      <span class="account-type">{{ account.tipo }} - {{ account.moneda }}</span>
+                    </div>
+                  </div>
+                  <span class="account-balance">{{ formatCurrency(account.saldo) }}</span>
+                  @if (sourceAccountId() === account.id) {
+                    <ion-icon name="checkmark-circle" color="success" class="check-icon"></ion-icon>
+                  }
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="empty-message">
+              <ion-icon name="wallet-outline" color="medium"></ion-icon>
+              <p>No tiene cuentas activas disponibles</p>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Paso 2: Cuenta Destino -->
+    @if (currentStep() === 2) {
+      <div class="bank-section">
+        <div class="bank-section-header">
+          <h3>Seleccione destino</h3>
+        </div>
+
+        <div class="form-card">
+          <!-- Tipo de búsqueda -->
+          <div class="form-group">
+            <ion-segment [value]="searchType()" (ionChange)="searchType.set($any($event).detail.value)">
+              <ion-segment-button value="cuenta">
+                <ion-label>Número de Cuenta</ion-label>
+              </ion-segment-button>
+              <ion-segment-button value="beneficiario">
+                <ion-label>Beneficiarios</ion-label>
+              </ion-segment-button>
+            </ion-segment>
+          </div>
+
+          @if (searchType() === 'cuenta') {
+            <div class="form-group">
+              <ion-label class="form-label">Número de cuenta destino</ion-label>
+              <ion-item class="bank-form-item" lines="none">
+                <ion-input
+                  type="text"
+                  [value]="destinationAccountNumber()"
+                  (ionInput)="destinationAccountNumber.set($any($event).target.value)"
+                  placeholder="Ingrese número de cuenta o IBAN">
+                </ion-input>
+              </ion-item>
+            </div>
+          } @else {
+            <div class="form-group">
+              @if (myBeneficiaries().length > 0) {
+                <div class="beneficiary-options">
+                  @for (beneficiary of myBeneficiaries(); track beneficiary.id) {
+                    <div class="beneficiary-option"
+                         [class.selected]="beneficiaryId() === beneficiary.id"
+                         (click)="beneficiaryId.set(beneficiary.id)">
+                      <div class="beneficiary-avatar">
+                        <ion-icon name="person-outline" color="primary"></ion-icon>
+                      </div>
+                      <div class="beneficiary-info">
+                        <span class="beneficiary-name">{{ beneficiary.alias }}</span>
+                        <span class="beneficiary-account">****{{ beneficiary.numeroCuenta.slice(-4) }}</span>
+                      </div>
+                      @if (beneficiaryId() === beneficiary.id) {
+                        <ion-icon name="checkmark-circle" color="success" class="check-icon"></ion-icon>
+                      }
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="empty-message">
+                  <ion-icon name="people-outline" color="medium"></ion-icon>
+                  <p>No tiene beneficiarios registrados</p>
+                  <ion-button fill="outline" size="small" routerLink="/customer/transferencias/beneficiarios/crear">
+                    Agregar Beneficiario
+                  </ion-button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Paso 3: Monto -->
+    @if (currentStep() === 3) {
+      <div class="bank-section">
+        <div class="bank-section-header">
+          <h3>Monto a transferir</h3>
+        </div>
+
+        <div class="form-card">
+          <div class="form-group">
+            <ion-label class="form-label">Moneda</ion-label>
+            <div class="options-container currency-options">
+              <div class="option-card" [class.selected]="currency() === 'CRC'" (click)="currency.set('CRC')">
+                <span class="currency-symbol">₡</span>
+                <span>Colones</span>
+              </div>
+              <div class="option-card" [class.selected]="currency() === 'USD'" (click)="currency.set('USD')">
+                <span class="currency-symbol">$</span>
+                <span>Dólares</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <ion-label class="form-label">Monto</ion-label>
+            <ion-item class="bank-form-item amount-input" lines="none">
+              <span class="currency-prefix">{{ currency() === 'USD' ? '$' : '₡' }}</span>
+              <ion-input
+                type="number"
+                [value]="amount()"
+                (ionInput)="amount.set(+$any($event).target.value)"
+                placeholder="0.00"
+                [min]="minimumAmount">
+              </ion-input>
+            </ion-item>
+            <p class="helper-text">
+              <ion-icon name="information-circle-outline"></ion-icon>
+              Monto mínimo: ₡{{ minimumAmount.toLocaleString('es-CR') }}
+            </p>
+          </div>
+
+          <div class="form-group">
+            <ion-label class="form-label">Descripción (opcional)</ion-label>
+            <ion-item class="bank-form-item" lines="none">
+              <ion-textarea
+                [value]="description()"
+                (ionInput)="description.set($any($event).target.value)"
+                placeholder="Concepto de la transferencia"
+                rows="2">
+              </ion-textarea>
+            </ion-item>
+          </div>
+        </div>
+
+        <!-- Información de límites -->
+        <div class="info-card">
+          <div class="info-row">
+            <ion-icon name="shield-checkmark-outline" color="primary"></ion-icon>
+            <span>Límite diario: ₡{{ dailyLimit.toLocaleString('es-CR') }}</span>
+          </div>
+          @if (amount() >= approvalThreshold) {
+            <div class="info-row warning">
+              <ion-icon name="warning-outline" color="warning"></ion-icon>
+              <span>Transferencias mayores a ₡{{ approvalThreshold.toLocaleString('es-CR') }} requieren aprobación</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Paso 4: Confirmación -->
+    @if (currentStep() === 4 && preCheckResult()) {
+      <div class="bank-section">
+        <div class="bank-section-header">
+          <h3>Confirmar Transferencia</h3>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-header">
+            <ion-icon name="swap-horizontal-outline" color="primary"></ion-icon>
+            <h4>Resumen de la Transferencia</h4>
+          </div>
+
+          <div class="summary-row">
+            <span class="label">Cuenta origen</span>
+            <span class="value">{{ getMaskedAccountNumber(sourceAccount()?.numero || '') }}</span>
+          </div>
+
+          <div class="summary-row">
+            <span class="label">Cuenta destino</span>
+            <span class="value">{{ preCheckResult()?.nombreDestinatario || 'N/A' }}</span>
+          </div>
+
+          <div class="summary-row">
+            <span class="label">Número destino</span>
+            <span class="value">{{ getMaskedAccountNumber(searchType() === 'beneficiario' ? selectedBeneficiary()?.numeroCuenta || '' : destinationAccountNumber()) }}</span>
+          </div>
+
+          <div class="summary-row">
+            <span class="label">Monto</span>
+            <span class="value amount">{{ formatCurrency(amount()) }}</span>
+          </div>
+
+          @if (preCheckResult()?.comision && preCheckResult()!.comision > 0) {
+            <div class="summary-row">
+              <span class="label">Comisión</span>
+              <span class="value">{{ formatCurrency(preCheckResult()!.comision) }}</span>
+            </div>
+
+            <div class="summary-row total">
+              <span class="label">Total a debitar</span>
+              <span class="value">{{ formatCurrency(preCheckResult()!.totalDebitar) }}</span>
+            </div>
+          }
+
+          @if (description()) {
+            <div class="summary-row">
+              <span class="label">Descripción</span>
+              <span class="value">{{ description() }}</span>
+            </div>
+          }
+
+          @if (preCheckResult()?.requiereAprobacion) {
+            <div class="approval-warning">
+              <ion-icon name="time-outline" color="warning"></ion-icon>
+              <span>Esta transferencia requiere aprobación administrativa</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Botones de Navegación -->
+    <div class="action-container">
+      @if (currentStep() < 4) {
+        <ion-button
+          expand="block"
+          size="large"
+          [disabled]="isPreChecking()"
+          (click)="nextStep()">
+          @if (isPreChecking()) {
+            <ion-spinner name="crescent"></ion-spinner>
+          } @else {
+            Continuar
+            <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+          }
+        </ion-button>
+      } @else {
+        <ion-button
+          expand="block"
+          size="large"
+          color="success"
+          [disabled]="isSubmitting()"
+          (click)="confirmTransfer()">
+          @if (isSubmitting()) {
+            <ion-spinner name="crescent"></ion-spinner>
+          } @else {
+            <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+            Confirmar Transferencia
+          }
+        </ion-button>
+      }
+    </div>
+  </div>
+</ion-content>

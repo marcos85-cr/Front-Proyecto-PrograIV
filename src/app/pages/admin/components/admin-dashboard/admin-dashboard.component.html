@@ -23,7 +23,7 @@
             <div class="bank-glass-card bank-stat-item" style="animation-delay: 0.1s;">
                 <ion-icon name="people-outline" color="primary"></ion-icon>
                 <div>
-                    <span class="bank-stat-number">{{ stats.totalUsers | number }}</span>
+                    <span class="bank-stat-number">{{ stats.totalUsuarios | number }}</span>
                     <span class="bank-stat-label">Usuarios</span>
                 </div>
             </div>
@@ -31,7 +31,7 @@
             <div class="bank-glass-card bank-stat-item" style="animation-delay: 0.2s;">
                 <ion-icon name="wallet-outline" color="success"></ion-icon>
                 <div>
-                    <span class="bank-stat-number">{{ stats.totalAccounts | number }}</span>
+                    <span class="bank-stat-number">{{ stats.totalCuentas | number }}</span>
                     <span class="bank-stat-label">Cuentas</span>
                 </div>
             </div>
@@ -39,16 +39,51 @@
             <div class="bank-glass-card bank-stat-item" style="animation-delay: 0.3s;">
                 <ion-icon name="swap-horizontal-outline" color="tertiary"></ion-icon>
                 <div>
-                    <span class="bank-stat-number">{{ stats.todayTransactions | number }}</span>
-                    <span class="bank-stat-label">Hoy</span>
+                    <span class="bank-stat-number">{{ stats.operacionesHoy | number }}</span>
+                    <span class="bank-stat-label">Operaciones Hoy</span>
                 </div>
             </div>
 
             <div class="bank-glass-card bank-stat-item" style="animation-delay: 0.4s;">
-                <ion-icon name="alert-circle-outline" color="warning"></ion-icon>
+                <ion-icon name="business-outline" color="warning"></ion-icon>
                 <div>
-                    <span class="bank-stat-number">{{ stats.pendingApprovals }}</span>
-                    <span class="bank-stat-label">Pendientes</span>
+                    <span class="bank-stat-number">{{ stats.totalProveedores | number }}</span>
+                    <span class="bank-stat-label">Proveedores</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadísticas Adicionales -->
+        <div class="bank-stats-grid mb-xl">
+            <div class="bank-glass-card bank-stat-item" style="animation-delay: 0.5s;">
+                <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
+                <div>
+                    <span class="bank-stat-number">{{ stats.usuariosActivos | number }}</span>
+                    <span class="bank-stat-label">Usuarios Activos</span>
+                </div>
+            </div>
+
+            <div class="bank-glass-card bank-stat-item" style="animation-delay: 0.6s;">
+                <ion-icon name="close-circle-outline" color="danger"></ion-icon>
+                <div>
+                    <span class="bank-stat-number">{{ stats.usuariosBloqueados | number }}</span>
+                    <span class="bank-stat-label">Usuarios Bloqueados</span>
+                </div>
+            </div>
+
+            <div class="bank-glass-card bank-stat-item" style="animation-delay: 0.7s;">
+                <ion-icon name="people-circle-outline" color="primary"></ion-icon>
+                <div>
+                    <span class="bank-stat-number">{{ stats.totalClientes | number }}</span>
+                    <span class="bank-stat-label">Clientes</span>
+                </div>
+            </div>
+
+            <div class="bank-glass-card bank-stat-item" style="animation-delay: 0.8s;">
+                <ion-icon name="trending-up-outline" color="tertiary"></ion-icon>
+                <div>
+                    <span class="bank-stat-number">${{ stats.volumenTotal | number:'1.2-2' }}</span>
+                    <span class="bank-stat-label">Volumen Total</span>
                 </div>
             </div>
         </div>

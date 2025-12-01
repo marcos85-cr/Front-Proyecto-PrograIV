@@ -1,0 +1,98 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Historial de Pagos</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToNewPayment()">
+        <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Búsqueda -->
+  <div class="search-container">
+    <ion-searchbar
+      [value]="searchTerm()"
+      (ionInput)="searchTerm.set($any($event).target.value); filterPayments()"
+      placeholder="Buscar pago..."
+      animated>
+    </ion-searchbar>
+  </div>
+
+  <div class="bank-content-container">
+    <div class="bank-section">
+      <div class="bank-section-header">
+        <h3>Pagos Realizados</h3>
+        <span class="bank-badge-primary">{{ filteredPayments().length }} pagos</span>
+      </div>
+
+      @if (filteredPayments().length > 0 && !isLoading()) {
+        <div class="bank-simple-list">
+          @for (pago of filteredPayments(); track pago.id) {
+            <div class="bank-glass-card payment-item" (click)="goToDetail(pago.id)">
+              <div class="payment-icon">
+                <ion-icon [name]="getProviderIcon(pago.proveedor)"></ion-icon>
+              </div>
+              <div class="payment-info">
+                <h4 class="payment-provider">{{ pago.proveedor }}</h4>
+                <p class="payment-contract">Contrato: {{ pago.numeroContrato }}</p>
+                <div class="payment-meta">
+                  <ion-badge [color]="getStatusColor(pago.estado)">
+                    {{ pago.estado }}
+                  </ion-badge>
+                  <span class="payment-date">{{ formatDate(pago.fechaCreacion) }}</span>
+                </div>
+              </div>
+              <div class="payment-amount">
+                <span class="amount">{{ formatCurrency(pago.monto, pago.moneda) }}</span>
+                @if (pago.comision > 0) {
+                  <span class="commission">+{{ formatCurrency(pago.comision, pago.moneda) }}</span>
+                }
+              </div>
+              <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Sin Resultados -->
+      @if (filteredPayments().length === 0 && !isLoading()) {
+        <div class="payment-empty-state">
+          <div class="empty-icon-container">
+            <ion-icon name="receipt-outline" class="empty-icon"></ion-icon>
+          </div>
+          <h3 class="empty-title">No hay pagos registrados</h3>
+          <p class="empty-description">No se encontraron pagos con los filtros aplicados</p>
+          <div class="empty-actions">
+            <ion-button fill="outline" class="empty-action-btn" (click)="clearFilters()">
+              <ion-icon name="refresh-outline" slot="start"></ion-icon>
+              Limpiar Filtros
+            </ion-button>
+            <ion-button fill="solid" class="empty-action-btn" (click)="goToNewPayment()">
+              <ion-icon name="add-outline" slot="start"></ion-icon>
+              Realizar Pago
+            </ion-button>
+          </div>
+        </div>
+      }
+
+      <!-- Cargando -->
+      @if (isLoading()) {
+        <div class="bank-loading-state">
+          <ion-spinner name="crescent" color="primary"></ion-spinner>
+          <p>Cargando pagos...</p>
+        </div>
+      }
+    </div>
+  </div>
+</ion-content>

@@ -1,0 +1,130 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Mis Cuentas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="goToCreateAccount()">
+        <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Resumen de Saldos -->
+  <div class="balance-summary">
+    <div class="bank-glass-card balance-card">
+      <div class="balance-item">
+        <span class="balance-label">Saldo Total CRC</span>
+        <span class="balance-amount">{{ formatCurrency(stats().saldoTotalCRC, 'CRC') }}</span>
+      </div>
+      <div class="balance-divider"></div>
+      <div class="balance-item">
+        <span class="balance-label">Saldo Total USD</span>
+        <span class="balance-amount">{{ formatCurrency(stats().saldoTotalUSD, 'USD') }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Búsqueda y Filtros -->
+  <div class="search-container">
+    <ion-searchbar
+      [value]="searchTerm()"
+      (ionInput)="searchTerm.set($any($event).target.value); filterAccounts()"
+      placeholder="Buscar cuenta..."
+      animated>
+    </ion-searchbar>
+
+    <div class="filters-container">
+      <ion-segment [value]="filterStatus()" (ionChange)="filterStatus.set($any($event).detail.value); filterAccounts()">
+        <ion-segment-button value="todos">
+          <ion-label>Todas</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="Activa">
+          <ion-label>Activas</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="Bloqueada">
+          <ion-label>Bloqueadas</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+  </div>
+
+  <div class="bank-content-container">
+    <!-- Lista de Cuentas -->
+    <div class="bank-section">
+      <div class="bank-section-header">
+        <h3>Cuentas Registradas</h3>
+        <span class="bank-badge-primary">{{ filteredAccounts().length }} cuentas</span>
+      </div>
+
+      @if (filteredAccounts().length > 0 && !isLoading()) {
+        <div class="bank-simple-list">
+          @for (cuenta of filteredAccounts(); track cuenta.id) {
+            <div class="bank-glass-card bank-customer-item">
+              <div class="customer-main-content" (click)="goToAccountDetail(cuenta.id)">
+                <div class="bank-customer-avatar">
+                  <ion-icon [name]="getTypeIcon(cuenta.tipo)" color="primary"></ion-icon>
+                </div>
+                <div class="bank-customer-info">
+                  <h4 class="bank-customer-name">****{{ cuenta.numero.slice(-4) }}</h4>
+                  <p class="bank-customer-email">{{ cuenta.tipo }} - {{ cuenta.moneda }}</p>
+                  <div class="bank-customer-meta">
+                    <span class="bank-badge" [class.bank-badge-success]="cuenta.estado === 'Activa'"
+                          [class.bank-badge-warning]="cuenta.estado === 'Bloqueada'"
+                          [class.bank-badge-medium]="cuenta.estado === 'Cerrada'">
+                      {{ cuenta.estado }}
+                    </span>
+                    <span class="bank-text-small balance-text">{{ formatCurrency(cuenta.saldo, cuenta.moneda) }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="customer-actions">
+                @if (cuenta.estado !== 'Cerrada') {
+                  <ion-button fill="clear" size="small" (click)="toggleBlock(cuenta); $event.stopPropagation()">
+                    <ion-icon [name]="cuenta.estado === 'Bloqueada' ? 'lock-open-outline' : 'lock-closed-outline'"
+                              [color]="cuenta.estado === 'Bloqueada' ? 'success' : 'warning'" slot="icon-only"></ion-icon>
+                  </ion-button>
+                  @if (cuenta.saldo === 0 && cuenta.estado === 'Activa') {
+                    <ion-button fill="clear" size="small" color="danger" (click)="closeAccount(cuenta); $event.stopPropagation()">
+                      <ion-icon name="close-circle-outline" slot="icon-only"></ion-icon>
+                    </ion-button>
+                  }
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Sin Resultados -->
+      @if (filteredAccounts().length === 0 && !isLoading()) {
+        <div class="bank-empty-state">
+          <ion-icon name="wallet-outline" color="medium"></ion-icon>
+          <h3>No se encontraron cuentas</h3>
+          <p>Intenta ajustar los filtros o crea una nueva cuenta</p>
+          <ion-button fill="outline" (click)="goToCreateAccount()">
+            <ion-icon name="add-outline" slot="start"></ion-icon>
+            Crear Cuenta
+          </ion-button>
+        </div>
+      }
+
+      <!-- Cargando -->
+      @if (isLoading()) {
+        <div class="bank-loading-state">
+          <ion-spinner name="crescent" color="primary"></ion-spinner>
+          <p>Cargando cuentas...</p>
+        </div>
+      }
+    </div>
+  </div>
+</ion-content>

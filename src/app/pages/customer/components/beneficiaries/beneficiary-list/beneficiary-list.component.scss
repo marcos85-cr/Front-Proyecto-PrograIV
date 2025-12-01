@@ -1,0 +1,161 @@
+// =====================================================
+// BENEFICIARY LIST COMPONENT STYLES
+// Siguiendo patrones de CustomerListComponent (DARK THEME)
+// =====================================================
+
+// Search Container
+.search-container {
+  padding: 0.5rem 1rem 0;
+}
+
+ion-searchbar {
+  --background: rgba(0, 0, 0, 0.2);
+  --border-radius: 12px;
+  --box-shadow: none;
+  --placeholder-color: rgba(255, 255, 255, 0.5);
+  --color: #ffffff;
+  --icon-color: rgba(255, 255, 255, 0.5);
+  --clear-button-color: rgba(255, 255, 255, 0.5);
+  padding: 0.5rem 0;
+  margin: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+// Filters Container
+.filters-container {
+  padding: 0.5rem 0;
+
+  ion-segment {
+    --background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    ion-segment-button {
+      --color: rgba(255, 255, 255, 0.7);
+      --color-checked: white;
+      --indicator-color: var(--ion-color-primary);
+      --indicator-box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+      font-size: 0.75rem;
+      font-weight: 600;
+      min-height: 38px;
+      border-radius: 8px;
+    }
+  }
+}
+
+// Beneficiary List
+.bank-simple-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.beneficiary-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+}
+
+.beneficiary-main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+// Beneficiary Avatar
+.beneficiary-avatar {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+
+  ion-icon {
+    font-size: 1.5rem;
+    color: #ffffff;
+  }
+}
+
+// Beneficiary Info
+.beneficiary-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.beneficiary-alias {
+  margin: 0 0 0.2rem 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.beneficiary-name {
+  margin: 0 0 0.35rem 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.beneficiary-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .account-number {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: 'Courier New', monospace;
+  }
+
+  ion-badge {
+    font-size: 0.65rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+}
+
+// Beneficiary Actions
+.beneficiary-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+
+  ion-button {
+    --padding-start: 0.4rem;
+    --padding-end: 0.4rem;
+    margin: 0;
+    height: 36px;
+
+    ion-icon {
+      font-size: 1.15rem;
+    }
+  }
+}

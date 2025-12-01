@@ -1,0 +1,119 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Nueva Cuenta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <div class="bank-content-container">
+    <!-- Información del Proceso -->
+    <div class="info-card">
+      <div class="info-header">
+        <ion-icon name="information-circle-outline" color="primary"></ion-icon>
+        <h3>Abrir Nueva Cuenta</h3>
+      </div>
+      <p>Complete los datos para solicitar la apertura de una nueva cuenta. El proceso es inmediato.</p>
+    </div>
+
+    <!-- Formulario -->
+    <div class="bank-section">
+      <div class="bank-section-header">
+        <h3>Datos de la Cuenta</h3>
+      </div>
+
+      <div class="form-card">
+        <!-- Tipo de Cuenta -->
+        <div class="form-group">
+          <ion-label class="form-label">Tipo de Cuenta</ion-label>
+          <div class="options-container">
+            <div class="option-card" [class.selected]="accountType() === 'Ahorro'" (click)="accountType.set('Ahorro')">
+              <ion-icon name="wallet-outline"></ion-icon>
+              <span>Ahorro</span>
+            </div>
+            <div class="option-card" [class.selected]="accountType() === 'Corriente'" (click)="accountType.set('Corriente')">
+              <ion-icon name="card-outline"></ion-icon>
+              <span>Corriente</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Moneda -->
+        <div class="form-group">
+          <ion-label class="form-label">Moneda</ion-label>
+          <div class="options-container">
+            <div class="option-card" [class.selected]="currency() === 'CRC'" (click)="currency.set('CRC')">
+              <span class="currency-symbol">₡</span>
+              <span>Colones</span>
+            </div>
+            <div class="option-card" [class.selected]="currency() === 'USD'" (click)="currency.set('USD')">
+              <span class="currency-symbol">$</span>
+              <span>Dólares</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Depósito Inicial -->
+        <div class="form-group">
+          <ion-label class="form-label">Depósito Inicial</ion-label>
+          <ion-item class="bank-input-item" lines="none">
+            <ion-input
+              type="number"
+              [value]="initialDeposit()"
+              (ionInput)="initialDeposit.set(+$any($event).target.value)"
+              [placeholder]="'Mínimo ' + currencySymbol + minDeposit"
+              [min]="minDeposit">
+            </ion-input>
+            <ion-note slot="end" class="currency-note">{{ currency() }}</ion-note>
+          </ion-item>
+          <p class="helper-text">
+            <ion-icon name="information-circle-outline"></ion-icon>
+            Depósito mínimo: {{ currencySymbol }}{{ minDeposit.toLocaleString('es-CR') }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumen -->
+    <div class="bank-section">
+      <div class="bank-section-header">
+        <h3>Resumen</h3>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-row">
+          <span class="summary-label">Tipo de cuenta</span>
+          <span class="summary-value">{{ accountType() }}</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Moneda</span>
+          <span class="summary-value">{{ currency() }}</span>
+        </div>
+        <div class="summary-row highlight">
+          <span class="summary-label">Depósito inicial</span>
+          <span class="summary-value">{{ currencySymbol }}{{ initialDeposit().toLocaleString('es-CR', { minimumFractionDigits: 2 }) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón de Acción -->
+    <div class="action-container">
+      <ion-button
+        expand="block"
+        size="large"
+        [disabled]="!isFormValid() || isSubmitting()"
+        (click)="confirmCreation()">
+        @if (isSubmitting()) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          Crear Cuenta
+        }
+      </ion-button>
+    </div>
+  </div>
+</ion-content>
