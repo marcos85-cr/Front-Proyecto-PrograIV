@@ -12,7 +12,7 @@ import { TransferRequest, TransferPrecheck, Transaction } from '../shared/models
   providedIn: 'root'
 })
 export class TransactionService {
-  private apiUrl = `${environment.apiUrl || 'https://tu-api.com/api'}/transactions`;
+  private apiUrl = `${environment.apiUrl}/transactions`;
 
   constructor(private http: HttpClient) {}
 
