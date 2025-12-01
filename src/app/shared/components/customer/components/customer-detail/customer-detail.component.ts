@@ -1,9 +1,9 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { CustomerService } from '../../services/customer.service';
-import { ToastService } from '../../../../../../services/toast.service';
+import { ToastService } from '../../../../../services/toast.service';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 
@@ -59,6 +59,7 @@ export class CustomerDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private location: Location,
     private customerService: CustomerService,
     private toastService: ToastService
   ) {}
@@ -123,7 +124,7 @@ export class CustomerDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/admin/customers']);
+    this.location.back();
   }
 
   goToEdit(): void {

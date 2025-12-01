@@ -9,16 +9,16 @@ import {
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { ToastService } from './../../../../../../services/toast.service';
+import { ToastService } from '../../../../../services/toast.service';
 import { CustomerService } from '../../services/customer.service';
 import { AlertController } from '@ionic/angular';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { EMPTY, forkJoin } from 'rxjs';
 import { USER_ROLES } from 'src/app/shared/constants/user-roles.constants';
-import { Account } from '../../../accounts/models/account.dto';
-import { AccountsService } from '../../../accounts/services/accounts.service';
+import { Account } from '../../../../../pages/admin/components/accounts/models/account.dto';
+import { AccountsService } from '../../../../../pages/admin/components/accounts/services/accounts.service';
 
 // Constantes para tipos de cuenta y monedas
 export const ACCOUNT_TYPES = [
@@ -58,6 +58,7 @@ export class CustomerCreateComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
+    private location: Location,
     private customerService: CustomerService,
     private toastService: ToastService,
     private alertController: AlertController,
@@ -453,7 +454,7 @@ export class CustomerCreateComponent implements OnInit {
   );
 
   goBack(): void {
-    this.router.navigate(['/admin/customers']);
+    this.location.back();
   }
 
   goToCustomerDetail(): void {

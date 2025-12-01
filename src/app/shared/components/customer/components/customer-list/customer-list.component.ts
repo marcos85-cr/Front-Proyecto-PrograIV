@@ -1,10 +1,10 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { Customer } from '../../models/customer.dto';
 import { IonicModule, AlertController } from '@ionic/angular';
-import { ToastService } from '../../../../../../services/toast.service';
+import { ToastService } from '../../../../../services/toast.service';
 import { CustomerService } from '../../services/customer.service';
 
 @Component({
@@ -34,6 +34,7 @@ export class CustomerListComponent implements OnInit {
   constructor(
     private alertController: AlertController,
     private router: Router,
+    private location: Location,
     private toastService: ToastService,
     private customerService: CustomerService
   ) {}
@@ -195,5 +196,9 @@ export class CustomerListComponent implements OnInit {
   handleRefresh(event: any): void {
     this.loadCustomers();
     event.target.complete();
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 }

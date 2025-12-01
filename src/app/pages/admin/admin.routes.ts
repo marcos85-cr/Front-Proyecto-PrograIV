@@ -14,7 +14,7 @@ export const MAIN_ROUTES: Routes = [
   {
     path: 'customers',
     loadChildren: () =>
-      import('./components/customer/customer.routes').then(
+      import('../../shared/components/customer/customer.routes').then(
         (m) => m.CUSTOMER_ROUTES
       ),
   },
