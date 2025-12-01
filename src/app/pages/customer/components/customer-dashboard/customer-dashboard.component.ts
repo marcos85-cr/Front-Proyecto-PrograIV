@@ -1,22 +1,23 @@
 import { CommonModule } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
-import { register } from 'swiper/element/bundle';
+import { catchError, finalize, tap, forkJoin } from 'rxjs';
+import { EMPTY } from 'rxjs';
 
-interface Account {
-  id: number;
-  acc_no: string;
-  acc_type: string;
-  balance: number;
-}
+import { AuthService } from '../../../../services/auth.service';
+import { ToastService } from '../../../../services/toast.service';
+import { CustomerAccountsService } from '../../services/customer-accounts.service';
+import { CustomerTransfersService } from '../../services/customer-transfers.service';
+import { CuentaListaDto } from '../../model/account.model';
 
 interface Transaction {
   id: number;
-  to: string;
-  date: string;
-  amount: number;
-  type?: 'income' | 'expense';
+  descripcion: string;
+  fecha: string;
+  monto: number;
+  tipo: string;
+  estado: string;
 }
 
 @Component({
@@ -24,139 +25,105 @@ interface Transaction {
   templateUrl: './customer-dashboard.component.html',
   styleUrls: ['./customer-dashboard.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, RouterModule],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [CommonModule, IonicModule, RouterModule]
 })
 export class CustomerDashboardComponent implements OnInit {
-  // Signals para estado reactivo
-  accounts = signal<Account[]>([]);
+  userName = signal('');
+  accounts = signal<CuentaListaDto[]>([]);
   transactions = signal<Transaction[]>([]);
   isLoading = signal(false);
-  userName = signal('Marcos Vargas');
 
-  // Computed signals
-  totalBalance = computed(() =>
-    this.accounts().reduce((sum, acc) => sum + acc.balance, 0)
-  );
+  totalBalance = computed(() => {
+    const cuentasCRC = this.accounts().filter(c => c.moneda === 'CRC');
+    const cuentasUSD = this.accounts().filter(c => c.moneda === 'USD');
+    return {
+      CRC: cuentasCRC.reduce((sum, acc) => sum + acc.saldo, 0),
+      USD: cuentasUSD.reduce((sum, acc) => sum + acc.saldo, 0)
+    };
+  });
 
   recentTransactions = computed(() =>
     this.transactions()
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
       .slice(0, 5)
   );
 
-  // Acciones rápidas del dashboard
-  quickActions = signal([
-    {
-      icon: 'swap-horizontal-outline',
-      label: 'Transferir',
-      route: '/customer/transferencias/nueva',
-      color: 'primary'
-    },
-    {
-      icon: 'wallet-outline',
-      label: 'Mis Cuentas',
-      route: '/customer/cuentas',
-      color: 'success'
-    },
-    {
-      icon: 'cash-outline',
-      label: 'Pagar Servicio',
-      route: '/customer/pagos/realizar',
-      color: 'warning'
-    },
-    {
-      icon: 'document-outline',
-      label: 'Reportes',
-      route: '/customer/reportes',
-      color: 'tertiary'
-    },
-  ]);
+  quickActions = [
+    { icon: 'swap-horizontal-outline', label: 'Transferir', route: '/customer/transferencias/nueva' },
+    { icon: 'wallet-outline', label: 'Cuentas', route: '/customer/cuentas' },
+    { icon: 'card-outline', label: 'Pagos', route: '/customer/pagos/realizar' },
+    { icon: 'time-outline', label: 'Historial', route: '/customer/transferencias' }
+  ];
+
+  constructor(
+    private authService: AuthService,
+    private toastService: ToastService,
+    private accountsService: CustomerAccountsService,
+    private transfersService: CustomerTransfersService
+  ) {}
 
   ngOnInit(): void {
-    // Registrar Swiper elementos personalizados
-    register();
+    this.loadUserInfo();
     this.loadDashboardData();
   }
 
-  /**
-   * Carga los datos del dashboard
-   */
+  private loadUserInfo(): void {
+    const user = this.authService.getUserInfo();
+    this.userName.set(user?.nombre || user?.name || 'Cliente');
+  }
+
   private loadDashboardData(): void {
     this.isLoading.set(true);
 
-    // TODO: Reemplazar con llamadas reales al servicio
-    this.accounts.set([
-      { id: 1, acc_no: '1234567890', acc_type: 'Corriente', balance: 2500.75 },
-      { id: 2, acc_no: '0987654321', acc_type: 'Ahorros', balance: 10500.00 },
-      { id: 3, acc_no: '1122334455', acc_type: 'Inversión', balance: 50000.50 },
-    ]);
-
-    this.transactions.set([
-      { id: 1, to: 'Pedro Sanchez', date: '2025-05-22', amount: 5000, type: 'income' },
-      { id: 2, to: 'Marta Porras', date: '2025-03-02', amount: 7000, type: 'income' },
-      { id: 3, to: 'Ezequiel Santos', date: '2025-07-28', amount: -3250, type: 'expense' },
-      { id: 4, to: 'Tomas Cerrano', date: '2025-01-09', amount: 1000, type: 'income' },
-      { id: 5, to: 'Juan Perez', date: '2025-04-13', amount: -800, type: 'expense' },
-    ]);
-
-    this.isLoading.set(false);
+    forkJoin({
+      accounts: this.accountsService.getMisCuentas(),
+      transfers: this.transfersService.getMyTransfers()
+    }).pipe(
+      tap(({ accounts, transfers }) => {
+        if (accounts.success && accounts.data) {
+          this.accounts.set(accounts.data);
+        }
+        if (transfers.success && transfers.data) {
+          this.transactions.set(transfers.data);
+        }
+      }),
+      catchError(() => {
+        this.toastService.error('Error al cargar datos');
+        return EMPTY;
+      }),
+      finalize(() => this.isLoading.set(false))
+    ).subscribe();
   }
 
-  /**
-   * Formatea el balance como moneda
-   */
-  formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('es-CR', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2
-    }).format(amount);
+  formatCurrency(amount: number, currency: string = 'CRC'): string {
+    const symbol = currency === 'USD' ? '$' : '₡';
+    return `${symbol}${amount.toLocaleString('es-CR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
 
-  /**
-   * Formatea la fecha
-   */
   formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('es-CR', {
+      day: '2-digit',
+      month: 'short'
     });
   }
 
-  /**
-   * Obtiene el ícono según el tipo de transacción
-   */
-  getTransactionIcon(amount: number): string {
-    return amount >= 0 ? 'arrow-down-circle' : 'arrow-up-circle';
+  getTransactionIcon(tipo: string): string {
+    const icons: Record<string, string> = {
+      transferencia: 'swap-horizontal-outline',
+      deposito: 'arrow-down-outline',
+      retiro: 'arrow-up-outline',
+      pago: 'card-outline'
+    };
+    return icons[tipo?.toLowerCase()] || 'cash-outline';
   }
 
-  /**
-   * Obtiene el color según el tipo de transacción
-   */
-  getTransactionColor(amount: number): string {
-    return amount >= 0 ? 'success' : 'danger';
+  isIncome(tipo: string): boolean {
+    return ['deposito', 'ingreso'].includes(tipo?.toLowerCase());
   }
 
-  /**
-   * Refresca los datos del dashboard
-   */
   refreshDashboard(event?: any): void {
     this.loadDashboardData();
-    if (event) {
-      event.target.complete();
-    }
-  }
-
-  /**
-   * Trackby para optimizar el renderizado de listas
-   */
-  trackByAccountId(index: number, account: Account): number {
-    return account.id;
-  }
-
-  trackByTransactionId(index: number, transaction: Transaction): number {
-    return transaction.id;
+    if (event) setTimeout(() => event.target.complete(), 500);
   }
 }
