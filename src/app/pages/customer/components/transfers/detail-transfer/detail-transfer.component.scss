@@ -1,0 +1,359 @@
+// Contenedor principal
+.bank-content-container {
+  padding: 1rem;
+  padding-bottom: 2rem;
+}
+
+// Loading state
+.bank-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  min-height: 50vh;
+
+  p {
+    margin: 1rem 0 0;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+// Status Card
+.status-card {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: none !important;
+  border-radius: 20px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+
+  .status-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+
+    .status-icon {
+      font-size: 3rem;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+    }
+
+    .status-info {
+      flex: 1;
+
+      .status-title {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2d3748;
+        letter-spacing: -0.02em;
+      }
+
+      .status-date {
+        margin: 0.25rem 0 0;
+        font-size: 0.95rem;
+        color: #718096;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .reference-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(248, 250, 252, 0.8);
+    margin: 1rem -1.5rem -1.5rem;
+    padding: 1rem 1.5rem;
+
+    .reference-label {
+      font-size: 0.85rem;
+      color: #4a5568;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .reference-number {
+      font-size: 0.9rem;
+      color: #2d3748;
+      font-weight: 700;
+      font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+      background: rgba(66, 153, 225, 0.1);
+      padding: 0.25rem 0.75rem;
+      border-radius: 8px;
+      border: 1px solid rgba(66, 153, 225, 0.2);
+    }
+  }
+}
+
+// Amount Information
+.amount-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+
+  &.total {
+    border-top: 2px solid rgba(0, 0, 0, 0.1);
+    padding-top: 1.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .amount-label {
+    font-size: 1rem;
+    color: #4a5568;
+    font-weight: 600;
+  }
+
+  .amount-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2d3748;
+
+    &.total {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #10b981;
+    }
+  }
+}
+
+.amount-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+  margin: 0.5rem 0;
+}
+
+// Account Information
+.accounts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.account-card {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  padding: 1.5rem !important;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12) !important;
+  }
+
+  .account-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+
+    .account-icon {
+      font-size: 2.5rem;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
+    }
+
+    .account-label {
+      font-size: 0.85rem;
+      color: #6b7280;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .account-info {
+    .account-number {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1f2937;
+      letter-spacing: 0.05em;
+    }
+
+    .account-full {
+      margin: 0;
+      font-size: 0.75rem;
+      color: #9ca3af;
+      font-family: 'SF Mono', 'Monaco', monospace;
+      background: rgba(243, 244, 246, 0.8);
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      border: 1px solid rgba(229, 231, 235, 0.8);
+    }
+  }
+}
+
+// Beneficiary Information
+.beneficiary-info {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  padding: 1.25rem 1.5rem !important;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .beneficiary-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+
+    .beneficiary-icon {
+      font-size: 2.2rem;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
+    }
+
+    .beneficiary-label {
+      font-size: 0.75rem;
+      color: #6b7280;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .beneficiary-name {
+    flex: 1;
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1f2937;
+    background: rgba(219, 234, 254, 0.5);
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(147, 197, 253, 0.3);
+  }
+}
+
+// Balance Information
+.balance-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .balance-label {
+    font-size: 1rem;
+    color: #4a5568;
+    font-weight: 600;
+  }
+
+  .balance-value {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #2d3748;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+// Description
+.description-text {
+  margin: 0;
+  font-size: 1rem;
+  color: #4b5563;
+  line-height: 1.6;
+  background: rgba(249, 250, 251, 0.8);
+  padding: 1rem;
+  border-radius: 12px;
+  border-left: 4px solid #3b82f6;
+}
+
+// Actions Card
+.actions-card {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: none !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+  padding: 1.5rem !important;
+  text-align: center;
+
+  ion-button {
+    --background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    --background-hover: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    --box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    --border-radius: 12px;
+    --padding-top: 1rem;
+    --padding-bottom: 1rem;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.025em;
+    margin: 0;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      --box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    }
+  }
+}
+
+// Section headers enhancement
+:host ::ng-deep .bank-section-header {
+  h3 {
+    font-weight: 700 !important;
+    font-size: 1.25rem !important;
+    position: relative;
+    padding-bottom: 0.5rem;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      border-radius: 2px;
+    }
+  }
+}
+
+// Enhanced card styles for all bank-glass-card elements
+::ng-deep .bank-glass-card {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+  padding: 1.5rem !important;
+  margin-bottom: 1.25rem !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12) !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
+  }
+}
+
+// Professional spacing and typography
+.bank-section {
+  margin-bottom: 2rem;
+}
+
+// Ensure proper contrast and readability
+ion-content {
+  --background: transparent;
+}

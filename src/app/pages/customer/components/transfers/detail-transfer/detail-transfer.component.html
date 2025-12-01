@@ -1,0 +1,160 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Detalle de Transferencia</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="bank-loading-state">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Cargando detalle...</p>
+    </div>
+  }
+
+  <!-- Transfer Detail -->
+  @if (transfer() && !isLoading()) {
+    <div class="bank-content-container">
+      <!-- Status Card -->
+      <div class="bank-glass-card status-card">
+        <div class="status-header">
+          <ion-icon [name]="getEstadoIcon(transfer()!.estado)"
+                    [color]="getEstadoColor(transfer()!.estado)"
+                    class="status-icon"></ion-icon>
+          <div class="status-info">
+            <h2 class="status-title">{{ transfer()!.estado }}</h2>
+            <p class="status-date">{{ formatDateTime(transfer()!.fechaCreacion) }}</p>
+          </div>
+        </div>
+
+        @if (transfer()!.comprobanteReferencia) {
+          <div class="reference-info">
+            <span class="reference-label">Referencia:</span>
+            <span class="reference-number">{{ transfer()!.comprobanteReferencia }}</span>
+          </div>
+        }
+      </div>
+
+      <!-- Amount Information -->
+      <div class="bank-section">
+        <div class="bank-section-header">
+          <h3>Información del Monto</h3>
+        </div>
+
+        <div class="bank-glass-card">
+          <div class="amount-item">
+            <span class="amount-label">Monto Transferido</span>
+            <span class="amount-value">{{ formatCurrency(transfer()!.monto, transfer()!.moneda) }}</span>
+          </div>
+
+          <div class="amount-divider"></div>
+
+          <div class="amount-item">
+            <span class="amount-label">Comisión</span>
+            <span class="amount-value">{{ formatCurrency(transfer()!.comision, transfer()!.moneda) }}</span>
+          </div>
+
+          <div class="amount-divider"></div>
+
+          <div class="amount-item total">
+            <span class="amount-label">Total Debitado</span>
+            <span class="amount-value total">{{ formatCurrency(transfer()!.monto + transfer()!.comision, transfer()!.moneda) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account Information -->
+      <div class="bank-section">
+        <div class="bank-section-header">
+          <h3>Cuentas Involucradas</h3>
+        </div>
+
+        <div class="accounts-grid">
+          <!-- Source Account -->
+          <div class="bank-glass-card account-card">
+            <div class="account-header">
+              <ion-icon name="arrow-up-circle" color="danger" class="account-icon"></ion-icon>
+              <span class="account-label">Cuenta Origen</span>
+            </div>
+            <div class="account-info">
+              <p class="account-number">****{{ transfer()!.cuentaOrigenNumero?.slice(-4) || '----' }}</p>
+              <p class="account-full">{{ transfer()!.cuentaOrigenNumero || 'No disponible' }}</p>
+            </div>
+          </div>
+
+          <!-- Destination Account -->
+          <div class="bank-glass-card account-card">
+            <div class="account-header">
+              <ion-icon name="arrow-down-circle" color="success" class="account-icon"></ion-icon>
+              <span class="account-label">Cuenta Destino</span>
+            </div>
+            <div class="account-info">
+              <p class="account-number">****{{ transfer()!.cuentaDestinoNumero?.slice(-4) || '----' }}</p>
+              <p class="account-full">{{ transfer()!.cuentaDestinoNumero || 'No disponible' }}</p>
+            </div>
+          </div>
+        </div>
+
+        @if (transfer()!.beneficiarioAlias) {
+          <div class="bank-glass-card beneficiary-info">
+            <div class="beneficiary-header">
+              <ion-icon name="person-circle" color="primary" class="beneficiary-icon"></ion-icon>
+              <span class="beneficiary-label">Beneficiario</span>
+            </div>
+            <p class="beneficiary-name">{{ transfer()!.beneficiarioAlias }}</p>
+          </div>
+        }
+      </div>
+
+      <!-- Balance Information -->
+      <div class="bank-section">
+        <div class="bank-section-header">
+          <h3>Información de Saldo</h3>
+        </div>
+
+        <div class="bank-glass-card">
+          <div class="balance-item">
+            <span class="balance-label">Saldo Anterior</span>
+            <span class="balance-value">{{ formatCurrency(transfer()!.saldoAnterior, transfer()!.moneda) }}</span>
+          </div>
+
+          <div class="balance-item">
+            <span class="balance-label">Saldo Posterior</span>
+            <span class="balance-value">{{ formatCurrency(transfer()!.saldoPosterior, transfer()!.moneda) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Information -->
+      @if (transfer()!.descripcion) {
+        <div class="bank-section">
+          <div class="bank-section-header">
+            <h3>Descripción</h3>
+          </div>
+
+          <div class="bank-glass-card">
+            <p class="description-text">{{ transfer()!.descripcion }}</p>
+          </div>
+        </div>
+      }
+
+      <!-- Actions -->
+      @if (transfer()!.estado === 'Fallida') {
+        <div class="bank-section">
+          <div class="bank-glass-card actions-card">
+            <ion-button expand="block" fill="outline" (click)="retryTransfer()">
+              <ion-icon name="refresh" slot="start"></ion-icon>
+              Reintentar Transferencia
+            </ion-button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</ion-content>

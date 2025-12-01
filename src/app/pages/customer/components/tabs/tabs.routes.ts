@@ -23,6 +23,7 @@ import { PaymentHistoryComponent } from '../payments/payment-history/payment-his
 // Reports
 import { AccountStatementComponent } from '../reports/account-statement/account-statement.component';
 import { CustomerSummaryComponent } from '../reports/customer-summary/customer-summary.component';
+import { DetailTransferComponent } from '../transfers/detail-transfer/detail-transfer.component';
 
 export const TABS_ROUTES: Routes = [
   {
@@ -68,6 +69,9 @@ export const TABS_ROUTES: Routes = [
       {
         path: 'beneficiarios/crear',
         component: CreateBeneficiaryComponent
+      }, {
+        path: ':id',
+        component: DetailTransferComponent
       }
     ]
   },
