@@ -182,4 +182,73 @@ export class ReportsDashboardComponent implements OnInit, OnDestroy, ViewWillEnt
   goBack(): void {
     this.router.navigate(['/admin/dashboard']);
   }
+
+  /**
+   * Exporta el reporte de totales del período
+   */
+  exportPeriodTotals(format: 'pdf' | 'xlsx'): void {
+    const start = this.startDate();
+    const end = this.endDate();
+
+    this.reportService.exportPeriodTotals(start, end, format).pipe(
+      tap(blob => {
+        this.downloadFile(blob, `totales-periodo-${start}-${end}.${format}`);
+        this.toastService.success(`Reporte exportado exitosamente`);
+      }),
+      catchError(() => {
+        this.toastService.error('Error al exportar el reporte');
+        return EMPTY;
+      })
+    ).subscribe();
+  }
+
+  /**
+   * Exporta el reporte de top clientes
+   */
+  exportTopClients(format: 'pdf' | 'xlsx'): void {
+    const start = this.startDate();
+    const end = this.endDate();
+
+    this.reportService.exportTopClients(start, end, 10, format).pipe(
+      tap(blob => {
+        this.downloadFile(blob, `top-clientes-${start}-${end}.${format}`);
+        this.toastService.success(`Reporte exportado exitosamente`);
+      }),
+      catchError(() => {
+        this.toastService.error('Error al exportar el reporte');
+        return EMPTY;
+      })
+    ).subscribe();
+  }
+
+  /**
+   * Exporta el reporte de volumen diario
+   */
+  exportDailyVolume(format: 'pdf' | 'xlsx'): void {
+    const start = this.startDate();
+    const end = this.endDate();
+
+    this.reportService.exportDailyVolume(start, end, format).pipe(
+      tap(blob => {
+        this.downloadFile(blob, `volumen-diario-${start}-${end}.${format}`);
+        this.toastService.success(`Reporte exportado exitosamente`);
+      }),
+      catchError(() => {
+        this.toastService.error('Error al exportar el reporte');
+        return EMPTY;
+      })
+    ).subscribe();
+  }
+
+  /**
+   * Descarga un archivo blob
+   */
+  private downloadFile(blob: Blob, fileName: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    window.URL.revokeObjectURL(url);
+  }
 }

@@ -270,4 +270,37 @@ export class AuditLogComponent implements OnInit, OnDestroy, ViewWillEnter, View
   goBack(): void {
     this.router.navigate(['/admin/dashboard']);
   }
+
+  /**
+   * Exporta el registro de auditoría
+   */
+  exportAuditLog(format: 'pdf' | 'xlsx'): void {
+    const filters: FiltrosAuditoria = {};
+    if (this.startDate()) filters.fechaInicio = this.startDate();
+    if (this.endDate()) filters.fechaFin = this.endDate();
+    if (this.filterOperacion() !== 'todos') filters.tipoOperacion = this.filterOperacion();
+
+    this.adminService.exportAuditLogs(filters, format).pipe(
+      tap(blob => {
+        this.downloadFile(blob, `auditoria-${this.startDate()}-${this.endDate()}.${format}`);
+        this.toastService.success('Registro exportado exitosamente');
+      }),
+      catchError(() => {
+        this.toastService.error('Error al exportar el registro');
+        return EMPTY;
+      })
+    ).subscribe();
+  }
+
+  /**
+   * Descarga un archivo blob
+   */
+  private downloadFile(blob: Blob, fileName: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    window.URL.revokeObjectURL(url);
+  }
 }

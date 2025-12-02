@@ -73,10 +73,22 @@
     <!-- Totales del Período -->
     @if (periodTotals()) {
     <div class="report-section">
-      <h3 class="section-title">
-        <ion-icon name="stats-chart-outline"></ion-icon>
-        Totales del Período
-      </h3>
+      <div class="section-header">
+        <h3 class="section-title">
+          <ion-icon name="stats-chart-outline"></ion-icon>
+          Totales del Período
+        </h3>
+        <div class="export-buttons">
+          <ion-button size="small" fill="outline" (click)="exportPeriodTotals('pdf')">
+            <ion-icon name="document-outline" slot="start"></ion-icon>
+            PDF
+          </ion-button>
+          <ion-button size="small" fill="outline" (click)="exportPeriodTotals('xlsx')">
+            <ion-icon name="document-text-outline" slot="start"></ion-icon>
+            Excel
+          </ion-button>
+        </div>
+      </div>
       <div class="totals-grid">
         <div class="total-card">
           <span class="total-label">Total Transacciones</span>
@@ -129,10 +141,22 @@
     <!-- Volumen Diario -->
     @if (dailyVolume()) {
     <div class="report-section">
-      <h3 class="section-title">
-        <ion-icon name="trending-up-outline"></ion-icon>
-        Resumen de Volumen
-      </h3>
+      <div class="section-header">
+        <h3 class="section-title">
+          <ion-icon name="trending-up-outline"></ion-icon>
+          Resumen de Volumen
+        </h3>
+        <div class="export-buttons">
+          <ion-button size="small" fill="outline" (click)="exportDailyVolume('pdf')">
+            <ion-icon name="document-outline" slot="start"></ion-icon>
+            PDF
+          </ion-button>
+          <ion-button size="small" fill="outline" (click)="exportDailyVolume('xlsx')">
+            <ion-icon name="document-text-outline" slot="start"></ion-icon>
+            Excel
+          </ion-button>
+        </div>
+      </div>
       <div class="volume-card">
         <div class="volume-row">
           <span class="volume-label">Total Días</span>
@@ -171,10 +195,22 @@
     <!-- Top Clientes Activos -->
     @if (activeClients().length > 0) {
     <div class="report-section">
-      <h3 class="section-title">
-        <ion-icon name="trophy-outline"></ion-icon>
-        Top 5 Clientes Más Activos
-      </h3>
+      <div class="section-header">
+        <h3 class="section-title">
+          <ion-icon name="trophy-outline"></ion-icon>
+          Top 5 Clientes Más Activos
+        </h3>
+        <div class="export-buttons">
+          <ion-button size="small" fill="outline" (click)="exportTopClients('pdf')">
+            <ion-icon name="document-outline" slot="start"></ion-icon>
+            PDF
+          </ion-button>
+          <ion-button size="small" fill="outline" (click)="exportTopClients('xlsx')">
+            <ion-icon name="document-text-outline" slot="start"></ion-icon>
+            Excel
+          </ion-button>
+        </div>
+      </div>
       <div class="clients-list">
         @for (client of activeClients(); track client.clienteId; let i = $index) {
         <div class="client-card">

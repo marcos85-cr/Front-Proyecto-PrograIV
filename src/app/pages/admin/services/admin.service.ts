@@ -135,6 +135,21 @@ export class AdminService {
     );
   }
 
+  exportAuditLogs(filters?: FiltrosAuditoria, format: 'pdf' | 'xlsx' = 'pdf'): Observable<Blob> {
+    let params = new HttpParams().append('format', format);
+    if (filters) {
+      if (filters.fechaInicio) params = params.append('fechaInicio', filters.fechaInicio);
+      if (filters.fechaFin) params = params.append('fechaFin', filters.fechaFin);
+      if (filters.tipoOperacion) params = params.append('tipoOperacion', filters.tipoOperacion);
+    }
+    return this.http.get(`${this.adminUrl}/auditoria`, {
+      params,
+      responseType: 'blob'
+    }).pipe(
+      catchError(error => this.errorHandler.handleError(error, 'exportAuditLogs'))
+    );
+  }
+
   // ==================== CUENTAS ====================
 
   closeAccount(id: number): Observable<Result> {

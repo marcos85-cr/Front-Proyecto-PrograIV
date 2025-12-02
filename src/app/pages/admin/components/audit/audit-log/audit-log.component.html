@@ -86,6 +86,21 @@
         <ion-icon name="search-outline" slot="start"></ion-icon>
         Buscar
       </ion-button>
+
+      <!-- Botones de exportación -->
+      <div class="export-section">
+        <label>Exportar Registros</label>
+        <div class="export-buttons">
+          <ion-button expand="block" fill="outline" (click)="exportAuditLog('pdf')">
+            <ion-icon name="document-outline" slot="start"></ion-icon>
+            Exportar PDF
+          </ion-button>
+          <ion-button expand="block" fill="outline" (click)="exportAuditLog('xlsx')">
+            <ion-icon name="document-text-outline" slot="start"></ion-icon>
+            Exportar Excel
+          </ion-button>
+        </div>
+      </div>
     </div>
 
     <!-- Contador de resultados -->

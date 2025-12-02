@@ -102,4 +102,47 @@ export class ReportService {
       catchError(error => this.errorHandler.handleError(error, 'getClientSummary'))
     );
   }
+
+  // ==================== EXPORTACIONES ====================
+
+  exportPeriodTotals(startDate?: string, endDate?: string, format: 'pdf' | 'xlsx' = 'pdf'): Observable<Blob> {
+    let params = new HttpParams().append('format', format);
+    if (startDate) params = params.append('startDate', startDate);
+    if (endDate) params = params.append('endDate', endDate);
+
+    return this.http.get(`${this.reportsUrl}/period-totals`, {
+      params,
+      responseType: 'blob'
+    }).pipe(
+      catchError(error => this.errorHandler.handleError(error, 'exportPeriodTotals'))
+    );
+  }
+
+  exportTopClients(startDate?: string, endDate?: string, top: number = 10, format: 'pdf' | 'xlsx' = 'pdf'): Observable<Blob> {
+    let params = new HttpParams()
+      .append('top', top.toString())
+      .append('format', format);
+    if (startDate) params = params.append('startDate', startDate);
+    if (endDate) params = params.append('endDate', endDate);
+
+    return this.http.get(`${this.reportsUrl}/top-clients`, {
+      params,
+      responseType: 'blob'
+    }).pipe(
+      catchError(error => this.errorHandler.handleError(error, 'exportTopClients'))
+    );
+  }
+
+  exportDailyVolume(startDate?: string, endDate?: string, format: 'pdf' | 'xlsx' = 'pdf'): Observable<Blob> {
+    let params = new HttpParams().append('format', format);
+    if (startDate) params = params.append('startDate', startDate);
+    if (endDate) params = params.append('endDate', endDate);
+
+    return this.http.get(`${this.reportsUrl}/daily-volume`, {
+      params,
+      responseType: 'blob'
+    }).pipe(
+      catchError(error => this.errorHandler.handleError(error, 'exportDailyVolume'))
+    );
+  }
 }
