@@ -1,0 +1,118 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Transferencias Pendientes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Filters -->
+  <div class="filters-container">
+    <ion-segment [value]="estadoFilter()" (ionChange)="filterByEstado($any($event).detail.value)">
+      <ion-segment-button value="todos">
+        <ion-label>Todas</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="PendienteAprobacion">
+        <ion-label>Pendientes</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="Exitosa">
+        <ion-label>Aprobadas</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="Rechazada">
+        <ion-label>Rechazadas</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <div class="bank-content-container">
+    <div class="bank-section">
+      <div class="bank-section-header">
+        <h3>Transferencias</h3>
+        <span class="bank-badge-primary">{{ filteredTransferencias().length }} registros</span>
+      </div>
+
+      @if (filteredTransferencias().length > 0 && !isLoading()) {
+        <div class="bank-simple-list">
+          @for (transfer of filteredTransferencias(); track transfer.id) {
+            <div class="bank-glass-card transfer-item">
+              <div class="transfer-header">
+                <div class="transfer-icon">
+                  <ion-icon name="swap-horizontal-outline"></ion-icon>
+                </div>
+                <div class="transfer-info">
+                  <h4 class="transfer-client">{{ transfer.clienteNombre }}</h4>
+                  <p class="transfer-date">{{ formatDate(transfer.fechaCreacion) }}</p>
+                  <p class="transfer-accounts">
+                    @if (transfer.cuentaOrigenNumero) {
+                      <span>****{{ transfer.cuentaOrigenNumero.slice(-4) }}</span>
+                    }
+                    @if (transfer.cuentaDestinoNumero) {
+                      <ion-icon name="arrow-forward-outline"></ion-icon>
+                      <span>****{{ transfer.cuentaDestinoNumero.slice(-4) }}</span>
+                    }
+                  </p>
+                </div>
+                <div class="transfer-amount">
+                  <span class="amount">{{ formatCurrency(transfer.monto, transfer.moneda) }}</span>
+                  <ion-badge [color]="getEstadoColor(transfer.estado)">
+                    {{ getEstadoLabel(transfer.estado) }}
+                  </ion-badge>
+                </div>
+              </div>
+
+              @if (transfer.descripcion) {
+                <p class="transfer-description">{{ transfer.descripcion }}</p>
+              }
+
+              @if (transfer.estado === 'PendienteAprobacion') {
+                <div class="transfer-actions">
+                  <ion-button
+                    expand="block"
+                    fill="outline"
+                    color="success"
+                    (click)="aprobarTransferencia(transfer)">
+                    <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+                    Aprobar
+                  </ion-button>
+                  <ion-button
+                    expand="block"
+                    fill="outline"
+                    color="danger"
+                    (click)="rechazarTransferencia(transfer)">
+                    <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+                    Rechazar
+                  </ion-button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Empty State -->
+      @if (filteredTransferencias().length === 0 && !isLoading()) {
+        <div class="bank-empty-state">
+          <ion-icon name="swap-horizontal-outline"></ion-icon>
+          <h3>No hay transferencias</h3>
+          <p>No se encontraron transferencias con los filtros aplicados</p>
+        </div>
+      }
+
+      <!-- Loading -->
+      @if (isLoading()) {
+        <div class="bank-loading-state">
+          <ion-spinner name="crescent" color="primary"></ion-spinner>
+          <p>Cargando transferencias...</p>
+        </div>
+      }
+    </div>
+  </div>
+</ion-content>

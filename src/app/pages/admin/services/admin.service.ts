@@ -142,4 +142,24 @@ export class AdminService {
       catchError(error => this.errorHandler.handleError(error, 'closeAccount'))
     );
   }
+
+  // ==================== TRANSFERENCIAS ====================
+
+  getPendingTransfers(): Observable<Result> {
+    return this.http.get<Result>(`${this.adminUrl}/operaciones`).pipe(
+      catchError(error => this.errorHandler.handleError(error, 'getPendingTransfers'))
+    );
+  }
+
+  aprobarTransferencia(id: number): Observable<Result> {
+    return this.http.put<Result>(`${environment.apiUrl}/transferencias/${id}/aprobar`, {}).pipe(
+      catchError(error => this.errorHandler.handleError(error, 'aprobarTransferencia'))
+    );
+  }
+
+  rechazarTransferencia(id: number, razon: string): Observable<Result> {
+    return this.http.put<Result>(`${environment.apiUrl}/transferencias/${id}/rechazar`, { razon }).pipe(
+      catchError(error => this.errorHandler.handleError(error, 'rechazarTransferencia'))
+    );
+  }
 }

@@ -144,20 +144,20 @@ export class GestorService {
   }
 
   /**
-   * Aprueba una operación pendiente
+   * Aprueba una operación/transferencia pendiente
    */
   aprobarOperacion(id: number): Observable<Result<OperacionResultado>> {
-    const url = `${this.baseUrl}/operaciones/${id}/aprobar`;
+    const url = `${environment.apiUrl}/transferencias/${id}/aprobar`;
     return this.http.put<Result<OperacionResultado>>(url, {}).pipe(
       catchError((error) => this.errorHandler.handleError(error, url))
     );
   }
 
   /**
-   * Rechaza una operación pendiente
+   * Rechaza una operación/transferencia pendiente
    */
   rechazarOperacion(id: number, razon: string): Observable<Result<OperacionResultado>> {
-    const url = `${this.baseUrl}/operaciones/${id}/rechazar`;
+    const url = `${environment.apiUrl}/transferencias/${id}/rechazar`;
     const request: RechazarOperacionRequest = { razon };
     return this.http.put<Result<OperacionResultado>>(url, request).pipe(
       catchError((error) => this.errorHandler.handleError(error, url))

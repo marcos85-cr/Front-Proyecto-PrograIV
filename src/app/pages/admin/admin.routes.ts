@@ -57,5 +57,12 @@ export const MAIN_ROUTES: Routes = [
       import('./components/audit/audit.routes').then(
         (m) => m.AUDIT_ROUTES
       ),
+  },
+  {
+    path: 'transfers',
+    loadChildren: () =>
+      import('./components/transfers/transfer.routes').then(
+        (m) => m.TRANSFER_ROUTES
+      ),
   }
 ];

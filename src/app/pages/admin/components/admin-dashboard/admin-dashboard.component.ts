@@ -41,6 +41,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy, ViewWillEnter
   menuOptions: MenuOption[] = [
     { icon: 'people-outline', label: 'Usuarios', route: '/admin/users', color: 'primary' },
     { icon: 'wallet-outline', label: 'Cuentas', route: '/admin/accounts', color: 'success' },
+    { icon: 'swap-horizontal-outline', label: 'Transferencias', route: '/admin/transfers', color: 'danger' },
     { icon: 'people-circle-outline', label: 'Clientes', route: '/admin/customers', color: 'tertiary' },
     { icon: 'business-outline', label: 'Proveedores', route: '/admin/providers', color: 'warning' },
     { icon: 'person-add-outline', label: 'Beneficiarios', route: '/admin/beneficiaries', color: 'secondary' },
