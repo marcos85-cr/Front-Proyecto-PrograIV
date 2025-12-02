@@ -9,10 +9,8 @@ import { environment } from 'src/environments/environment';
 import {
   GestorDashboard,
   OperacionPendiente,
-  ClienteGestor,
   ClienteDetalleGestor,
   CuentaGestor,
-  OperacionGestor,
   OperacionDetalle,
   CrearCuentaRequest,
   RechazarOperacionRequest,

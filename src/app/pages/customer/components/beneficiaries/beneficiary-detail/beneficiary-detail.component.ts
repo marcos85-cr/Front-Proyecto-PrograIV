@@ -4,8 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { catchError, finalize, tap, EMPTY } from 'rxjs';
 import { ToastService } from '../../../../../services/toast.service';
-import { BeneficiariosService } from '../../../services/beneficiarios.service';
-import { BeneficiarioDetalleDto } from '../../../model/beneficiario.model';
+import { CustomerBeneficiariesService } from '../../../services/customer-beneficiaries.service';
+import { BeneficiarioDetalleDto } from '../../../model/beneficiary.model';
 
 @Component({
   selector: 'app-beneficiary-detail',
@@ -25,7 +25,7 @@ export class BeneficiaryDetailComponent implements OnInit {
     private location: Location,
     private alertController: AlertController,
     private toastService: ToastService,
-    private beneficiariosService: BeneficiariosService
+    private beneficiariosService: CustomerBeneficiariesService
   ) {}
 
   ngOnInit(): void {
@@ -39,8 +39,8 @@ export class BeneficiaryDetailComponent implements OnInit {
   loadBeneficiario(): void {
     this.isLoading.set(true);
 
-    this.beneficiariosService.getBeneficiarioById(this.beneficiarioId).pipe(
-      tap((response) => {
+    this.beneficiariosService.getBeneficiaryById(this.beneficiarioId).pipe(
+      tap((response: any) => {
         if (response.success && response.data) {
           this.beneficiario.set(response.data);
         } else {
@@ -97,8 +97,8 @@ export class BeneficiaryDetailComponent implements OnInit {
   }
 
   private executeEditarAlias(nuevoAlias: string): void {
-    this.beneficiariosService.actualizar(this.beneficiarioId, { nuevoAlias }).pipe(
-      tap((response) => {
+    this.beneficiariosService.update(this.beneficiarioId, { nuevoAlias }).pipe(
+      tap((response: any) => {
         if (response.success) {
           this.toastService.success('Alias actualizado exitosamente');
           this.loadBeneficiario();
@@ -130,8 +130,8 @@ export class BeneficiaryDetailComponent implements OnInit {
   }
 
   private executeConfirmar(): void {
-    this.beneficiariosService.confirmar(this.beneficiarioId).pipe(
-      tap((response) => {
+    this.beneficiariosService.confirm(this.beneficiarioId).pipe(
+      tap((response: any) => {
         if (response.success) {
           this.toastService.success('Beneficiario confirmado exitosamente');
           this.loadBeneficiario();
@@ -172,8 +172,8 @@ export class BeneficiaryDetailComponent implements OnInit {
   }
 
   private executeEliminar(): void {
-    this.beneficiariosService.eliminar(this.beneficiarioId).pipe(
-      tap((response) => {
+    this.beneficiariosService.delete(this.beneficiarioId).pipe(
+      tap((response: any) => {
         if (response.success) {
           this.toastService.success('Beneficiario eliminado exitosamente');
           this.router.navigate(['/customer/transferencias/beneficiarios']);

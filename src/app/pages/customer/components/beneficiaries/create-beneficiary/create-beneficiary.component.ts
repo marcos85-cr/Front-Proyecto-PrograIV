@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { ToastService } from '../../../../../services/toast.service';
-import { BeneficiariosService } from '../../../services/beneficiarios.service';
-import { CrearBeneficiarioRequest } from '../../../model/beneficiario.model';
+import { CustomerBeneficiariesService } from '../../../services/customer-beneficiaries.service';
+import { CrearBeneficiarioRequest } from '../../../model/beneficiary.model';
 
 @Component({
   selector: 'app-create-beneficiary',
@@ -41,7 +41,7 @@ export class CreateBeneficiaryComponent {
     private router: Router,
     private location: Location,
     private toastService: ToastService,
-    private beneficiariosService: BeneficiariosService
+    private beneficiariosService: CustomerBeneficiariesService
   ) {}
 
   isFormValid(): boolean {
@@ -77,9 +77,9 @@ export class CreateBeneficiaryComponent {
 
     const request: CrearBeneficiarioRequest = {
       alias: this.alias().trim(),
+      numeroCuenta: this.numeroCuentaDestino().trim(),
       banco: this.banco().trim(),
-      moneda: this.moneda(),
-      numeroCuentaDestino: this.numeroCuentaDestino().trim()
+      moneda: this.moneda()
     };
 
     if (this.pais().trim()) {
@@ -88,8 +88,8 @@ export class CreateBeneficiaryComponent {
 
     this.isSubmitting.set(true);
 
-    this.beneficiariosService.crear(request).subscribe({
-      next: (response) => {
+    this.beneficiariosService.create(request).subscribe({
+      next: (response: any) => {
         if (response.success) {
           this.toastService.success('Beneficiario creado. Debe confirmarlo antes de poder usarlo.');
           this.router.navigate(['/customer/transferencias/beneficiarios']);
@@ -98,7 +98,7 @@ export class CreateBeneficiaryComponent {
         }
         this.isSubmitting.set(false);
       },
-      error: (error) => {
+      error: (error: any) => {
         this.toastService.error(error?.message || 'Error al crear beneficiario');
         this.isSubmitting.set(false);
       }

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, signal, computed, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, AlertController, LoadingController, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
+import { IonicModule, AlertController, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { catchError, finalize, tap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
