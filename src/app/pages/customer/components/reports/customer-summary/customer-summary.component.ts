@@ -1,8 +1,8 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { ToastService } from '../../../../../services/toast.service';
 import { CustomerReportsService } from '../../../services/customer-reports.service';
 import { ResumenClienteDto } from '../../../model/report.model';
@@ -14,7 +14,7 @@ import { ResumenClienteDto } from '../../../model/report.model';
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule]
 })
-export class CustomerSummaryComponent implements OnInit {
+export class CustomerSummaryComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   summary = signal<ResumenClienteDto | null>(null);
   isLoading = signal(false);
 
@@ -25,8 +25,25 @@ export class CustomerSummaryComponent implements OnInit {
     private reportsService: CustomerReportsService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
+    // Solo inicialización
+  }
+
+  ngOnDestroy(): void {
+    this.resetData();
+  }
+
+  ionViewWillEnter(): void {
     this.loadSummary();
+  }
+
+  ionViewWillLeave(): void {
+    this.resetData();
+  }
+
+  private resetData(): void {
+    this.summary.set(null);
+    this.isLoading.set(false);
   }
 
   loadSummary(): void {
@@ -67,7 +84,11 @@ export class CustomerSummaryComponent implements OnInit {
   formatCurrency(amount: number | undefined, moneda: string = 'CRC'): string {
     if (amount === undefined) return '-';
     const symbol = moneda === 'USD' ? '$' : '₡';
-    return `${symbol}${amount.toLocaleString('es-CR', { minimumFractionDigits: 2 })}`;
+    const formatted = amount.toLocaleString('es-CR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+    return `${symbol}${formatted}`;
   }
 
   formatDate(date: Date | string | undefined): string {

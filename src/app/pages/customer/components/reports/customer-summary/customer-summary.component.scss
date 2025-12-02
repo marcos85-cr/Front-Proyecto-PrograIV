@@ -1,9 +1,18 @@
 
+// Customer Profile Card - Tarjeta de perfil del cliente
+.customer-profile-card {
+  margin: 1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
 .customer-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .customer-avatar {
@@ -14,12 +23,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 
   ion-icon {
-    font-size: 2.5rem;
-    color: var(--ion-color-primary);
+    font-size: 3rem;
+    color: #93c5fd;
   }
 }
 
@@ -29,41 +39,36 @@
 
   .customer-name {
     margin: 0 0 0.25rem 0;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 700;
-    color: #000000;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    color: #f8fafc;
   }
 
-  .customer-id,
-  .customer-email,
-  .customer-phone {
+  .customer-detail {
     margin: 0 0 0.1rem 0;
-    font-size: 0.85rem;
-    color: rgba(0, 0, 0, 0.8);
-  }
-
-  .customer-id {
-    font-weight: 600;
+    font-size: 0.8rem;
+    color: #cbd5e1;
+    font-weight: 500;
+    line-height: 1.3;
   }
 }
 
-.customer-date {
+.customer-footer {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding-top: 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 
-  .date-label {
-    font-size: 0.8rem;
-    color: rgba(0, 0, 0, 0.7);
+  .footer-label {
+    font-size: 0.75rem;
+    color: #94a3b8;
   }
 
-  .date-value {
-    font-size: 0.8rem;
+  .footer-value {
+    font-size: 0.75rem;
     font-weight: 600;
-    color: rgba(0, 0, 0, 0.9);
+    color: #e2e8f0;
   }
 }
 
@@ -93,54 +98,90 @@
 
 // Patrimony Card - Tarjeta de patrimonio principal
 .patrimony-card {
-  padding: 1rem;
-}
-
-.patrimony-card .bank-glass-card {
-  padding: 1.5rem !important;
-  background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%) !important;
-  border: none !important;
+  margin: 1rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(59, 130, 246, 0.4);
   text-align: center;
-  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3) !important;
 }
 
 .patrimony-title {
-  margin: 0 0 1rem 0;
-  font-size: 0.9rem;
+  margin: 0 0 1.25rem 0;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.95);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
 }
 
 .patrimony-grid {
   display: flex;
-  align-items: center;
-  justify-content: space-around;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .patrimony-item {
   display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  &:last-child {
+    border-bottom: none;
+  }
 }
 
 .currency-label {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .patrimony-amount {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: #ffffff;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.3px;
+  text-align: right;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.3;
 }
 
-.patrimony-divider {
-  width: 1px;
-  height: 50px;
-  background: rgba(255, 255, 255, 0.3);
+// Responsive para patrimonio
+@media (max-width: 480px) {
+  .patrimony-card {
+    padding: 1.25rem;
+  }
+
+  .patrimony-amount {
+    font-size: 1.1rem;
+    letter-spacing: -0.2px;
+  }
+
+  .currency-label {
+    font-size: 0.75rem;
+  }
+
+  .patrimony-grid {
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .patrimony-amount {
+    font-size: 0.95rem;
+  }
+
+  .patrimony-item {
+    padding: 0.5rem 0;
+  }
 }
 
 // Account List
@@ -171,18 +212,19 @@
 // Account Icon
 .account-icon {
   flex-shrink: 0;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
 
   ion-icon {
-    font-size: 1.4rem;
-    color: #ffffff;
+    font-size: 1.8rem;
+    color: var(--ion-color-primary);
   }
 }
 

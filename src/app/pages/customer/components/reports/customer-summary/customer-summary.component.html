@@ -17,40 +17,35 @@
   @if (summary() && !isLoading()) {
     <div class="bank-content-container">
       <!-- Información del Cliente -->
-      <div class="bank-section">
-        <div class="bank-glass-card">
-          <div class="customer-header">
-            <div class="customer-avatar">
-              <ion-icon name="person-circle-outline" color="primary"></ion-icon>
-            </div>
-            <div class="customer-info">
-              <h2 class="customer-name">{{ summary()?.cliente?.nombre || 'Cliente' }}</h2>
-              <p class="customer-id">ID: {{ summary()?.cliente?.identificacion || 'N/A' }}</p>
-              <p class="customer-email">{{ summary()?.cliente?.correo || 'N/A' }}</p>
-              <p class="customer-phone">{{ summary()?.cliente?.telefono || 'N/A' }}</p>
-            </div>
+      <div class="customer-profile-card">
+        <div class="customer-header">
+          <div class="customer-avatar">
+            <ion-icon name="person-circle"></ion-icon>
           </div>
-          <div class="customer-date">
-            <span class="date-label">Cliente desde:</span>
-            <span class="date-value">{{ formatDate(summary()?.cliente?.fechaRegistro) }}</span>
+          <div class="customer-info">
+            <h2 class="customer-name">{{ summary()?.cliente?.nombre || 'Cliente' }}</h2>
+            <p class="customer-detail">ID: {{ summary()?.cliente?.identificacion || 'N/A' }}</p>
+            <p class="customer-detail">{{ summary()?.cliente?.correo || 'N/A' }}</p>
+            <p class="customer-detail">{{ summary()?.cliente?.telefono || 'N/A' }}</p>
           </div>
+        </div>
+        <div class="customer-footer">
+          <span class="footer-label">Cliente desde:</span>
+          <span class="footer-value">{{ formatDate(summary()?.cliente?.fechaRegistro) }}</span>
         </div>
       </div>
 
       <!-- Patrimonio Total -->
       <div class="patrimony-card">
-        <div class="bank-glass-card">
-          <h3 class="patrimony-title">Patrimonio Total</h3>
-          <div class="patrimony-grid">
-            <div class="patrimony-item">
-              <span class="currency-label">Colones (CRC)</span>
-              <span class="patrimony-amount">{{ formatCurrency(summary()?.cuentas?.saldoTotalCRC, 'CRC') }}</span>
-            </div>
-            <div class="patrimony-divider"></div>
-            <div class="patrimony-item">
-              <span class="currency-label">Dólares (USD)</span>
-              <span class="patrimony-amount">{{ formatCurrency(summary()?.cuentas?.saldoTotalUSD, 'USD') }}</span>
-            </div>
+        <h3 class="patrimony-title">Patrimonio Total</h3>
+        <div class="patrimony-grid">
+          <div class="patrimony-item">
+            <span class="currency-label">Colones (CRC)</span>
+            <span class="patrimony-amount">{{ formatCurrency(summary()?.cuentas?.saldoTotalCRC, 'CRC') }}</span>
+          </div>
+          <div class="patrimony-item">
+            <span class="currency-label">Dólares (USD)</span>
+            <span class="patrimony-amount">{{ formatCurrency(summary()?.cuentas?.saldoTotalUSD, 'USD') }}</span>
           </div>
         </div>
       </div>
