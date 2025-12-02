@@ -153,7 +153,6 @@
             @if (operacion.estado === 'PendienteAprobacion') {
             <div class="action-buttons">
               <ion-button fill="solid" color="success" size="small"
-                [disabled]="!puedeAprobarOperacion(operacion.monto, operacion.moneda)"
                 (click)="approveOperation(operacion)">
                 <ion-icon name="checkmark-outline" slot="start"></ion-icon>
                 Aprobar

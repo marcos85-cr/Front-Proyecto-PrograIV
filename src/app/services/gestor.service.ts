@@ -193,37 +193,4 @@ export class GestorService {
     const queryString = params.toString();
     return queryString ? `${baseUrl}?${queryString}` : baseUrl;
   }
-
-  /**
-   * Verifica si una operación puede ser aprobada por el gestor (límite de 5 millones)
-   */
-  puedeAprobarOperacion(monto: number, moneda: string): boolean {
-    const LIMITE_APROBACION_CRC = 5000000; // 5 millones de colones
-    const LIMITE_APROBACION_USD = 8000; // Aproximado, puede ajustarse
-
-    if (moneda === 'CRC') {
-      return monto <= LIMITE_APROBACION_CRC;
-    } else if (moneda === 'USD') {
-      return monto <= LIMITE_APROBACION_USD;
-    }
-    return false;
-  }
-
-  /**
-   * Obtiene el límite de aprobación para una moneda
-   */
-  getLimiteAprobacion(moneda: string): number {
-    if (moneda === 'CRC') return 5000000;
-    if (moneda === 'USD') return 8000;
-    return 0;
-  }
-
-  /**
-   * Formatea el mensaje de error de límite excedido
-   */
-  getMensajeLimiteExcedido(monto: number, moneda: string): string {
-    const limite = this.getLimiteAprobacion(moneda);
-    const simbolo = moneda === 'CRC' ? '₡' : '$';
-    return `El monto ${simbolo}${monto.toLocaleString()} excede el límite de autorización del gestor (${simbolo}${limite.toLocaleString()}). Requiere aprobación de un administrador.`;
-  }
 }

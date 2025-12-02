@@ -94,7 +94,7 @@ export class OperationDetailComponent implements OnInit {
   puedeAprobar(): boolean {
     const op = this.operacion();
     if (!op || op.estado !== 'PendienteAprobacion') return false;
-    return this.gestorService.puedeAprobarOperacion(op.monto, op.moneda);
+    return true;
   }
 
   isPendiente(): boolean {
@@ -104,11 +104,6 @@ export class OperationDetailComponent implements OnInit {
   async approveOperation() {
     const op = this.operacion();
     if (!op) return;
-
-    if (!this.gestorService.puedeAprobarOperacion(op.monto, op.moneda)) {
-      this.toastService.error(this.gestorService.getMensajeLimiteExcedido(op.monto, op.moneda));
-      return;
-    }
 
     const alert = await this.alertController.create({
       header: 'Aprobar Operación',

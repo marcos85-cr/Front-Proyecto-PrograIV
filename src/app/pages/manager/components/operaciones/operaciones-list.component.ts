@@ -103,7 +103,7 @@ export class OperacionesListComponent implements OnInit, OnDestroy, ViewWillEnte
     ).subscribe();
   }
 
-  filterOperaciones(term: string) {
+  filterOperaciones(term: string | null) {
     let operaciones = this.operaciones();
     const estadoFilter = this.activeFilters().estado;
 
@@ -111,7 +111,7 @@ export class OperacionesListComponent implements OnInit, OnDestroy, ViewWillEnte
       operaciones = operaciones.filter(op => op.estado === estadoFilter);
     }
 
-    if (!term.trim()) {
+    if (!term?.trim()) {
       this.filteredOperaciones.set(operaciones);
       return;
     }
@@ -148,10 +148,6 @@ export class OperacionesListComponent implements OnInit, OnDestroy, ViewWillEnte
   }
 
   approveOperation(operacion: OperacionGestor) {
-    if (!this.gestorService.puedeAprobarOperacion(operacion.monto, operacion.moneda)) {
-      this.toastService.error(this.gestorService.getMensajeLimiteExcedido(operacion.monto, operacion.moneda));
-      return;
-    }
     this.showApproveConfirmation(operacion);
   }
 
@@ -274,9 +270,5 @@ export class OperacionesListComponent implements OnInit, OnDestroy, ViewWillEnte
   refresh(event: any) {
     this.loadOperaciones(this.activeFilters());
     event.target.complete();
-  }
-
-  puedeAprobarOperacion(monto: number, moneda: string): boolean {
-    return this.gestorService.puedeAprobarOperacion(monto, moneda);
   }
 }

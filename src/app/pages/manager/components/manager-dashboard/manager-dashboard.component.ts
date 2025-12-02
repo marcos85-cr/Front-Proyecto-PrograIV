@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, AlertController, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -29,14 +29,6 @@ export class ManagerDashboardComponent implements OnInit, OnDestroy, ViewWillEnt
   });
   pendingOperations = signal<OperacionPendiente[]>([]);
   myClients = signal<ClienteGestor[]>([]);
-
-  puedeAprobarOperacion = computed(() => (monto: number, moneda: string) =>
-    this.gestorService.puedeAprobarOperacion(monto, moneda)
-  );
-
-  getMensajeLimiteExcedido = computed(() => (monto: number, moneda: string) =>
-    this.gestorService.getMensajeLimiteExcedido(monto, moneda)
-  );
 
   constructor(
     private authService: AuthService,
@@ -127,14 +119,6 @@ export class ManagerDashboardComponent implements OnInit, OnDestroy, ViewWillEnt
   }
 
   approveOperation(id: number): void {
-    const operation = this.pendingOperations().find(op => op.id === id);
-    if (!operation) return;
-
-    if (!this.gestorService.puedeAprobarOperacion(operation.monto, operation.moneda)) {
-      this.toastService.error(this.gestorService.getMensajeLimiteExcedido(operation.monto, operation.moneda));
-      return;
-    }
-
     this.gestorService.aprobarOperacion(id).pipe(
       tap(response => {
         if (response.success) {

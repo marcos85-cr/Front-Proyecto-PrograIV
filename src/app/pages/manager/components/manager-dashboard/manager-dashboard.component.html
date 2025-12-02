@@ -99,8 +99,7 @@
                     </div>
                     <div class="bank-action-buttons">
                         <button class="bank-btn-action bank-btn-approve" (click)="approveOperation(operation.id)"
-                                [disabled]="!puedeAprobarOperacion()(operation.monto, operation.moneda)"
-                                [title]="puedeAprobarOperacion()(operation.monto, operation.moneda) ? 'Aprobar operación' : getMensajeLimiteExcedido()(operation.monto, operation.moneda)">✓</button>
+                                title="Aprobar operación">✓</button>
                         <button class="bank-btn-action bank-btn-reject" (click)="rejectOperation(operation.id)">✗</button>
                     </div>
                 </div>
