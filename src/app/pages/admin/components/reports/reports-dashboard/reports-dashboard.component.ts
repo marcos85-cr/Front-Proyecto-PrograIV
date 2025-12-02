@@ -95,7 +95,7 @@ export class ReportsDashboardComponent implements OnInit {
           this.dailyVolume.set(results.dailyVolume.data);
         }
         if (results.activeClients?.success && results.activeClients.data) {
-          this.activeClients.set(results.activeClients.data.topClientes || []);
+          this.activeClients.set(results.activeClients.data.clientesMasActivos || []);
         }
         if (results.periodTotals?.success && results.periodTotals.data) {
           this.periodTotals.set(results.periodTotals.data);

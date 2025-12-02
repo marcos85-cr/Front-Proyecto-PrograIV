@@ -80,21 +80,49 @@
       <div class="totals-grid">
         <div class="total-card">
           <span class="total-label">Total Transacciones</span>
-          <span class="total-value">{{ formatNumber(periodTotals()!.totalTransacciones) }}</span>
+          <span class="total-value">{{ formatNumber(periodTotals()!.transacciones.total) }}</span>
         </div>
-        <div class="total-card">
-          <span class="total-label">Monto Total</span>
-          <span class="total-value primary">{{ formatCurrency(periodTotals()!.montoTotal) }}</span>
+        <div class="total-card success">
+          <span class="total-label">Exitosas</span>
+          <span class="total-value">{{ formatNumber(periodTotals()!.transacciones.exitosas) }}</span>
         </div>
-        <div class="total-card">
-          <span class="total-label">Promedio por Transacción</span>
-          <span class="total-value">{{ formatCurrency(periodTotals()!.promedioTransaccion) }}</span>
+        <div class="total-card danger">
+          <span class="total-label">Fallidas</span>
+          <span class="total-value">{{ formatNumber(periodTotals()!.transacciones.fallidas) }}</span>
         </div>
-        <div class="total-card">
-          <span class="total-label">Clientes Únicos</span>
-          <span class="total-value">{{ formatNumber(periodTotals()!.clientesUnicos) }}</span>
+        <div class="total-card warning">
+          <span class="total-label">Pendientes</span>
+          <span class="total-value">{{ formatNumber(periodTotals()!.transacciones.pendientes) }}</span>
         </div>
       </div>
+      <div class="totals-grid" style="margin-top: 12px;">
+        <div class="total-card">
+          <span class="total-label">Total CRC</span>
+          <span class="total-value primary">₡{{ formatNumber(periodTotals()!.montos.totalCRC) }}</span>
+        </div>
+        <div class="total-card">
+          <span class="total-label">Total USD</span>
+          <span class="total-value primary">${{ formatNumber(periodTotals()!.montos.totalUSD) }}</span>
+        </div>
+        <div class="total-card">
+          <span class="total-label">Comisiones</span>
+          <span class="total-value">₡{{ formatNumber(periodTotals()!.montos.comisionesTotales) }}</span>
+        </div>
+      </div>
+      @if (periodTotals()!.porTipo && periodTotals()!.porTipo.length > 0) {
+      <div class="type-breakdown">
+        <h4>Por Tipo de Transacción</h4>
+        <div class="type-list">
+          @for (tipo of periodTotals()!.porTipo; track tipo.tipo) {
+          <div class="type-item">
+            <span class="type-name">{{ tipo.tipo }}</span>
+            <span class="type-count">{{ tipo.cantidad }} transacciones</span>
+            <span class="type-amounts">₡{{ formatNumber(tipo.montoCRC) }} / ${{ formatNumber(tipo.montoUSD) }}</span>
+          </div>
+          }
+        </div>
+      </div>
+      }
     </div>
     }
 
@@ -103,22 +131,40 @@
     <div class="report-section">
       <h3 class="section-title">
         <ion-icon name="trending-up-outline"></ion-icon>
-        Volumen Diario
+        Resumen de Volumen
       </h3>
       <div class="volume-card">
         <div class="volume-row">
-          <span class="volume-label">Total del Día</span>
-          <span class="volume-value">{{ formatCurrency(dailyVolume()!.totalDia) }}</span>
+          <span class="volume-label">Total Días</span>
+          <span class="volume-value">{{ formatNumber(dailyVolume()!.resumen.totalDias) }}</span>
         </div>
         <div class="volume-row">
-          <span class="volume-label">Cantidad de Operaciones</span>
-          <span class="volume-value">{{ formatNumber(dailyVolume()!.cantidadOperaciones) }}</span>
+          <span class="volume-label">Promedio Diario (Cantidad)</span>
+          <span class="volume-value">{{ formatNumber(dailyVolume()!.resumen.promedioDiarioCantidad) }}</span>
         </div>
         <div class="volume-row">
-          <span class="volume-label">Promedio por Operación</span>
-          <span class="volume-value">{{ formatCurrency(dailyVolume()!.promedioOperacion) }}</span>
+          <span class="volume-label">Promedio Diario CRC</span>
+          <span class="volume-value">₡{{ formatNumber(dailyVolume()!.resumen.promedioDiarioMontoCRC) }}</span>
+        </div>
+        <div class="volume-row">
+          <span class="volume-label">Promedio Diario USD</span>
+          <span class="volume-value">${{ formatNumber(dailyVolume()!.resumen.promedioDiarioMontoUSD) }}</span>
         </div>
       </div>
+      @if (dailyVolume()!.volumenDiario && dailyVolume()!.volumenDiario.length > 0) {
+      <div class="daily-detail">
+        <h4>Detalle por Día</h4>
+        <div class="daily-list">
+          @for (dia of dailyVolume()!.volumenDiario; track dia.fecha) {
+          <div class="daily-item">
+            <span class="daily-date">{{ dia.fecha | date:'dd/MM/yyyy' }}</span>
+            <span class="daily-count">{{ dia.cantidadTransacciones }} transacciones</span>
+            <span class="daily-amounts">₡{{ formatNumber(dia.montoTotalCRC) }} / ${{ formatNumber(dia.montoTotalUSD) }}</span>
+          </div>
+          }
+        </div>
+      </div>
+      }
     </div>
     }
 
@@ -134,13 +180,15 @@
         <div class="client-card">
           <div class="client-rank">{{ i + 1 }}</div>
           <div class="client-info">
-            <span class="client-name">{{ client.nombreCliente }}</span>
+            <span class="client-name">{{ client.clienteNombre }}</span>
+            <span class="client-email">{{ client.clienteEmail }}</span>
             <span class="client-stats">
-              {{ formatNumber(client.cantidadOperaciones) }} operaciones
+              {{ formatNumber(client.totalTransacciones) }} transacciones ({{ client.transaccionesExitosas }} exitosas)
             </span>
           </div>
-          <div class="client-amount">
-            {{ formatCurrency(client.montoTotal) }}
+          <div class="client-amounts">
+            <span class="amount-crc">₡{{ formatNumber(client.montoTotalCRC) }}</span>
+            <span class="amount-usd">${{ formatNumber(client.montoTotalUSD) }}</span>
           </div>
         </div>
         }

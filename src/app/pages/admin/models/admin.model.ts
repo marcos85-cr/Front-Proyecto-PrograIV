@@ -120,92 +120,75 @@ export interface FiltrosReporteTransacciones {
   clienteId?: number;
 }
 
+// Volumen Diario - /reports/daily-volume
 export interface ReporteVolumenDiario {
-  totalDia: number;
-  cantidadOperaciones: number;
-  promedioOperacion: number;
-  periodo: {
-    inicio: string;
-    fin: string;
-  };
-  resumenGeneral: {
+  resumen: {
+    periodo: {
+      desde: string;
+      hasta: string;
+    };
     totalDias: number;
-    totalTransacciones: number;
-    montoTotal: number;
-    promedioTransaccionesDiarias: number;
-    promedioMontoDiario: number;
+    promedioDiarioCantidad: number;
+    promedioDiarioMontoCRC: number;
+    promedioDiarioMontoUSD: number;
   };
-  detallesDiarios: DetalleDiario[];
-  tendencias: {
-    diaConMasTransacciones: { fecha: string; cantidad: number };
-    diaConMayorVolumen: { fecha: string; monto: number };
-  };
+  volumenDiario: VolumenDiarioDetalle[];
 }
 
-export interface DetalleDiario {
+export interface VolumenDiarioDetalle {
   fecha: string;
-  transacciones: number;
-  montoTotal: number;
-  porTipo: {
-    Transferencia: number;
-    PagoServicio: number;
-    Retiro: number;
-    Deposito: number;
+  cantidadTransacciones: number;
+  montoTotalCRC: number;
+  montoTotalUSD: number;
+  comisionesTotales: number;
+}
+
+// Clientes más activos - /reports/most-active-clients
+export interface ClientesActivosResponse {
+  periodo: {
+    desde: string;
+    hasta: string;
   };
+  top: number;
+  clientesMasActivos: ClienteActivo[];
 }
 
 export interface ClienteActivo {
-  posicion: number;
   clienteId: number;
   clienteNombre: string;
-  nombreCliente: string;
   clienteEmail: string;
   totalTransacciones: number;
-  cantidadOperaciones: number;
-  montoTotal: number;
-  montoPromedio: number;
-  tipoMasFrecuente: string;
-  ultimaOperacion: string;
+  transaccionesExitosas: number;
+  montoTotalCRC: number;
+  montoTotalUSD: number;
+  ultimaTransaccion: string;
 }
 
+// Totales del período - /reports/period-totals
 export interface ReporteTotalesPeriodo {
-  totalTransacciones: number;
-  montoTotal: number;
-  promedioTransaccion: number;
-  clientesUnicos: number;
   periodo: {
-    inicio: string;
-    fin: string;
-    totalDias: number;
+    desde: string;
+    hasta: string;
   };
-  totales: {
-    totalTransacciones: number;
-    montoTotal: number;
-    totalComisiones: number;
-    montoPromedioPorTransaccion: number;
+  transacciones: {
+    total: number;
+    exitosas: number;
+    fallidas: number;
+    pendientes: number;
+  };
+  montos: {
+    totalCRC: number;
+    totalUSD: number;
+    comisionesTotales: number;
   };
   porTipo: TotalPorTipo[];
-  porEstado: TotalPorEstado[];
-  tendencias: {
-    crecimientoRespectoPeriodoAnterior: number;
-    transaccionesPorDia: number;
-    montoPorDia: number;
-  };
 }
 
 export interface TotalPorTipo {
   tipo: string;
   cantidad: number;
-  monto: number;
-  comisiones: number;
-  porcentaje: number;
-}
-
-export interface TotalPorEstado {
-  estado: string;
-  cantidad: number;
-  monto: number;
-  porcentaje: number;
+  montoCRC: number;
+  montoUSD: number;
 }
 
 // Extracto de cuenta

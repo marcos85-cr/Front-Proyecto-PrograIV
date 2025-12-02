@@ -7,7 +7,7 @@ import { Result } from '../../../shared/models/result.dto';
 import {
   FiltrosReporteTransacciones,
   ReporteVolumenDiario,
-  ClienteActivo,
+  ClientesActivosResponse,
   ReporteTotalesPeriodo,
   ExtractoCuenta,
   ResumenCliente
@@ -34,12 +34,12 @@ export class ReportService {
     );
   }
 
-  getMostActiveClients(startDate?: string, endDate?: string, top: number = 10): Observable<Result<{ topClientes: ClienteActivo[] }>> {
+  getMostActiveClients(startDate?: string, endDate?: string, top: number = 10): Observable<Result<ClientesActivosResponse>> {
     let params = new HttpParams().append('top', top.toString());
     if (startDate) params = params.append('startDate', startDate);
     if (endDate) params = params.append('endDate', endDate);
 
-    return this.http.get<Result<{ topClientes: ClienteActivo[] }>>(`${this.reportsUrl}/most-active-clients`, { params }).pipe(
+    return this.http.get<Result<ClientesActivosResponse>>(`${this.reportsUrl}/most-active-clients`, { params }).pipe(
       catchError(error => this.errorHandler.handleError(error, 'getMostActiveClients'))
     );
   }
