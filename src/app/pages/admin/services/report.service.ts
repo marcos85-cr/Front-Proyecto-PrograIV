@@ -105,6 +105,9 @@ export class ReportService {
 
   // ==================== EXPORTACIONES ====================
 
+  /**
+   * Exporta el reporte de totales del período en PDF o Excel
+   */
   exportPeriodTotals(startDate?: string, endDate?: string, format: 'pdf' | 'xlsx' = 'pdf'): Observable<Blob> {
     let params = new HttpParams().append('format', format);
     if (startDate) params = params.append('startDate', startDate);
@@ -118,6 +121,9 @@ export class ReportService {
     );
   }
 
+  /**
+   * Exporta el reporte de top clientes más activos en PDF o Excel
+   */
   exportTopClients(startDate?: string, endDate?: string, top: number = 10, format: 'pdf' | 'xlsx' = 'pdf'): Observable<Blob> {
     let params = new HttpParams()
       .append('top', top.toString())
@@ -133,6 +139,9 @@ export class ReportService {
     );
   }
 
+  /**
+   * Exporta el reporte de volumen diario en PDF o Excel
+   */
   exportDailyVolume(startDate?: string, endDate?: string, format: 'pdf' | 'xlsx' = 'pdf'): Observable<Blob> {
     let params = new HttpParams().append('format', format);
     if (startDate) params = params.append('startDate', startDate);

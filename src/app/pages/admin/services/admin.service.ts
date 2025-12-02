@@ -135,6 +135,9 @@ export class AdminService {
     );
   }
 
+  /**
+   * Exporta los registros de auditoría en PDF o Excel
+   */
   exportAuditLogs(filters?: FiltrosAuditoria, format: 'pdf' | 'xlsx' = 'pdf'): Observable<Blob> {
     let params = new HttpParams().append('format', format);
     if (filters) {
