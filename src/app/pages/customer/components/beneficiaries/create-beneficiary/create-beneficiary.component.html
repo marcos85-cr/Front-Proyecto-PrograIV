@@ -5,105 +5,107 @@
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Agregar Beneficiario</ion-title>
+    <ion-title>Nuevo Beneficiario</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="bank-gradient-bg">
-  <div class="bank-content-container">
-    <!-- Información -->
-    <div class="info-card">
-      <div class="info-header">
-        <ion-icon name="person-add-outline" color="primary"></ion-icon>
-        <h3>Nuevo Beneficiario</h3>
+  <div class="form-container">
+
+    <div class="form-card">
+      <h3 class="form-title">Datos del Beneficiario</h3>
+
+      <!-- Alias -->
+      <div class="form-field">
+        <ion-label>Alias / Nombre *</ion-label>
+        <ion-input
+          [value]="alias()"
+          (ionInput)="alias.set($any($event).target.value)"
+          placeholder="Ej: Proveedor ABC"
+          type="text"
+          class="custom-input">
+        </ion-input>
       </div>
-      <p>Agregue un beneficiario para transferir dinero de forma más rápida. Deberá confirmar con un código enviado a su correo.</p>
+
+      <!-- Banco -->
+      <div class="form-field">
+        <ion-label>Banco *</ion-label>
+        <ion-select
+          [value]="banco()"
+          (ionChange)="banco.set($any($event).detail.value)"
+          placeholder="Seleccione un banco"
+          interface="action-sheet"
+          class="custom-input">
+          @for (b of bancos; track b) {
+            <ion-select-option [value]="b">{{ b }}</ion-select-option>
+          }
+        </ion-select>
+      </div>
+
+      <!-- Moneda -->
+      <div class="form-field">
+        <ion-label>Moneda *</ion-label>
+        <ion-segment [value]="moneda()" (ionChange)="moneda.set($any($event).detail.value)">
+          <ion-segment-button value="CRC">
+            <ion-label>CRC (₡)</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="USD">
+            <ion-label>USD ($)</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+
+      <!-- Número de Cuenta -->
+      <div class="form-field">
+        <ion-label>Número de Cuenta *</ion-label>
+        <ion-input
+          [value]="numeroCuentaDestino()"
+          (ionInput)="numeroCuentaDestino.set($any($event).target.value)"
+          placeholder="Ej: 12345678901234"
+          type="tel"
+          maxlength="20"
+          class="custom-input">
+        </ion-input>
+      </div>
+
+      <!-- País -->
+      <div class="form-field">
+        <ion-label>País</ion-label>
+        <ion-select
+          [value]="pais()"
+          (ionChange)="pais.set($any($event).detail.value)"
+          placeholder="Seleccione un país"
+          interface="action-sheet"
+          class="custom-input">
+          @for (p of paises; track p) {
+            <ion-select-option [value]="p">{{ p }}</ion-select-option>
+          }
+        </ion-select>
+      </div>
+
+      <div class="info-note">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <p>El beneficiario se creará en estado "Inactivo". Deberá confirmarlo antes de poder usarlo en transferencias.</p>
+      </div>
     </div>
 
-    <!-- Formulario -->
-    <div class="bank-section">
-      <div class="bank-section-header">
-        <h3>Datos del Beneficiario</h3>
-      </div>
-
-      <div class="form-card">
-        <div class="form-group">
-          <ion-label class="form-label">Número de Cuenta / IBAN *</ion-label>
-          <ion-item class="bank-form-item" lines="none">
-            <ion-input
-              type="text"
-              [value]="accountNumber()"
-              (ionInput)="accountNumber.set($any($event).target.value)"
-              placeholder="Ingrese número de cuenta o IBAN">
-            </ion-input>
-          </ion-item>
-        </div>
-
-        <div class="form-group">
-          <ion-label class="form-label">Alias *</ion-label>
-          <ion-item class="bank-form-item" lines="none">
-            <ion-input
-              type="text"
-              [value]="alias()"
-              (ionInput)="alias.set($any($event).target.value)"
-              placeholder="Nombre para identificar al beneficiario">
-            </ion-input>
-          </ion-item>
-          <p class="helper-text">
-            <ion-icon name="information-circle-outline"></ion-icon>
-            Ejemplo: "Mamá", "Alquiler", "Ahorro personal"
-          </p>
-        </div>
-
-        <div class="form-group">
-          <ion-label class="form-label">Email de notificación (opcional)</ion-label>
-          <ion-item class="bank-form-item" lines="none">
-            <ion-input
-              type="email"
-              [value]="email()"
-              (ionInput)="email.set($any($event).target.value)"
-              placeholder="correo@ejemplo.com">
-            </ion-input>
-          </ion-item>
-          <p class="helper-text">
-            <ion-icon name="mail-outline"></ion-icon>
-            El beneficiario recibirá notificación de cada transferencia
-          </p>
-        </div>
-
-        <div class="form-group">
-          <ion-label class="form-label">Límite por transferencia (opcional)</ion-label>
-          <ion-item class="bank-form-item" lines="none">
-            <span class="currency-prefix">₡</span>
-            <ion-input
-              type="number"
-              [value]="transferLimit()"
-              (ionInput)="transferLimit.set($any($event).target.value ? +$any($event).target.value : null)"
-              placeholder="Sin límite">
-            </ion-input>
-          </ion-item>
-          <p class="helper-text">
-            <ion-icon name="shield-checkmark-outline"></ion-icon>
-            Establezca un monto máximo para proteger sus fondos
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Botón de Acción -->
-    <div class="action-container">
+    <div class="actions-container">
       <ion-button
         expand="block"
-        size="large"
         [disabled]="!isFormValid() || isSubmitting()"
-        (click)="confirmCreation()">
+        (click)="confirmarCreacion()">
         @if (isSubmitting()) {
           <ion-spinner name="crescent"></ion-spinner>
         } @else {
-          <ion-icon name="person-add-outline" slot="start"></ion-icon>
-          Agregar Beneficiario
+          <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+          Crear Beneficiario
         }
       </ion-button>
+
+      <ion-button expand="block" fill="clear" (click)="goBack()" [disabled]="isSubmitting()">
+        Cancelar
+      </ion-button>
     </div>
+
   </div>
 </ion-content>

@@ -1,0 +1,113 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Detalle Beneficiario</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  @if (isLoading()) {
+  <div class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+  } @else if (beneficiario()) {
+  <div class="detail-container">
+
+    <!-- Estado y Acciones -->
+    <div class="status-card">
+      <div class="status-info">
+        <ion-icon name="person-circle-outline"></ion-icon>
+        <div>
+          <h2>{{ beneficiario()!.alias }}</h2>
+          <ion-chip [color]="getEstadoColor(beneficiario()!.estado)">
+            {{ beneficiario()!.estado }}
+          </ion-chip>
+        </div>
+      </div>
+
+      @if (beneficiario()!.estado === 'Inactivo') {
+      <ion-button expand="block" color="success" (click)="confirmarBeneficiario()">
+        <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+        Confirmar Beneficiario
+      </ion-button>
+      }
+
+      @if (beneficiario()!.estado === 'Confirmado') {
+      <ion-button expand="block" (click)="goToTransferir()">
+        <ion-icon name="send-outline" slot="start"></ion-icon>
+        Realizar Transferencia
+      </ion-button>
+      }
+    </div>
+
+    <!-- Información Bancaria -->
+    <div class="info-card">
+      <h3>Información Bancaria</h3>
+
+      <div class="info-row">
+        <span class="label">Banco</span>
+        <span class="value">{{ beneficiario()!.banco }}</span>
+      </div>
+
+      <div class="info-row">
+        <span class="label">Número de Cuenta</span>
+        <span class="value">{{ beneficiario()!.numeroCuenta }}</span>
+      </div>
+
+      <div class="info-row">
+        <span class="label">Moneda</span>
+        <span class="value">{{ beneficiario()!.moneda }}</span>
+      </div>
+
+      @if (beneficiario()!.pais) {
+      <div class="info-row">
+        <span class="label">País</span>
+        <span class="value">{{ beneficiario()!.pais }}</span>
+      </div>
+      }
+    </div>
+
+    <!-- Información Adicional -->
+    <div class="info-card">
+      <h3>Información Adicional</h3>
+
+      <div class="info-row">
+        <span class="label">Fecha de Creación</span>
+        <span class="value">{{ formatDate(beneficiario()!.fechaCreacion) }}</span>
+      </div>
+
+      <div class="info-row">
+        <span class="label">Operaciones Pendientes</span>
+        <span class="value">{{ beneficiario()!.tieneOperacionesPendientes ? 'Sí' : 'No' }}</span>
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="actions-section">
+      <ion-button expand="block" fill="outline" (click)="editarAlias()"
+                  [disabled]="beneficiario()!.tieneOperacionesPendientes">
+        <ion-icon name="create-outline" slot="start"></ion-icon>
+        Editar Alias
+      </ion-button>
+
+      <ion-button expand="block" fill="outline" color="danger" (click)="eliminarBeneficiario()"
+                  [disabled]="beneficiario()!.tieneOperacionesPendientes">
+        <ion-icon name="trash-outline" slot="start"></ion-icon>
+        Eliminar Beneficiario
+      </ion-button>
+
+      @if (beneficiario()!.tieneOperacionesPendientes) {
+      <div class="warning-note">
+        <ion-icon name="warning-outline"></ion-icon>
+        <p>No se puede editar o eliminar porque tiene operaciones pendientes</p>
+      </div>
+      }
+    </div>
+
+  </div>
+  }
+</ion-content>

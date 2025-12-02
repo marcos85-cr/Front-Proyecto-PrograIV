@@ -102,6 +102,7 @@ export class NewTransferComponent implements OnInit {
     this.beneficiariesService.getMyBeneficiaries().subscribe({
       next: (response: any) => {
         if (response.success) {
+          console.log(response.data);
           // Solo beneficiarios confirmados
           const confirmed = (response.data || []).filter((b: BeneficiarioListaDto) => b.estado === 'Confirmado');
           this.myBeneficiaries.set(confirmed);
@@ -257,5 +258,8 @@ export class NewTransferComponent implements OnInit {
   getMaskedAccountNumber(number: string): string {
     if (!number || number.length < 4) return number;
     return `****${number.slice(-4)}`;
+  }
+  goToBeneficiary(): void {
+    this.router.navigate(['/customer/transferencias/beneficiarios/crear']);
   }
 }

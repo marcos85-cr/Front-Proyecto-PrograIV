@@ -179,7 +179,7 @@ export class BeneficiaryListComponent implements OnInit {
   getStatusColor(status: string): string {
     switch (status) {
       case 'Confirmado': return 'success';
-      case 'Pendiente': return 'warning';
+      case 'Inactivo': return 'warning';
       default: return 'medium';
     }
   }

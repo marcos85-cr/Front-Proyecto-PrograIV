@@ -15,6 +15,7 @@ import { TransferHistoryComponent } from '../transfers/transfer-history/transfer
 // Beneficiaries
 import { BeneficiaryListComponent } from '../beneficiaries/beneficiary-list/beneficiary-list.component';
 import { CreateBeneficiaryComponent } from '../beneficiaries/create-beneficiary/create-beneficiary.component';
+import { BeneficiaryDetailComponent } from '../beneficiaries/beneficiary-detail/beneficiary-detail.component';
 
 // Payments
 import { MakePaymentComponent } from '../payments/make-payment/make-payment.component';
@@ -74,7 +75,12 @@ export const TABS_ROUTES: Routes = [
       {
         path: 'beneficiarios/crear',
         component: CreateBeneficiaryComponent
-      }, {
+      },
+      {
+        path: 'beneficiarios/:id',
+        component: BeneficiaryDetailComponent
+      },
+      {
         path: ':id',
         component: DetailTransferComponent
       }

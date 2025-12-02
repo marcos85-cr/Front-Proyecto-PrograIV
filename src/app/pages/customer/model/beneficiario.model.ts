@@ -5,13 +5,10 @@
 // Crear beneficiario
 export interface CrearBeneficiarioRequest {
   alias: string;
-  numeroCuenta: string;
-  banco?: string;
-  moneda?: 'CRC' | 'USD';
-  numeroCuentaDestino?: string;
+  banco: string;
+  moneda: 'CRC' | 'USD';
+  numeroCuentaDestino: string;
   pais?: string;
-  emailNotificacion?: string;
-  limiteTransferencia?: number;
 }
 
 export interface BeneficiarioCreacionDto {
@@ -38,7 +35,7 @@ export interface BeneficiarioListaDto {
   numeroCuenta: string;
   nombreDestinatario: string;
   pais?: string;
-  estado: 'Pendiente' | 'Confirmado' | 'Rechazado';
+  estado: 'Inactivo' | 'Confirmado' | 'Rechazado';
   fechaCreacion: Date;
 }
 

@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { ToastService } from '../../../../../services/toast.service';
-import { CustomerBeneficiariesService } from '../../../services/customer-beneficiaries.service';
-import { CrearBeneficiarioRequest } from '../../../model/beneficiary.model';
+import { BeneficiariosService } from '../../../services/beneficiarios.service';
+import { CrearBeneficiarioRequest } from '../../../model/beneficiario.model';
 
 @Component({
   selector: 'app-create-beneficiary',
@@ -15,29 +15,42 @@ import { CrearBeneficiarioRequest } from '../../../model/beneficiary.model';
   imports: [CommonModule, FormsModule, IonicModule]
 })
 export class CreateBeneficiaryComponent {
-  // Datos del formulario
-  accountNumber = signal('');
   alias = signal('');
-  email = signal('');
-  transferLimit = signal<number | null>(null);
+  banco = signal('');
+  moneda = signal<'CRC' | 'USD'>('CRC');
+  numeroCuentaDestino = signal('');
+  pais = signal('Costa Rica');
 
-  // Estado
   isSubmitting = signal(false);
+
+  bancos = [
+    'BAC Credomatic',
+    'Banco Nacional',
+    'Banco de Costa Rica',
+    'Scotiabank',
+    'Davivienda',
+    'Banco Popular',
+    'Promerica',
+    'Banco Improsa'
+  ];
+
+  paises = ['Costa Rica', 'Panamá', 'Nicaragua', 'Honduras', 'El Salvador', 'Guatemala'];
 
   constructor(
     private alertController: AlertController,
     private router: Router,
     private location: Location,
     private toastService: ToastService,
-    private customerBeneficiariesService: CustomerBeneficiariesService
+    private beneficiariosService: BeneficiariosService
   ) {}
 
   isFormValid(): boolean {
-    return this.accountNumber().trim().length >= 10 &&
-           this.alias().trim().length >= 2;
+    return this.alias().trim().length >= 2 &&
+           this.banco().trim().length > 0 &&
+           this.numeroCuentaDestino().trim().length >= 10;
   }
 
-  async confirmCreation(): Promise<void> {
+  async confirmarCreacion(): Promise<void> {
     if (!this.isFormValid()) {
       this.toastService.warning('Complete todos los campos requeridos');
       return;
@@ -45,13 +58,13 @@ export class CreateBeneficiaryComponent {
 
     const alert = await this.alertController.create({
       header: 'Agregar Beneficiario',
-      message: `¿Confirma agregar a "${this.alias()}" como beneficiario? Se enviará un código de confirmación a su correo.`,
+      message: `¿Confirma agregar a "${this.alias()}" como beneficiario? Deberá confirmarlo antes de poder usarlo.`,
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {
           text: 'Agregar',
           role: 'confirm',
-          handler: () => this.createBeneficiary()
+          handler: () => this.crearBeneficiario()
         }
       ]
     });
@@ -59,36 +72,34 @@ export class CreateBeneficiaryComponent {
     await alert.present();
   }
 
-  private createBeneficiary(): void {
+  private crearBeneficiario(): void {
     if (this.isSubmitting()) return;
 
     const request: CrearBeneficiarioRequest = {
-      numeroCuenta: this.accountNumber().trim(),
-      alias: this.alias().trim()
+      alias: this.alias().trim(),
+      banco: this.banco().trim(),
+      moneda: this.moneda(),
+      numeroCuentaDestino: this.numeroCuentaDestino().trim()
     };
 
-    if (this.email().trim()) {
-      request.emailNotificacion = this.email().trim();
-    }
-
-    if (this.transferLimit()) {
-      request.limiteTransferencia = this.transferLimit()!;
+    if (this.pais().trim()) {
+      request.pais = this.pais().trim();
     }
 
     this.isSubmitting.set(true);
 
-    this.customerBeneficiariesService.create(request).subscribe({
-      next: (response: any) => {
+    this.beneficiariosService.crear(request).subscribe({
+      next: (response) => {
         if (response.success) {
-          this.toastService.success('Beneficiario agregado. Revise su correo para confirmar.');
+          this.toastService.success('Beneficiario creado. Debe confirmarlo antes de poder usarlo.');
           this.router.navigate(['/customer/transferencias/beneficiarios']);
         } else {
-          this.toastService.error(response.message || 'Error al agregar beneficiario');
+          this.toastService.error(response.message || 'Error al crear beneficiario');
         }
         this.isSubmitting.set(false);
       },
-      error: () => {
-        this.toastService.error('Error al agregar beneficiario');
+      error: (error) => {
+        this.toastService.error(error?.message || 'Error al crear beneficiario');
         this.isSubmitting.set(false);
       }
     });

@@ -36,8 +36,8 @@
         <ion-segment-button value="Confirmado">
           <ion-label>Confirmados</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="Pendiente">
-          <ion-label>Pendientes</ion-label>
+        <ion-segment-button value="Inactivo">
+          <ion-label>Inactivos</ion-label>
         </ion-segment-button>
       </ion-segment>
     </div>
@@ -52,38 +52,38 @@
 
       @if (filteredBeneficiaries().length > 0 && !isLoading()) {
         <div class="bank-simple-list">
-          @for (beneficiario of filteredBeneficiaries(); track beneficiario.id) {
+          @for (beneficiary of filteredBeneficiaries(); track beneficiary.id) {
             <div class="bank-glass-card beneficiary-item">
-              <div class="beneficiary-main" (click)="goToDetail(beneficiario.id)">
+              <div class="beneficiary-main" (click)="goToDetail(beneficiary.id)">
                 <div class="beneficiary-avatar">
                   <ion-icon name="person-outline" color="primary"></ion-icon>
                 </div>
                 <div class="beneficiary-info">
-                  <h4 class="beneficiary-alias">{{ beneficiario.alias }}</h4>
-                  <p class="beneficiary-name">{{ beneficiario.nombreDestinatario }}</p>
+                  <h4 class="beneficiary-alias">{{ beneficiary.alias }}</h4>
+                  <p class="beneficiary-name">{{ beneficiary.nombreDestinatario }}</p>
                   <div class="beneficiary-meta">
-                    <span class="account-number">{{ getMaskedAccountNumber(beneficiario.numeroCuenta) }}</span>
-                    <ion-badge [color]="getStatusColor(beneficiario.estado)">
-                      {{ beneficiario.estado }}
+                    <span class="account-number">{{ getMaskedAccountNumber(beneficiary.numeroCuenta) }}</span>
+                    <ion-badge [color]="getStatusColor(beneficiary.estado)">
+                      {{ beneficiary.estado }}
                     </ion-badge>
                   </div>
                 </div>
               </div>
               <div class="beneficiary-actions">
-                @if (beneficiario.estado === 'Pendiente') {
+                @if (beneficiary.estado === 'Pendiente') {
                   <ion-button fill="clear" size="small" color="success"
-                              (click)="confirmBeneficiary(beneficiario); $event.stopPropagation()">
+                              (click)="confirmBeneficiary(beneficiary); $event.stopPropagation()">
                     <ion-icon name="checkmark-circle-outline" slot="icon-only"></ion-icon>
                   </ion-button>
                 }
-                @if (beneficiario.estado === 'Confirmado') {
+                @if (beneficiary.estado === 'Confirmado') {
                   <ion-button fill="clear" size="small" color="primary"
-                              (click)="goToTransfer(beneficiario); $event.stopPropagation()">
+                              (click)="goToTransfer(beneficiary); $event.stopPropagation()">
                     <ion-icon name="send-outline" slot="icon-only"></ion-icon>
                   </ion-button>
                 }
                 <ion-button fill="clear" size="small" color="danger"
-                            (click)="deleteBeneficiary(beneficiario); $event.stopPropagation()">
+                            (click)="deleteBeneficiary(beneficiary); $event.stopPropagation()">
                   <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
                 </ion-button>
               </div>
