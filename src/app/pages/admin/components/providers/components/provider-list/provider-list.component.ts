@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ProviderService } from '../../../../../../services/provider.service';
 import { ToastService } from '../../../../../../services/toast.service';
 import { ErrorHandlerService } from '../../../../../../services/error-handler.service';
 import { Provider } from '../../models/provider.model';
-import { AlertController, IonicModule, ViewWillEnter } from '@ionic/angular';
+import { AlertController, IonicModule, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -21,7 +21,7 @@ import { Location } from '@angular/common';
     RouterModule,
   ],
 })
-export class ProviderListComponent implements OnInit, ViewWillEnter {
+export class ProviderListComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   providers: Provider[] = [];
   isLoading = false;
   searchTerm = '';
@@ -36,7 +36,11 @@ export class ProviderListComponent implements OnInit, ViewWillEnter {
   ) {}
 
   ngOnInit(): void {
-    this.loadProviders();
+    // Inicialización
+  }
+
+  ngOnDestroy(): void {
+    this.resetData();
   }
 
   /**
@@ -45,6 +49,16 @@ export class ProviderListComponent implements OnInit, ViewWillEnter {
    */
   ionViewWillEnter(): void {
     this.loadProviders();
+  }
+
+  ionViewWillLeave(): void {
+    this.resetData();
+  }
+
+  private resetData(): void {
+    this.providers = [];
+    this.isLoading = false;
+    this.searchTerm = '';
   }
 
   /**

@@ -1,6 +1,6 @@
-import { Component, OnInit, signal, computed, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, AlertController, LoadingController } from '@ionic/angular';
+import { IonicModule, AlertController, LoadingController, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { catchError, finalize, tap, debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -17,7 +17,7 @@ import { OperacionGestor, OperacionFilters } from '../../../../shared/models/ges
   standalone: true,
   imports: [IonicModule, CommonModule, ReactiveFormsModule, FormsModule],
 })
-export class OperacionesListComponent implements OnInit {
+export class OperacionesListComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   operaciones = signal<OperacionGestor[]>([]);
   filteredOperaciones = signal<OperacionGestor[]>([]);
   isLoading = signal(false);
@@ -42,9 +42,29 @@ export class OperacionesListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadOperaciones();
     this.setupSearch();
     this.checkRouteParams();
+  }
+
+  ngOnDestroy(): void {
+    this.resetData();
+  }
+
+  ionViewWillEnter(): void {
+    this.loadOperaciones();
+  }
+
+  ionViewWillLeave(): void {
+    this.resetData();
+  }
+
+  private resetData(): void {
+    this.operaciones.set([]);
+    this.filteredOperaciones.set([]);
+    this.isLoading.set(false);
+    this.summary.set({ pending: 0, approved: 0, rejected: 0 });
+    this.activeFilters.set({});
+    this.searchForm.reset();
   }
 
   setupSearch() {

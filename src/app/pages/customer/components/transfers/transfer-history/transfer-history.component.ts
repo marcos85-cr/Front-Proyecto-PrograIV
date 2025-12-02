@@ -1,8 +1,8 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { ToastService } from '../../../../../services/toast.service';
 import { CustomerTransfersService } from '../../../services/customer-transfers.service';
 import { TransferenciaTransaccionListaDto } from '../../../model/transfer.model';
@@ -14,7 +14,7 @@ import { TransferenciaTransaccionListaDto } from '../../../model/transfer.model'
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule, RouterModule]
 })
-export class TransferHistoryComponent implements OnInit {
+export class TransferHistoryComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   transfers = signal<TransferenciaTransaccionListaDto[]>([]);
   filteredTransfers = signal<TransferenciaTransaccionListaDto[]>([]);
   searchTerm = signal('');
@@ -29,7 +29,27 @@ export class TransferHistoryComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Inicialización
+  }
+
+  ngOnDestroy(): void {
+    this.resetData();
+  }
+
+  ionViewWillEnter(): void {
     this.loadTransfers();
+  }
+
+  ionViewWillLeave(): void {
+    this.resetData();
+  }
+
+  private resetData(): void {
+    this.transfers.set([]);
+    this.filteredTransfers.set([]);
+    this.searchTerm.set('');
+    this.statusFilter.set('todos');
+    this.isLoading.set(false);
   }
 
   loadTransfers(): void {

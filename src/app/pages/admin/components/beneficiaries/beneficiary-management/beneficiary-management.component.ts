@@ -1,7 +1,7 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, AlertController, ViewWillEnter } from '@ionic/angular';
+import { IonicModule, AlertController, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { catchError, finalize, tap, EMPTY } from 'rxjs';
 
@@ -16,7 +16,7 @@ import { BeneficiarioAdmin } from '../../../models/admin.model';
   standalone: true,
   imports: [CommonModule, IonicModule, FormsModule]
 })
-export class BeneficiaryManagementComponent implements OnInit, ViewWillEnter {
+export class BeneficiaryManagementComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   // Señales para estado
   beneficiarios = signal<BeneficiarioAdmin[]>([]);
   isLoading = signal(false);
@@ -60,11 +60,26 @@ export class BeneficiaryManagementComponent implements OnInit, ViewWillEnter {
   ) {}
 
   ngOnInit(): void {
-    this.loadBeneficiarios();
+    // Inicialización
+  }
+
+  ngOnDestroy(): void {
+    this.resetData();
   }
 
   ionViewWillEnter(): void {
     this.loadBeneficiarios();
+  }
+
+  ionViewWillLeave(): void {
+    this.resetData();
+  }
+
+  private resetData(): void {
+    this.beneficiarios.set([]);
+    this.isLoading.set(false);
+    this.searchTerm.set('');
+    this.filterEstado.set('todos');
   }
 
   /**

@@ -1,7 +1,7 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { catchError, finalize, tap, forkJoin, EMPTY } from 'rxjs';
 
@@ -20,7 +20,7 @@ import {
   standalone: true,
   imports: [CommonModule, IonicModule, FormsModule]
 })
-export class ReportsDashboardComponent implements OnInit {
+export class ReportsDashboardComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   // Estado de carga
   isLoading = signal(false);
 
@@ -41,7 +41,25 @@ export class ReportsDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeDates();
+  }
+
+  ngOnDestroy(): void {
+    this.resetData();
+  }
+
+  ionViewWillEnter(): void {
     this.loadReports();
+  }
+
+  ionViewWillLeave(): void {
+    this.resetData();
+  }
+
+  private resetData(): void {
+    this.dailyVolume.set(null);
+    this.activeClients.set([]);
+    this.periodTotals.set(null);
+    this.isLoading.set(false);
   }
 
   /**

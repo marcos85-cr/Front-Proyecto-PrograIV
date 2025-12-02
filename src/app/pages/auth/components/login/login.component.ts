@@ -59,12 +59,8 @@ export class LoginComponent {
             this.router.navigate(['/customer/dashboard']);
           }
         },
-        error: async (error: any) => {
-          console.error('Error en login:', error);
-          const message =
-            error.error?.message ||
-            'Error al iniciar sesión. Verifique sus credenciales.';
-          await this.toastService.error(message);
+        error:   (error) => {
+          this.toastService.error(error.message || 'Error en inicio de sesión');
           this.isLoading.set(false);
         },
         complete: () => {

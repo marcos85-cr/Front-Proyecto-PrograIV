@@ -1,8 +1,8 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { IonicModule, AlertController } from '@ionic/angular';
+import { IonicModule, AlertController, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { ToastService } from '../../../../../services/toast.service';
 import { CustomerAccountsService } from '../../../services/customer-accounts.service';
 import { CuentaListaDto } from '../../../model/account.model';
@@ -14,7 +14,7 @@ import { CuentaListaDto } from '../../../model/account.model';
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule, RouterModule]
 })
-export class MyAccountsComponent implements OnInit {
+export class MyAccountsComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   // Signals para estado reactivo
   accounts = signal<CuentaListaDto[]>([]);
   filteredAccounts = signal<CuentaListaDto[]>([]);
@@ -48,7 +48,27 @@ export class MyAccountsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Inicialización
+  }
+
+  ngOnDestroy(): void {
+    this.resetData();
+  }
+
+  ionViewWillEnter(): void {
     this.loadAccounts();
+  }
+
+  ionViewWillLeave(): void {
+    this.resetData();
+  }
+
+  private resetData(): void {
+    this.accounts.set([]);
+    this.filteredAccounts.set([]);
+    this.searchTerm.set('');
+    this.filterStatus.set('todos');
+    this.isLoading.set(false);
   }
 
   loadAccounts(): void {

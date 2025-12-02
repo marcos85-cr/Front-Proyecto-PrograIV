@@ -1,8 +1,8 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { ToastService } from '../../../../../services/toast.service';
 import { CustomerPaymentsService } from '../../../services/customer-payments.service';
 import { PagoListaDto } from '../../../model/payment.model';
@@ -14,7 +14,7 @@ import { PagoListaDto } from '../../../model/payment.model';
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule, RouterModule]
 })
-export class PaymentHistoryComponent implements OnInit {
+export class PaymentHistoryComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   payments = signal<PagoListaDto[]>([]);
   filteredPayments = signal<PagoListaDto[]>([]);
   searchTerm = signal('');
@@ -28,7 +28,26 @@ export class PaymentHistoryComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Inicialización
+  }
+
+  ngOnDestroy(): void {
+    this.resetData();
+  }
+
+  ionViewWillEnter(): void {
     this.loadPayments();
+  }
+
+  ionViewWillLeave(): void {
+    this.resetData();
+  }
+
+  private resetData(): void {
+    this.payments.set([]);
+    this.filteredPayments.set([]);
+    this.searchTerm.set('');
+    this.isLoading.set(false);
   }
 
   loadPayments(): void {

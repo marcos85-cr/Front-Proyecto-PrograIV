@@ -1,8 +1,8 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { IonicModule, AlertController } from '@ionic/angular';
+import { IonicModule, AlertController, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { ToastService } from '../../../../../services/toast.service';
 import { CustomerBeneficiariesService } from '../../../services/customer-beneficiaries.service';
 import { BeneficiarioListaDto } from '../../../model/beneficiary.model';
@@ -14,7 +14,7 @@ import { BeneficiarioListaDto } from '../../../model/beneficiary.model';
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule, RouterModule]
 })
-export class BeneficiaryListComponent implements OnInit {
+export class BeneficiaryListComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   beneficiaries = signal<BeneficiarioListaDto[]>([]);
   filteredBeneficiaries = signal<BeneficiarioListaDto[]>([]);
   searchTerm = signal('');
@@ -30,7 +30,27 @@ export class BeneficiaryListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Inicialización
+  }
+
+  ngOnDestroy(): void {
+    this.resetData();
+  }
+
+  ionViewWillEnter(): void {
     this.loadBeneficiaries();
+  }
+
+  ionViewWillLeave(): void {
+    this.resetData();
+  }
+
+  private resetData(): void {
+    this.beneficiaries.set([]);
+    this.filteredBeneficiaries.set([]);
+    this.searchTerm.set('');
+    this.filterStatus.set('todos');
+    this.isLoading.set(false);
   }
 
   loadBeneficiaries(): void {

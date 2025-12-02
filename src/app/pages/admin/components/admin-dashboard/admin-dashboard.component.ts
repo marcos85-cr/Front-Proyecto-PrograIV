@@ -1,7 +1,7 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { IonicModule, AlertController } from '@ionic/angular';
+import { IonicModule, AlertController, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { catchError, finalize, tap, forkJoin, EMPTY } from 'rxjs';
 
 import { AuthService } from '../../../../services/auth.service';
@@ -23,7 +23,7 @@ interface MenuOption {
   standalone: true,
   imports: [CommonModule, IonicModule, RouterModule]
 })
-export class AdminDashboardComponent implements OnInit {
+export class AdminDashboardComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   userName = signal('Administrador');
   isLoading = signal(false);
   stats = signal<EstadisticasDashboard>({
@@ -58,12 +58,38 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUserInfo();
+  }
+
+  ngOnDestroy(): void {
+    this.resetData();
+  }
+
+  ionViewWillEnter(): void {
     this.loadStats();
+  }
+
+  ionViewWillLeave(): void {
+    this.resetData();
   }
 
   private loadUserInfo(): void {
     const user = this.authService.getUserInfo();
     this.userName.set(user?.nombre || user?.name || 'Administrador');
+  }
+
+  private resetData(): void {
+    this.stats.set({
+      totalUsuarios: 0,
+      usuariosActivos: 0,
+      usuariosBloqueados: 0,
+      totalClientes: 0,
+      totalCuentas: 0,
+      cuentasActivas: 0,
+      totalProveedores: 0,
+      operacionesHoy: 0,
+      volumenTotal: 0
+    });
+    this.isLoading.set(false);
   }
 
   private loadStats(): void {

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { catchError, finalize, tap, forkJoin } from 'rxjs';
 import { EMPTY } from 'rxjs';
 
@@ -27,7 +27,7 @@ interface Transaction {
   standalone: true,
   imports: [CommonModule, IonicModule, RouterModule]
 })
-export class CustomerDashboardComponent implements OnInit {
+export class CustomerDashboardComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   userName = signal('');
   accounts = signal<CuentaListaDto[]>([]);
   transactions = signal<Transaction[]>([]);
@@ -64,12 +64,29 @@ export class CustomerDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUserInfo();
+  }
+
+  ngOnDestroy(): void {
+    this.resetData();
+  }
+
+  ionViewWillEnter(): void {
     this.loadDashboardData();
+  }
+
+  ionViewWillLeave(): void {
+    this.resetData();
   }
 
   private loadUserInfo(): void {
     const user = this.authService.getUserInfo();
     this.userName.set(user?.nombre || user?.name || 'Cliente');
+  }
+
+  private resetData(): void {
+    this.accounts.set([]);
+    this.transactions.set([]);
+    this.isLoading.set(false);
   }
 
   private loadDashboardData(): void {

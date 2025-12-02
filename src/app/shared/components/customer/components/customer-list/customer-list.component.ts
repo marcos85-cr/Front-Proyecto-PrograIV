@@ -1,9 +1,9 @@
 import { CommonModule, Location } from '@angular/common';
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { Customer } from '../../models/customer.dto';
-import { IonicModule, AlertController } from '@ionic/angular';
+import { IonicModule, AlertController, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { ToastService } from '../../../../../services/toast.service';
 import { CustomerService } from '../../services/customer.service';
 
@@ -14,7 +14,7 @@ import { CustomerService } from '../../services/customer.service';
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule, RouterModule]
 })
-export class CustomerListComponent implements OnInit {
+export class CustomerListComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   // Signals para estado reactivo
   customers = signal<any[]>([]);
   filteredCustomers = signal<any[]>([]);
@@ -40,7 +40,26 @@ export class CustomerListComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Inicialización
+  }
+
+  ngOnDestroy(): void {
+    this.resetData();
+  }
+
+  ionViewWillEnter(): void {
     this.loadCustomers();
+  }
+
+  ionViewWillLeave(): void {
+    this.resetData();
+  }
+
+  private resetData(): void {
+    this.customers.set([]);
+    this.filteredCustomers.set([]);
+    this.searchTerm.set('');
+    this.isLoading.set(false);
   }
 
   loadCustomers(): void {

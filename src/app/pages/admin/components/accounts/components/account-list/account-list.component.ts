@@ -1,8 +1,8 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AlertController, IonicModule, ViewWillEnter } from '@ionic/angular';
+import { AlertController, IonicModule, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { AccountsService } from '../../services/accounts.service';
 import { ToastService } from '../../../../../../services/toast.service';
 import { ErrorHandlerService } from '../../../../../../services/error-handler.service';
@@ -15,7 +15,7 @@ import { Account } from '../../models/account.dto';
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule, RouterModule],
 })
-export class AccountListComponent implements OnInit, ViewWillEnter {
+export class AccountListComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   accounts = signal<Account[]>([]);
   isLoading = signal(false);
   searchTerm = signal('');
@@ -52,11 +52,26 @@ export class AccountListComponent implements OnInit, ViewWillEnter {
   ) {}
 
   ngOnInit(): void {
-    this.loadAccounts();
+    // Inicialización inicial si es necesaria
+    // Los datos se cargan en ionViewWillEnter
+  }
+
+  ngOnDestroy(): void {
+    this.resetData();
   }
 
   ionViewWillEnter(): void {
     this.loadAccounts();
+  }
+
+  ionViewWillLeave(): void {
+    this.resetData();
+  }
+
+  private resetData(): void {
+    this.accounts.set([]);
+    this.isLoading.set(false);
+    this.clearFilters();
   }
 
   loadAccounts(): void {

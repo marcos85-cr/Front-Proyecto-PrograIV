@@ -1,7 +1,7 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, ViewWillEnter } from '@ionic/angular';
+import { IonicModule, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { catchError, finalize, tap, EMPTY } from 'rxjs';
 
@@ -16,7 +16,7 @@ import { RegistroAuditoria, FiltrosAuditoria } from '../../../models/admin.model
   standalone: true,
   imports: [CommonModule, IonicModule, FormsModule]
 })
-export class AuditLogComponent implements OnInit, ViewWillEnter {
+export class AuditLogComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   // Estado
   registros = signal<RegistroAuditoria[]>([]);
   isLoading = signal(false);
@@ -66,11 +66,25 @@ export class AuditLogComponent implements OnInit, ViewWillEnter {
 
   ngOnInit(): void {
     this.initializeDates();
-    this.loadAuditLogs();
+  }
+
+  ngOnDestroy(): void {
+    this.resetData();
   }
 
   ionViewWillEnter(): void {
     this.loadAuditLogs();
+  }
+
+  ionViewWillLeave(): void {
+    this.resetData();
+  }
+
+  private resetData(): void {
+    this.registros.set([]);
+    this.isLoading.set(false);
+    this.searchTerm.set('');
+    this.filterOperacion.set('todos');
   }
 
   /**

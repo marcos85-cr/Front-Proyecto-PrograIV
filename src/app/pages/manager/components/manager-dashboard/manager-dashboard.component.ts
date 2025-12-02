@@ -1,6 +1,6 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, AlertController } from '@ionic/angular';
+import { IonicModule, AlertController, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { catchError, tap, finalize } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
@@ -17,7 +17,7 @@ import { GestorDashboard, OperacionPendiente, ClienteGestor } from '../../../../
   standalone: true,
   imports: [IonicModule, CommonModule],
 })
-export class ManagerDashboardComponent implements OnInit {
+export class ManagerDashboardComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   userName = signal<string>('');
   isLoading = signal(false);
   stats = signal<GestorDashboard>({
@@ -48,9 +48,20 @@ export class ManagerDashboardComponent implements OnInit {
 
   ngOnInit() {
     this.loadUserInfo();
+  }
+
+  ngOnDestroy(): void {
+    this.resetData();
+  }
+
+  ionViewWillEnter(): void {
     this.loadStats();
     this.loadPendingOperations();
     this.loadMyClients();
+  }
+
+  ionViewWillLeave(): void {
+    this.resetData();
   }
 
   loadUserInfo(): void {
@@ -60,6 +71,19 @@ export class ManagerDashboardComponent implements OnInit {
     } catch {
       this.userName.set('Gestor');
     }
+  }
+
+  private resetData(): void {
+    this.stats.set({
+      myClients: 0,
+      activeAccounts: 0,
+      todayOperations: 0,
+      pendingApprovals: 0,
+      totalVolume: 0,
+    });
+    this.pendingOperations.set([]);
+    this.myClients.set([]);
+    this.isLoading.set(false);
   }
 
   loadStats(): void {

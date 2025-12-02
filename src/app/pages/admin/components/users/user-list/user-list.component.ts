@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../../../../../services/user.service';
 import { ToastService } from '../../../../../services/toast.service';
 import { ErrorHandlerService } from '../../../../../services/error-handler.service';
 import { User } from '../../../../../shared/models/user.model';
 import { ROLES_UTILS, USER_ROLES } from '../../../../../shared/constants/user-roles.constants';
-import { AlertController, IonicModule, ViewWillEnter } from '@ionic/angular';
+import { AlertController, IonicModule, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -21,7 +21,7 @@ import { FormsModule } from '@angular/forms';
     RouterModule,
   ],
 })
-export class UserListComponent implements OnInit, ViewWillEnter {
+export class UserListComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   users: User[] = [];
   isLoading = false;
   searchTerm = '';
@@ -37,7 +37,11 @@ export class UserListComponent implements OnInit, ViewWillEnter {
   ) {}
 
   ngOnInit(): void {
-    this.loadUsers();
+    // Inicialización
+  }
+
+  ngOnDestroy(): void {
+    this.resetData();
   }
 
   /**
@@ -46,6 +50,18 @@ export class UserListComponent implements OnInit, ViewWillEnter {
    */
   ionViewWillEnter(): void {
     this.loadUsers();
+  }
+
+  ionViewWillLeave(): void {
+    this.resetData();
+  }
+
+  private resetData(): void {
+    this.users = [];
+    this.isLoading = false;
+    this.searchTerm = '';
+    this.filterBloqueados = null;
+    this.filterRole = 'todos';
   }
 
   /**
