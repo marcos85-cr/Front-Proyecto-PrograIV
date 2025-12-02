@@ -121,6 +121,17 @@
                       }
                     </div>
                   }
+                  <!-- Botón para agregar nuevo beneficiario -->
+                  <div class="beneficiary-option add-new" (click)="goToBeneficiary()">
+                    <div class="beneficiary-avatar add-avatar">
+                      <ion-icon name="add-outline"></ion-icon>
+                    </div>
+                    <div class="beneficiary-info">
+                      <span class="beneficiary-name">Agregar nuevo</span>
+                      <span class="beneficiary-account">Crear beneficiario</span>
+                    </div>
+                    <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
+                  </div>
                 </div>
               } @else {
                 <div class="empty-message">
@@ -208,8 +219,11 @@
                 <ion-item class="bank-form-item scheduled-item" lines="none" id="open-scheduled-modal" button="true">
                   <ion-icon name="calendar-outline" slot="start" color="primary"></ion-icon>
                   <ion-label class="scheduled-label-text">
-                    <span *ngIf="scheduledDate(); else noDate">{{ scheduledDate() | date:'dd/MM/yyyy HH:mm' }}</span>
-                    <ng-template #noDate><span class="placeholder-text">Seleccionar fecha y hora</span></ng-template>
+                    @if (scheduledDate()) {
+                      <span>{{ scheduledDate() | date:'dd/MM/yyyy HH:mm' }}</span>
+                    } @else {
+                      <span class="placeholder-text">Seleccionar fecha y hora</span>
+                    }
                   </ion-label>
                   <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
                 </ion-item>

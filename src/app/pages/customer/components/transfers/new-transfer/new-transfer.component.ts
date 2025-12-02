@@ -1,8 +1,9 @@
-import { Component, OnInit, signal, computed, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, ViewChild } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonicModule, AlertController, IonModal } from '@ionic/angular';
+import { ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { ToastService } from '../../../../../services/toast.service';
 import { CustomerTransfersService } from '../../../services/customer-transfers.service';
 import { CustomerAccountsService } from '../../../services/customer-accounts.service';
@@ -18,7 +19,7 @@ import { PreCheckTransferenciaRequest, EjecutarTransferenciaRequest, PreCheckTra
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule]
 })
-export class NewTransferComponent implements OnInit {
+export class NewTransferComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   @ViewChild(IonModal) scheduledModal!: IonModal;
 
   // Estado del wizard
@@ -76,7 +77,16 @@ export class NewTransferComponent implements OnInit {
     private beneficiariesService: CustomerBeneficiariesService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
+    // Solo inicialización básica
+  }
+
+  ngOnDestroy(): void {
+    this.resetForm();
+  }
+
+  ionViewWillEnter(): void {
+    this.resetForm();
     this.loadAccounts();
     this.loadBeneficiaries();
     this.initMinScheduledDate();
@@ -86,6 +96,27 @@ export class NewTransferComponent implements OnInit {
     if (sourceAccount) {
       this.sourceAccountId.set(+sourceAccount);
     }
+  }
+
+  ionViewWillLeave(): void {
+    this.resetForm();
+  }
+
+  private resetForm(): void {
+    this.currentStep.set(1);
+    this.sourceAccountId.set(null);
+    this.searchType.set('cuenta');
+    this.destinationAccountNumber.set('');
+    this.beneficiaryId.set(null);
+    this.amount.set(0);
+    this.currency.set('CRC');
+    this.description.set('');
+    this.isScheduled.set(false);
+    this.scheduledDate.set('');
+    this.isLoading.set(false);
+    this.isPreChecking.set(false);
+    this.isSubmitting.set(false);
+    this.preCheckResult.set(null);
   }
 
   private initMinScheduledDate(): void {
@@ -145,9 +176,16 @@ export class NewTransferComponent implements OnInit {
   }
 
   nextStep(): void {
-    if (this.currentStep() === 1 && !this.sourceAccountId()) {
-      this.toastService.warning('Seleccione una cuenta de origen');
-      return;
+    if (this.currentStep() === 1) {
+      if (!this.sourceAccountId()) {
+        this.toastService.warning('Seleccione una cuenta de origen');
+        return;
+      }
+      const account = this.sourceAccount();
+      if (account && account.saldo <= 0) {
+        this.toastService.error('La cuenta seleccionada no tiene saldo disponible para realizar transferencias');
+        return;
+      }
     }
 
     if (this.currentStep() === 2) {
