@@ -1,7 +1,7 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, Location } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { CustomerService } from '../../services/customer.service';
 import { ToastService } from '../../../../../services/toast.service';
 import { catchError, finalize, tap } from 'rxjs/operators';
@@ -51,7 +51,7 @@ export interface CustomerDetail {
   standalone: true,
   imports: [CommonModule, IonicModule],
 })
-export class CustomerDetailComponent implements OnInit {
+export class CustomerDetailComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   customer = signal<CustomerDetail | null>(null);
   isLoading = signal(false);
   customerId: string | null = null;
@@ -66,12 +66,28 @@ export class CustomerDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.customerId = this.route.snapshot.paramMap.get('id');
+  }
+
+  ngOnDestroy(): void {
+    this.resetData();
+  }
+
+  ionViewWillEnter(): void {
     if (this.customerId) {
       this.loadCustomer(this.customerId);
     } else {
       this.toastService.error('ID de cliente no válido');
       this.goBack();
     }
+  }
+
+  ionViewWillLeave(): void {
+    this.resetData();
+  }
+
+  private resetData(): void {
+    this.customer.set(null);
+    this.isLoading.set(false);
   }
 
   loadCustomer(id: string): void {

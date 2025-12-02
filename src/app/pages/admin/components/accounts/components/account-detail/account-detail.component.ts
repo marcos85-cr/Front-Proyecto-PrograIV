@@ -1,7 +1,7 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, IonicModule } from '@ionic/angular';
+import { AlertController, IonicModule, ViewWillEnter, ViewWillLeave } from '@ionic/angular';
 import { AccountsService } from '../../services/accounts.service';
 import { ToastService } from '../../../../../../services/toast.service';
 import { Account } from '../../models/account.dto';
@@ -15,7 +15,7 @@ import { EMPTY } from 'rxjs';
   standalone: true,
   imports: [IonicModule, CommonModule],
 })
-export class AccountDetailComponent implements OnInit {
+export class AccountDetailComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   account = signal<Account | null>(null);
   isLoading = signal(false);
   accountId = signal<string | null>(null);
@@ -47,11 +47,30 @@ export class AccountDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.accountId.set(id);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.resetData();
+  }
+
+  ionViewWillEnter(): void {
+    const id = this.accountId();
+    if (id) {
       this.loadAccount(id);
     } else {
       this.toastService.error('ID de cuenta no válido');
       this.goBack();
     }
+  }
+
+  ionViewWillLeave(): void {
+    this.resetData();
+  }
+
+  private resetData(): void {
+    this.account.set(null);
+    this.isLoading.set(false);
   }
 
   loadAccount(id: string): void {
