@@ -1,8 +1,8 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, ViewChild } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { IonicModule, AlertController } from '@ionic/angular';
+import { IonicModule, AlertController, IonModal } from '@ionic/angular';
 import { ToastService } from '../../../../../services/toast.service';
 import { CustomerTransfersService } from '../../../services/customer-transfers.service';
 import { CustomerAccountsService } from '../../../services/customer-accounts.service';
@@ -19,6 +19,8 @@ import { PreCheckTransferenciaRequest, EjecutarTransferenciaRequest, PreCheckTra
   imports: [CommonModule, FormsModule, IonicModule]
 })
 export class NewTransferComponent implements OnInit {
+  @ViewChild(IonModal) scheduledModal!: IonModal;
+
   // Estado del wizard
   currentStep = signal(1);
 
@@ -30,6 +32,11 @@ export class NewTransferComponent implements OnInit {
   amount = signal<number>(0);
   currency = signal<'CRC' | 'USD'>('CRC');
   description = signal('');
+
+  // Transferencia programada
+  isScheduled = signal(false);
+  scheduledDate = signal<string>('');
+  minScheduledDate = signal('');
 
   // Listas
   myAccounts = signal<CuentaListaDto[]>([]);
@@ -72,12 +79,37 @@ export class NewTransferComponent implements OnInit {
   ngOnInit() {
     this.loadAccounts();
     this.loadBeneficiaries();
+    this.initMinScheduledDate();
 
     // Verificar si viene con cuenta pre-seleccionada
     const sourceAccount = this.route.snapshot.queryParamMap.get('cuentaOrigen');
     if (sourceAccount) {
       this.sourceAccountId.set(+sourceAccount);
     }
+  }
+
+  private initMinScheduledDate(): void {
+    // Fecha mínima: mañana
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+    this.minScheduledDate.set(tomorrow.toISOString());
+  }
+
+  toggleScheduled(value: boolean): void {
+    this.isScheduled.set(value);
+    if (!value) {
+      this.scheduledDate.set('');
+    }
+  }
+
+  onScheduledDateChange(event: any): void {
+    this.scheduledDate.set(event.detail.value || '');
+    this.closeScheduledModal();
+  }
+
+  closeScheduledModal(): void {
+    this.scheduledModal?.dismiss();
   }
 
   loadAccounts(): void {
@@ -132,6 +164,10 @@ export class NewTransferComponent implements OnInit {
     if (this.currentStep() === 3) {
       if (this.amount() < this.minimumAmount) {
         this.toastService.warning(`El monto mínimo es ₡${this.minimumAmount.toLocaleString('es-CR')}`);
+        return;
+      }
+      if (this.isScheduled() && !this.scheduledDate()) {
+        this.toastService.warning('Seleccione una fecha para la transferencia programada');
         return;
       }
       this.performPreCheck();
@@ -217,7 +253,9 @@ export class NewTransferComponent implements OnInit {
       cuentaDestinoNumero: destinationAccount,
       monto: this.amount(),
       moneda: this.currency(),
-      descripcion: this.description() || 'Transferencia'
+      descripcion: this.description() || 'Transferencia',
+      programada: this.isScheduled(),
+      fechaProgramada: this.isScheduled() ? new Date(this.scheduledDate()) : undefined
     };
 
     this.isSubmitting.set(true);
@@ -225,9 +263,14 @@ export class NewTransferComponent implements OnInit {
     this.transfersService.execute(request).subscribe({
       next: (response: any) => {
         if (response.success) {
-          const message = response.data?.requiereAprobacion
-            ? 'Transferencia enviada. Pendiente de aprobación.'
-            : 'Transferencia realizada exitosamente';
+          let message: string;
+          if (this.isScheduled()) {
+            message = 'Transferencia programada exitosamente';
+          } else if (response.data?.requiereAprobacion) {
+            message = 'Transferencia enviada. Pendiente de aprobación.';
+          } else {
+            message = 'Transferencia realizada exitosamente';
+          }
           this.toastService.success(message);
           this.router.navigate(['/customer/transferencias']);
         } else {
@@ -235,8 +278,8 @@ export class NewTransferComponent implements OnInit {
         }
         this.isSubmitting.set(false);
       },
-      error: () => {
-        this.toastService.error('Error al realizar transferencia');
+      error: (error) => {
+        this.toastService.error(error.message || 'Error al realizar transferencia');
         this.isSubmitting.set(false);
       }
     });

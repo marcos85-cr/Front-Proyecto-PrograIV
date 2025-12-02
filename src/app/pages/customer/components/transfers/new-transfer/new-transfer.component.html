@@ -188,6 +188,59 @@
               </ion-textarea>
             </ion-item>
           </div>
+
+          <!-- Transferencia Programada -->
+          <div class="form-group scheduled-section">
+            <div class="scheduled-toggle">
+              <div class="scheduled-label">
+                <ion-icon name="calendar-outline" color="primary"></ion-icon>
+                <span>Programar transferencia</span>
+              </div>
+              <ion-toggle
+                [checked]="isScheduled()"
+                (ionChange)="toggleScheduled($any($event).detail.checked)">
+              </ion-toggle>
+            </div>
+
+            @if (isScheduled()) {
+              <div class="scheduled-date-picker">
+                <ion-label class="form-label">Fecha y hora de ejecución</ion-label>
+                <ion-item class="bank-form-item scheduled-item" lines="none" id="open-scheduled-modal" button="true">
+                  <ion-icon name="calendar-outline" slot="start" color="primary"></ion-icon>
+                  <ion-label class="scheduled-label-text">
+                    <span *ngIf="scheduledDate(); else noDate">{{ scheduledDate() | date:'dd/MM/yyyy HH:mm' }}</span>
+                    <ng-template #noDate><span class="placeholder-text">Seleccionar fecha y hora</span></ng-template>
+                  </ion-label>
+                  <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+                </ion-item>
+                <ion-modal trigger="open-scheduled-modal" [initialBreakpoint]="0.6" [breakpoints]="[0, 0.6, 0.9]">
+                  <ng-template>
+                    <ion-header>
+                      <ion-toolbar color="primary">
+                        <ion-title>Fecha Programada</ion-title>
+                        <ion-buttons slot="end">
+                          <ion-button (click)="closeScheduledModal()">Cerrar</ion-button>
+                        </ion-buttons>
+                      </ion-toolbar>
+                    </ion-header>
+                    <ion-content class="ion-padding">
+                      <ion-datetime
+                        presentation="date-time"
+                        [min]="minScheduledDate()"
+                        [value]="scheduledDate()"
+                        (ionChange)="onScheduledDateChange($event)">
+                        <span slot="title">Seleccione fecha y hora</span>
+                      </ion-datetime>
+                    </ion-content>
+                  </ng-template>
+                </ion-modal>
+                <p class="helper-text">
+                  <ion-icon name="information-circle-outline"></ion-icon>
+                  La transferencia se ejecutará automáticamente en la fecha seleccionada
+                </p>
+              </div>
+            }
+          </div>
         </div>
 
         <!-- Información de límites -->
@@ -258,7 +311,21 @@
             </div>
           }
 
-          @if (preCheckResult()?.requiereAprobacion) {
+          @if (isScheduled()) {
+            <div class="summary-row scheduled">
+              <span class="label">
+                <ion-icon name="calendar-outline"></ion-icon>
+                Fecha programada
+              </span>
+              <span class="value">{{ scheduledDate() | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            <div class="scheduled-info">
+              <ion-icon name="time-outline" color="primary"></ion-icon>
+              <span>Esta transferencia se ejecutará automáticamente en la fecha indicada</span>
+            </div>
+          }
+
+          @if (preCheckResult()?.requiereAprobacion && !isScheduled()) {
             <div class="approval-warning">
               <ion-icon name="time-outline" color="warning"></ion-icon>
               <span>Esta transferencia requiere aprobación administrativa</span>
