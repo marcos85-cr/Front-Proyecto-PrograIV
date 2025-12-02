@@ -1,0 +1,149 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Auditoría</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="refreshLogs()">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <ion-refresher slot="fixed" (ionRefresh)="refreshLogs($event)">
+    <ion-refresher-content pullingIcon="chevron-down-circle-outline" refreshingSpinner="crescent">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <div class="audit-container">
+    <!-- Filtros -->
+    <div class="filters-card">
+      <div class="filters-header">
+        <ion-icon name="filter-outline"></ion-icon>
+        <span>Filtros</span>
+      </div>
+
+      <!-- Búsqueda -->
+      <ion-searchbar
+        [value]="searchTerm()"
+        (ionInput)="onSearchChange($event)"
+        placeholder="Buscar por usuario, descripción o IP..."
+        animated>
+      </ion-searchbar>
+
+      <!-- Filtro por tipo de operación -->
+      <div class="filter-row">
+        <label>Tipo de Operación</label>
+        <ion-select
+          [value]="filterOperacion()"
+          (ionChange)="onFilterChange($event)"
+          interface="popover"
+          placeholder="Seleccionar">
+          @for (tipo of tiposOperacion; track tipo.valor) {
+          <ion-select-option [value]="tipo.valor">{{ tipo.etiqueta }}</ion-select-option>
+          }
+        </ion-select>
+      </div>
+
+      <!-- Filtro por fechas -->
+      <div class="date-filters">
+        <div class="date-input">
+          <label>Desde</label>
+          <ion-datetime-button datetime="auditStartDate"></ion-datetime-button>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime
+                id="auditStartDate"
+                presentation="date"
+                [value]="startDate()"
+                (ionChange)="onStartDateChange($event)"
+                [max]="endDate()">
+              </ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </div>
+        <div class="date-input">
+          <label>Hasta</label>
+          <ion-datetime-button datetime="auditEndDate"></ion-datetime-button>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime
+                id="auditEndDate"
+                presentation="date"
+                [value]="endDate()"
+                (ionChange)="onEndDateChange($event)"
+                [min]="startDate()">
+              </ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </div>
+      </div>
+
+      <ion-button expand="block" fill="solid" (click)="applyFilters()" class="apply-btn">
+        <ion-icon name="search-outline" slot="start"></ion-icon>
+        Buscar
+      </ion-button>
+    </div>
+
+    <!-- Contador de resultados -->
+    <div class="results-header">
+      <span class="results-count">{{ filteredRegistros().length }} registros encontrados</span>
+    </div>
+
+    @if (isLoading()) {
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando registros...</p>
+    </div>
+    } @else {
+
+    <!-- Lista de registros -->
+    @if (filteredRegistros().length > 0) {
+    <div class="audit-list">
+      @for (registro of filteredRegistros(); track registro.id) {
+      <div class="audit-card">
+        <div class="audit-header">
+          <div class="audit-icon" [attr.data-color]="getOperationColor(registro.tipoOperacion)">
+            <ion-icon [name]="getOperationIcon(registro.tipoOperacion)" [color]="getOperationColor(registro.tipoOperacion)"></ion-icon>
+          </div>
+          <div class="audit-info">
+            <span class="audit-operation">{{ registro.tipoOperacion }}</span>
+            <span class="audit-user">{{ registro.usuario }}</span>
+          </div>
+          <span class="audit-time">{{ formatDateTime(registro.fecha) }}</span>
+        </div>
+
+        <div class="audit-description">
+          {{ registro.descripcion }}
+        </div>
+
+        <div class="audit-footer">
+          <span class="audit-ip">
+            <ion-icon name="globe-outline"></ion-icon>
+            {{ registro.ip || 'N/A' }}
+          </span>
+          @if (registro.detalles) {
+          <span class="audit-details">
+            <ion-icon name="information-circle-outline"></ion-icon>
+            {{ registro.detalles }}
+          </span>
+          }
+        </div>
+      </div>
+      }
+    </div>
+    } @else {
+    <!-- Estado vacío -->
+    <div class="empty-state">
+      <ion-icon name="document-text-outline"></ion-icon>
+      <h3>No se encontraron registros</h3>
+      <p>Intenta ajustar los filtros de búsqueda</p>
+    </div>
+    }
+
+    }
+  </div>
+</ion-content>

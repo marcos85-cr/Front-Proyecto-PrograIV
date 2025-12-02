@@ -9,7 +9,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Excluir rutas públicas de autenticación
-    const publicAuthRoutes = ['/auth/login', '/auth/register', '/auth/reset-password'];
+    const publicAuthRoutes = ['/login', '/register', '/reset-password'];
     const isPublicAuthRoute = publicAuthRoutes.some(route =>
       req.url.toLowerCase().includes(route.toLowerCase())
     );

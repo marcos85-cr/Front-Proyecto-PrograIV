@@ -46,7 +46,7 @@ private token!: string;
   logout() {
     this.token = '';
     localStorage.removeItem('ACCESS_TOKEN_BANCO');
-    this.router.navigateByUrl('/auth/login');
+    this.router.navigateByUrl('/login');
   }
 
   /**

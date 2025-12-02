@@ -1,25 +1,32 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { CommonModule, Location } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { AuthService } from '../../../../services/auth.service';
-import { TransactionService } from 'src/app/services/transaction.service';
-import { HighValueOperationService } from '../../services/high-value-operation.service';
-import { AdminDashboardService, DashboardStats } from '../../services/admin-dashboard.service';
-import { ToastService } from '../../../../services/toast.service';
-import { ErrorHandlerService } from '../../../../services/error-handler.service';
+import { Component, OnInit, signal } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { IonicModule, AlertController } from '@ionic/angular';
+import { catchError, finalize, tap, forkJoin, EMPTY } from 'rxjs';
+
+import { AuthService } from '../../../../services/auth.service';
+import { ToastService } from '../../../../services/toast.service';
+import { AdminService } from '../../services/admin.service';
+import { EstadisticasDashboard } from '../../models/admin.model';
+
+interface MenuOption {
+  icon: string;
+  label: string;
+  route: string;
+  color: string;
+}
+
 @Component({
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, RouterModule],
+  imports: [CommonModule, IonicModule, RouterModule]
 })
-export class AdminDashboardComponent  implements OnInit {
-userName: string = '';
-  stats: DashboardStats = {
+export class AdminDashboardComponent implements OnInit {
+  userName = signal('Administrador');
+  isLoading = signal(false);
+  stats = signal<EstadisticasDashboard>({
     totalUsuarios: 0,
     usuariosActivos: 0,
     usuariosBloqueados: 0,
@@ -29,103 +36,77 @@ userName: string = '';
     totalProveedores: 0,
     operacionesHoy: 0,
     volumenTotal: 0
-  };
-  pendingTransactions: any[] = [];
+  });
+
+  menuOptions: MenuOption[] = [
+    { icon: 'people-outline', label: 'Usuarios', route: '/admin/users', color: 'primary' },
+    { icon: 'wallet-outline', label: 'Cuentas', route: '/admin/accounts', color: 'success' },
+    { icon: 'people-circle-outline', label: 'Clientes', route: '/admin/customers', color: 'tertiary' },
+    { icon: 'business-outline', label: 'Proveedores', route: '/admin/providers', color: 'warning' },
+    { icon: 'person-add-outline', label: 'Beneficiarios', route: '/admin/beneficiaries', color: 'secondary' },
+    { icon: 'bar-chart-outline', label: 'Reportes', route: '/admin/reports', color: 'primary' },
+    { icon: 'document-text-outline', label: 'Auditoría', route: '/admin/audit', color: 'medium' }
+  ];
 
   constructor(
-    private authService: AuthService,
-    private transactionService: TransactionService,
-    private operationService: HighValueOperationService,
-    private adminDashboardService: AdminDashboardService,
     private router: Router,
     private alertController: AlertController,
+    private authService: AuthService,
     private toastService: ToastService,
-    private errorHandler: ErrorHandlerService
-  ) { }
+    private adminService: AdminService
+  ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadUserInfo();
     this.loadStats();
-    this.loadPendingTransactions();
   }
 
-  loadUserInfo() {
+  private loadUserInfo(): void {
     const user = this.authService.getUserInfo();
-    this.userName = user?.nombre || 'Administrador';
+    this.userName.set(user?.nombre || user?.name || 'Administrador');
   }
 
-  loadStats() {
-    // Obtener estadísticas del dashboard desde la API
-    this.adminDashboardService.getDashboardStats().subscribe({
-      next: (response) => {
+  private loadStats(): void {
+    this.isLoading.set(true);
+
+    this.adminService.getDashboardStats().pipe(
+      tap(response => {
         if (response.success && response.data) {
-          this.stats = response.data;
+          this.stats.set(response.data);
         }
-      },
-      error: (error) => {
-        this.errorHandler.handleError(error?.message, 'loadStats').subscribe({
-          error: () => {
-            // Valores por defecto en caso de error
-            this.stats = {
-              totalUsuarios: 0,
-              usuariosActivos: 0,
-              usuariosBloqueados: 0,
-              totalClientes: 0,
-              totalCuentas: 0,
-              cuentasActivas: 0,
-              totalProveedores: 0,
-              operacionesHoy: 0,
-              volumenTotal: 0
-            };
-          }
-        });
-      }
-    });
+      }),
+      catchError(() => {
+        this.toastService.error('Error al cargar estadísticas');
+        return EMPTY;
+      }),
+      finalize(() => this.isLoading.set(false))
+    ).subscribe();
   }
 
-  loadPendingTransactions() {
-    this.transactionService.getAllTransactions({
-      estado: 'PendienteAprobacion'
-    }).subscribe({
-      next: (transactions) => {
-        this.pendingTransactions = transactions || [];
-      },
-      error: (error) => {
-        this.errorHandler.handleError(error, 'loadPendingTransactions').subscribe({
-          error: () => {
-            this.pendingTransactions = [];
-          }
-        });
-      }
-    });
+  navigateTo(route: string): void {
+    this.router.navigate([route]);
   }
 
-  async approveTransaction(id: string) {
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('es-CR', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2
+    }).format(amount);
+  }
+
+  async confirmLogout(): Promise<void> {
     const alert = await this.alertController.create({
-      header: 'Aprobar Transacción',
-      message: '¿Está seguro de aprobar esta transacción?',
+      header: 'Cerrar Sesión',
+      message: '¿Está seguro que desea cerrar sesión?',
       buttons: [
+        { text: 'Cancelar', role: 'cancel' },
         {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Aprobar',
+          text: 'Cerrar Sesión',
+          role: 'destructive',
           handler: () => {
-            this.transactionService.approveTransaction(id).subscribe({
-              next: () => {
-                this.toastService.success('Transacción aprobada exitosamente');
-                this.loadPendingTransactions();
-                this.loadStats();
-              },
-              error: (error) => {
-                this.errorHandler.handleError(error, 'approveTransaction').subscribe({
-                  error: (errorDetails) => {
-                    this.toastService.error(errorDetails.message);
-                  }
-                });
-              }
-            });
+            this.authService.logout();
+            this.router.navigate(['/login']);
           }
         }
       ]
@@ -133,58 +114,8 @@ userName: string = '';
     await alert.present();
   }
 
-  async rejectTransaction(id: string) {
-    const alert = await this.alertController.create({
-      header: 'Rechazar Transacción',
-      message: 'Ingrese el motivo del rechazo:',
-      inputs: [
-        {
-          name: 'reason',
-          type: 'textarea',
-          placeholder: 'Motivo del rechazo'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Rechazar',
-          handler: (data) => {
-            if (!data.reason) {
-              this.toastService.warning('Debe ingresar un motivo');
-              return false;
-            }
-            this.transactionService.rejectTransaction(id, data.reason).subscribe({
-              next: () => {
-                this.toastService.success('Transacción rechazada');
-                this.loadPendingTransactions();
-                this.loadStats();
-              },
-              error: (error) => {
-                this.errorHandler.handleError(error, 'rejectTransaction').subscribe({
-                  error: (errorDetails) => {
-                    this.toastService.error(errorDetails.message);
-                  }
-                });
-              }
-            });
-            return true;
-          }
-        }
-      ]
-    });
-    await alert.present();
+  refreshStats(event?: any): void {
+    this.loadStats();
+    if (event) setTimeout(() => event.target.complete(), 500);
   }
-
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
-
-  navegation(url:string) {
-    this.router.navigate([url]);
-  }
-
 }

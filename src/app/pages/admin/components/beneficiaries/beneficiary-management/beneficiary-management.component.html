@@ -1,0 +1,138 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Gestión de Beneficiarios</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="refreshBeneficiarios()">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <ion-refresher slot="fixed" (ionRefresh)="refreshBeneficiarios($event)">
+    <ion-refresher-content pullingIcon="chevron-down-circle-outline" refreshingSpinner="crescent">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <div class="management-container">
+    <!-- Estadísticas rápidas -->
+    <div class="stats-row">
+      <div class="stat-chip">
+        <ion-icon name="hourglass-outline" color="warning"></ion-icon>
+        <span>{{ totalPendientes() }} Pendientes</span>
+      </div>
+      <div class="stat-chip">
+        <ion-icon name="checkmark-circle-outline" color="success"></ion-icon>
+        <span>{{ totalConfirmados() }} Confirmados</span>
+      </div>
+    </div>
+
+    <!-- Búsqueda -->
+    <div class="search-section">
+      <ion-searchbar
+        [value]="searchTerm()"
+        (ionInput)="onSearchChange($event)"
+        placeholder="Buscar por nombre, cuenta o cliente..."
+        animated>
+      </ion-searchbar>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filter-section">
+      <ion-segment [value]="filterEstado()" (ionChange)="onFilterChange($any($event.detail.value))">
+        <ion-segment-button value="todos">
+          <ion-label>Todos</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="pendientes">
+          <ion-label>Pendientes</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="confirmados">
+          <ion-label>Confirmados</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <!-- Estado de carga -->
+    @if (isLoading()) {
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando beneficiarios...</p>
+    </div>
+    } @else {
+
+    <!-- Lista de beneficiarios -->
+    @if (filteredBeneficiarios().length > 0) {
+    <div class="beneficiaries-list">
+      @for (beneficiario of filteredBeneficiarios(); track beneficiario.id) {
+      <div class="beneficiary-card">
+        <div class="beneficiary-header">
+          <div class="beneficiary-avatar">
+            <ion-icon name="person-outline"></ion-icon>
+          </div>
+          <div class="beneficiary-info">
+            <h4 class="beneficiary-name">{{ beneficiario.nombreCompleto }}</h4>
+            <p class="beneficiary-account">{{ beneficiario.cuentaDestino }}</p>
+            @if (beneficiario.clienteNombre) {
+            <p class="beneficiary-client">
+              <ion-icon name="business-outline"></ion-icon>
+              {{ beneficiario.clienteNombre }}
+            </p>
+            }
+          </div>
+          <div class="beneficiary-status">
+            <span class="status-badge" [class.confirmed]="beneficiario.confirmado" [class.pending]="!beneficiario.confirmado">
+              {{ getStatusText(beneficiario.confirmado) }}
+            </span>
+          </div>
+        </div>
+
+        <div class="beneficiary-details">
+          <div class="detail-row">
+            <span class="detail-label">Banco:</span>
+            <span class="detail-value">{{ beneficiario.banco }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Tipo:</span>
+            <span class="detail-value">{{ beneficiario.tipoCuenta }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Registrado:</span>
+            <span class="detail-value">{{ formatDate(beneficiario.fechaCreacion) }}</span>
+          </div>
+        </div>
+
+        @if (!beneficiario.confirmado) {
+        <div class="beneficiary-actions">
+          <ion-button expand="block" fill="solid" color="success" (click)="confirmBeneficiary(beneficiario)">
+            <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+            Confirmar Beneficiario
+          </ion-button>
+        </div>
+        }
+      </div>
+      }
+    </div>
+    } @else {
+    <!-- Estado vacío -->
+    <div class="empty-state">
+      <ion-icon name="people-outline"></ion-icon>
+      <h3>No se encontraron beneficiarios</h3>
+      <p>
+        @if (filterEstado() === 'pendientes') {
+          No hay beneficiarios pendientes de confirmación
+        } @else if (filterEstado() === 'confirmados') {
+          No hay beneficiarios confirmados
+        } @else {
+          Intenta ajustar los filtros de búsqueda
+        }
+      </p>
+    </div>
+    }
+
+    }
+  </div>
+</ion-content>

@@ -1,0 +1,162 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/dashboard"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Reportes</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="refreshReports()">
+        <ion-icon name="refresh-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bank-gradient-bg">
+  <ion-refresher slot="fixed" (ionRefresh)="refreshReports($event)">
+    <ion-refresher-content pullingIcon="chevron-down-circle-outline" refreshingSpinner="crescent">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <div class="reports-container">
+    <!-- Filtros de Fecha -->
+    <div class="filters-card">
+      <h4 class="filters-title">
+        <ion-icon name="calendar-outline"></ion-icon>
+        Período del Reporte
+      </h4>
+      <div class="date-filters">
+        <div class="date-input">
+          <label>Desde</label>
+          <ion-datetime-button datetime="startDate"></ion-datetime-button>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime
+                id="startDate"
+                presentation="date"
+                [value]="startDate()"
+                (ionChange)="onStartDateChange($event)"
+                [max]="endDate()">
+              </ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </div>
+        <div class="date-input">
+          <label>Hasta</label>
+          <ion-datetime-button datetime="endDate"></ion-datetime-button>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime
+                id="endDate"
+                presentation="date"
+                [value]="endDate()"
+                (ionChange)="onEndDateChange($event)"
+                [min]="startDate()">
+              </ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </div>
+      </div>
+      <ion-button expand="block" fill="solid" (click)="applyFilters()" class="apply-btn">
+        <ion-icon name="search-outline" slot="start"></ion-icon>
+        Aplicar Filtros
+      </ion-button>
+    </div>
+
+    @if (isLoading()) {
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando reportes...</p>
+    </div>
+    } @else {
+
+    <!-- Totales del Período -->
+    @if (periodTotals()) {
+    <div class="report-section">
+      <h3 class="section-title">
+        <ion-icon name="stats-chart-outline"></ion-icon>
+        Totales del Período
+      </h3>
+      <div class="totals-grid">
+        <div class="total-card">
+          <span class="total-label">Total Transacciones</span>
+          <span class="total-value">{{ formatNumber(periodTotals()!.totalTransacciones) }}</span>
+        </div>
+        <div class="total-card">
+          <span class="total-label">Monto Total</span>
+          <span class="total-value primary">{{ formatCurrency(periodTotals()!.montoTotal) }}</span>
+        </div>
+        <div class="total-card">
+          <span class="total-label">Promedio por Transacción</span>
+          <span class="total-value">{{ formatCurrency(periodTotals()!.promedioTransaccion) }}</span>
+        </div>
+        <div class="total-card">
+          <span class="total-label">Clientes Únicos</span>
+          <span class="total-value">{{ formatNumber(periodTotals()!.clientesUnicos) }}</span>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Volumen Diario -->
+    @if (dailyVolume()) {
+    <div class="report-section">
+      <h3 class="section-title">
+        <ion-icon name="trending-up-outline"></ion-icon>
+        Volumen Diario
+      </h3>
+      <div class="volume-card">
+        <div class="volume-row">
+          <span class="volume-label">Total del Día</span>
+          <span class="volume-value">{{ formatCurrency(dailyVolume()!.totalDia) }}</span>
+        </div>
+        <div class="volume-row">
+          <span class="volume-label">Cantidad de Operaciones</span>
+          <span class="volume-value">{{ formatNumber(dailyVolume()!.cantidadOperaciones) }}</span>
+        </div>
+        <div class="volume-row">
+          <span class="volume-label">Promedio por Operación</span>
+          <span class="volume-value">{{ formatCurrency(dailyVolume()!.promedioOperacion) }}</span>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Top Clientes Activos -->
+    @if (activeClients().length > 0) {
+    <div class="report-section">
+      <h3 class="section-title">
+        <ion-icon name="trophy-outline"></ion-icon>
+        Top 5 Clientes Más Activos
+      </h3>
+      <div class="clients-list">
+        @for (client of activeClients(); track client.clienteId; let i = $index) {
+        <div class="client-card">
+          <div class="client-rank">{{ i + 1 }}</div>
+          <div class="client-info">
+            <span class="client-name">{{ client.nombreCliente }}</span>
+            <span class="client-stats">
+              {{ formatNumber(client.cantidadOperaciones) }} operaciones
+            </span>
+          </div>
+          <div class="client-amount">
+            {{ formatCurrency(client.montoTotal) }}
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- Estado vacío -->
+    @if (!periodTotals() && !dailyVolume() && activeClients().length === 0) {
+    <div class="empty-state">
+      <ion-icon name="document-text-outline"></ion-icon>
+      <h3>Sin datos disponibles</h3>
+      <p>No hay información para el período seleccionado</p>
+    </div>
+    }
+
+    }
+  </div>
+</ion-content>
