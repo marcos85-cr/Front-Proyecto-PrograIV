@@ -85,6 +85,9 @@ export interface TransferenciaTransaccionListaDto {
   comprobanteReferencia?: string;
   fechaCreacion: Date;
   fechaEjecucion?: Date;
+  cuentaOrigenNumero?: string;
+  cuentaDestinoNumero?: string;
+  tipoMovimiento: 'Entrada' | 'Salida';
 }
 
 // Estados de transferencia

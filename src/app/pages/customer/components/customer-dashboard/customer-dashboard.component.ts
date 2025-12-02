@@ -10,15 +10,7 @@ import { ToastService } from '../../../../services/toast.service';
 import { CustomerAccountsService } from '../../services/customer-accounts.service';
 import { CustomerTransfersService } from '../../services/customer-transfers.service';
 import { CuentaListaDto } from '../../model/account.model';
-
-interface Transaction {
-  id: number;
-  descripcion: string;
-  fecha: string;
-  monto: number;
-  tipo: string;
-  estado: string;
-}
+import { TransferenciaTransaccionListaDto } from '../../model/transfer.model';
 
 @Component({
   selector: 'app-customer-dashboard',
@@ -30,7 +22,7 @@ interface Transaction {
 export class CustomerDashboardComponent implements OnInit, OnDestroy, ViewWillEnter, ViewWillLeave {
   userName = signal('');
   accounts = signal<CuentaListaDto[]>([]);
-  transactions = signal<Transaction[]>([]);
+  transactions = signal<TransferenciaTransaccionListaDto[]>([]);
   isLoading = signal(false);
 
   totalBalance = computed(() => {
@@ -44,7 +36,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy, ViewWillEn
 
   recentTransactions = computed(() =>
     this.transactions()
-      .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
+      .sort((a, b) => new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime())
       .slice(0, 5)
   );
 
@@ -130,13 +122,14 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy, ViewWillEn
       transferencia: 'swap-horizontal-outline',
       deposito: 'arrow-down-outline',
       retiro: 'arrow-up-outline',
+      pagoservicio: 'card-outline',
       pago: 'card-outline'
     };
     return icons[tipo?.toLowerCase()] || 'cash-outline';
   }
 
-  isIncome(tipo: string): boolean {
-    return ['deposito', 'ingreso'].includes(tipo?.toLowerCase());
+  isIncome(tipoMovimiento: string): boolean {
+    return tipoMovimiento === 'Entrada';
   }
 
   refreshDashboard(event?: any): void {

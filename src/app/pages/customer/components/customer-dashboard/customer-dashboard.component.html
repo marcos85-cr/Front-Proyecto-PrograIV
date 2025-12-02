@@ -94,15 +94,15 @@
       <div class="transactions-list">
         @for (tx of recentTransactions(); track tx.id) {
         <div class="transaction-item">
-          <div class="tx-icon" [class.income]="isIncome(tx.tipo)">
+          <div class="tx-icon" [class.income]="isIncome(tx.tipoMovimiento)">
             <ion-icon [name]="getTransactionIcon(tx.tipo)"></ion-icon>
           </div>
           <div class="tx-info">
-            <span class="tx-desc">{{ tx.descripcion }}</span>
-            <span class="tx-date">{{ formatDate(tx.fecha) }}</span>
+            <span class="tx-desc">{{ tx.descripcion || tx.tipo }}</span>
+            <span class="tx-date">{{ formatDate(tx.fechaCreacion.toString()) }}</span>
           </div>
-          <span class="tx-amount" [class.income]="isIncome(tx.tipo)">
-            {{ isIncome(tx.tipo) ? '+' : '-' }}{{ formatCurrency(tx.monto > 0 ? tx.monto : -tx.monto) }}
+          <span class="tx-amount" [class.income]="isIncome(tx.tipoMovimiento)">
+            {{ isIncome(tx.tipoMovimiento) ? '+' : '-' }}{{ formatCurrency(tx.monto, tx.moneda) }}
           </span>
         </div>
         }

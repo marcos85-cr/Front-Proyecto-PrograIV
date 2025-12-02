@@ -36,6 +36,9 @@
         <ion-segment-button value="Exitosa">
           <ion-label>Exitosas</ion-label>
         </ion-segment-button>
+        <ion-segment-button value="Programada">
+          <ion-label>Programadas</ion-label>
+        </ion-segment-button>
         <ion-segment-button value="PendienteAprobacion">
           <ion-label>Pendientes</ion-label>
         </ion-segment-button>
@@ -58,19 +61,32 @@
                 <ion-icon [name]="getStatusIcon(transfer.estado)"></ion-icon>
               </div>
               <div class="transaction-info">
-                <h4 class="transaction-description">{{ transfer.descripcion || 'Transferencia' }}</h4>
+                <h4 class="transaction-description">{{ transfer.descripcion || transfer.tipo }}</h4>
                 <p class="transaction-date">{{ formatDate(transfer.fechaCreacion) }}</p>
+                <div class="transaction-accounts">
+                  @if (transfer.cuentaOrigenNumero && transfer.tipoMovimiento === 'Salida') {
+                    <span class="account-number">Desde: ****{{ transfer.cuentaOrigenNumero.slice(-4) }}</span>
+                  }
+                  @if (transfer.cuentaDestinoNumero && transfer.tipoMovimiento === 'Salida') {
+                    <span class="account-number">Hacia: ****{{ transfer.cuentaDestinoNumero.slice(-4) }}</span>
+                  }
+                  @if (transfer.cuentaOrigenNumero && transfer.tipoMovimiento === 'Entrada') {
+                    <span class="account-number">De: ****{{ transfer.cuentaOrigenNumero.slice(-4) }}</span>
+                  }
+                </div>
                 <div class="transaction-meta">
                   <ion-badge [color]="getStatusColor(transfer.estado)">
                     {{ getStatusLabel(transfer.estado) }}
                   </ion-badge>
                   @if (transfer.comprobanteReferencia) {
-                    <span class="reference">Ref: {{ transfer.comprobanteReferencia }}</span>
+                    <span class="reference">{{ transfer.comprobanteReferencia }}</span>
                   }
                 </div>
               </div>
               <div class="transaction-amount">
-                <span class="amount">{{ formatCurrency(transfer.monto, transfer.moneda) }}</span>
+                <span class="amount" [class.incoming]="transfer.tipoMovimiento === 'Entrada'" [class.outgoing]="transfer.tipoMovimiento === 'Salida'">
+                  {{ transfer.tipoMovimiento === 'Entrada' ? '+' : '-' }}{{ formatCurrency(transfer.monto, transfer.moneda) }}
+                </span>
                 @if (transfer.comision > 0) {
                   <span class="fee">Comisión: {{ formatCurrency(transfer.comision, transfer.moneda) }}</span>
                 }

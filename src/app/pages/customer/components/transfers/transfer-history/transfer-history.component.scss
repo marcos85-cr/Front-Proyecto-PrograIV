@@ -131,6 +131,19 @@ ion-searchbar {
   color: rgba(255, 255, 255, 0.7);
 }
 
+.transaction-accounts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0 0 0.35rem 0;
+
+  .account-number {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: monospace;
+  }
+}
+
 .transaction-meta {
   display: flex;
   align-items: center;
@@ -161,6 +174,16 @@ ion-searchbar {
     font-size: 1rem;
     font-weight: 700;
     color: #ffffff;
+
+    &.incoming {
+      color: #10b981;
+      text-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    }
+
+    &.outgoing {
+      color: #ef4444;
+      text-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+    }
   }
 
   .fee {
