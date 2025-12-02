@@ -42,7 +42,7 @@
           (ionChange)="onFilterChange($event)"
           interface="popover"
           placeholder="Seleccionar">
-          @for (tipo of tiposOperacion; track tipo.valor) {
+          @for (tipo of tiposOperacion(); track tipo.valor) {
           <ion-select-option [value]="tipo.valor">{{ tipo.etiqueta }}</ion-select-option>
           }
         </ion-select>
@@ -110,10 +110,10 @@
             <ion-icon [name]="getOperationIcon(registro.tipoOperacion)" [color]="getOperationColor(registro.tipoOperacion)"></ion-icon>
           </div>
           <div class="audit-info">
-            <span class="audit-operation">{{ registro.tipoOperacion }}</span>
-            <span class="audit-user">{{ registro.usuario }}</span>
+            <span class="audit-operation">{{ formatTipoOperacionDisplay(registro.tipoOperacion) }}</span>
+            <span class="audit-user">{{ registro.usuarioEmail || registro.usuario || 'N/A' }}</span>
           </div>
-          <span class="audit-time">{{ formatDateTime(registro.fecha) }}</span>
+          <span class="audit-time">{{ formatDateTime(registro.fechaHora || registro.fecha) }}</span>
         </div>
 
         <div class="audit-description">
@@ -121,14 +121,24 @@
         </div>
 
         <div class="audit-footer">
+          <span class="audit-id">
+            <ion-icon name="finger-print-outline"></ion-icon>
+            ID: {{ registro.id }}
+          </span>
+          <span class="audit-user-id">
+            <ion-icon name="person-outline"></ion-icon>
+            Usuario ID: {{ registro.usuarioId }}
+          </span>
+          @if (registro.ip) {
           <span class="audit-ip">
             <ion-icon name="globe-outline"></ion-icon>
-            {{ registro.ip || 'N/A' }}
+            {{ registro.ip }}
           </span>
-          @if (registro.detalles) {
+          }
+          @if (registro.detalles || registro.detalleJson) {
           <span class="audit-details">
             <ion-icon name="information-circle-outline"></ion-icon>
-            {{ registro.detalles }}
+            {{ registro.detalles || registro.detalleJson }}
           </span>
           }
         </div>

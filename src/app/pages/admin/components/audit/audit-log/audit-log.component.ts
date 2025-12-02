@@ -27,16 +27,10 @@ export class AuditLogComponent implements OnInit, OnDestroy, ViewWillEnter, View
   startDate = signal('');
   endDate = signal('');
 
-  // Tipos de operación disponibles
-  tiposOperacion = [
-    { valor: 'todos', etiqueta: 'Todos' },
-    { valor: 'LOGIN', etiqueta: 'Inicio Sesión' },
-    { valor: 'LOGOUT', etiqueta: 'Cierre Sesión' },
-    { valor: 'TRANSFERENCIA', etiqueta: 'Transferencia' },
-    { valor: 'CREACION_CUENTA', etiqueta: 'Creación Cuenta' },
-    { valor: 'MODIFICACION', etiqueta: 'Modificación' },
-    { valor: 'ELIMINACION', etiqueta: 'Eliminación' }
-  ];
+  // Tipos de operación disponibles (se cargan dinámicamente)
+  tiposOperacion = signal<{ valor: string; etiqueta: string }[]>([
+    { valor: 'todos', etiqueta: 'Todos' }
+  ]);
 
   // Lista filtrada computada
   filteredRegistros = computed(() => {
@@ -48,8 +42,10 @@ export class AuditLogComponent implements OnInit, OnDestroy, ViewWillEnter, View
       // Filtro por búsqueda
       const matchesSearch = !search ||
         reg.usuario?.toLowerCase().includes(search) ||
+        reg.usuarioEmail?.toLowerCase().includes(search) ||
         reg.descripcion?.toLowerCase().includes(search) ||
-        reg.ip?.includes(search);
+        reg.ip?.includes(search) ||
+        reg.tipoOperacion?.toLowerCase().includes(search);
 
       // Filtro por tipo de operación
       const matchesFilter = filter === 'todos' || reg.tipoOperacion === filter;
@@ -120,6 +116,7 @@ export class AuditLogComponent implements OnInit, OnDestroy, ViewWillEnter, View
       tap(response => {
         if (response.success && response.data) {
           this.registros.set(response.data);
+          this.loadTiposOperacion(response.data);
         }
       }),
       catchError(() => {
@@ -128,6 +125,48 @@ export class AuditLogComponent implements OnInit, OnDestroy, ViewWillEnter, View
       }),
       finalize(() => this.isLoading.set(false))
     ).subscribe();
+  }
+
+  /**
+   * Carga los tipos de operación desde los registros
+   */
+  private loadTiposOperacion(registros: RegistroAuditoria[]): void {
+    const tiposUnicos = [...new Set(registros.map(r => r.tipoOperacion).filter(Boolean))];
+    const tipos = [
+      { valor: 'todos', etiqueta: 'Todos' },
+      ...tiposUnicos.map(tipo => ({
+        valor: tipo,
+        etiqueta: this.formatTipoOperacion(tipo)
+      }))
+    ];
+    this.tiposOperacion.set(tipos);
+  }
+
+  /**
+   * Formatea el tipo de operación para mostrar
+   */
+  private formatTipoOperacion(tipo: string): string {
+    const labels: { [key: string]: string } = {
+      'LOGIN': 'Inicio Sesión',
+      'LOGOUT': 'Cierre Sesión',
+      'TRANSFERENCIA': 'Transferencia',
+      'CREACION_CUENTA': 'Creación Cuenta',
+      'MODIFICACION': 'Modificación',
+      'ELIMINACION': 'Eliminación',
+      'APROBACION': 'Aprobación',
+      'RECHAZO': 'Rechazo',
+      'AprobacionTransferencia': 'Aprobación Transferencia',
+      'RechazoTransferencia': 'Rechazo Transferencia',
+      'CreacionTransferencia': 'Creación Transferencia'
+    };
+    return labels[tipo] || tipo.replace(/([A-Z])/g, ' $1').trim();
+  }
+
+  /**
+   * Formatea el tipo de operación para mostrar en el template
+   */
+  formatTipoOperacionDisplay(tipo: string): string {
+    return this.formatTipoOperacion(tipo);
   }
 
   /**
@@ -185,7 +224,10 @@ export class AuditLogComponent implements OnInit, OnDestroy, ViewWillEnter, View
       'TRANSFERENCIA': 'swap-horizontal-outline',
       'CREACION_CUENTA': 'add-circle-outline',
       'MODIFICACION': 'create-outline',
-      'ELIMINACION': 'trash-outline'
+      'ELIMINACION': 'trash-outline',
+      'AprobacionTransferencia': 'checkmark-circle-outline',
+      'RechazoTransferencia': 'close-circle-outline',
+      'CreacionTransferencia': 'add-outline'
     };
     return icons[tipo] || 'document-outline';
   }
@@ -200,7 +242,10 @@ export class AuditLogComponent implements OnInit, OnDestroy, ViewWillEnter, View
       'TRANSFERENCIA': 'primary',
       'CREACION_CUENTA': 'tertiary',
       'MODIFICACION': 'warning',
-      'ELIMINACION': 'danger'
+      'ELIMINACION': 'danger',
+      'AprobacionTransferencia': 'success',
+      'RechazoTransferencia': 'danger',
+      'CreacionTransferencia': 'primary'
     };
     return colors[tipo] || 'medium';
   }
