@@ -176,8 +176,8 @@ export class NewTransferComponent implements OnInit {
         }
         this.isPreChecking.set(false);
       },
-      error: () => {
-        this.toastService.error('Error al validar transferencia');
+      error: (error) => {
+        this.toastService.error(error.message || 'Error en validación');
         this.isPreChecking.set(false);
       }
     });
